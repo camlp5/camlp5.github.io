@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- index.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>Camlp5</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Introduction</h1>
+
+<p>Camlp5 is a preprocessor and pretty-printer for OCaml programs. It
+  also provides parsing and printing tools.</p>
+
+<p>As a preprocessor, it allows to:</p>
+
+<ul>
+  <li>extend the syntax of OCaml,</li>
+  <li>redefine the whole syntax of the language.</li>
+</ul>
+
+<p>As a pretty printer, it allows to:</p>
+
+<ul>
+  <li>display OCaml programs in an elegant way,</li>
+  <li>convert from one syntax to another,</li>
+  <li>check the results of syntax extensions.</li>
+</ul>
+
+<p>Camlp5 also provides some parsing and pretty printing tools:</p>
+
+<ul>
+  <li>extensible grammars</li>
+  <li>extensible printers</li>
+  <li>stream parsers and lexers</li>
+  <li>pretty print module</li>
+</ul>
+
+<p>It works as a shell command and can also be used in the OCaml
+  toplevel.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Shell-usage">Shell usage</a></li>
+    <li><a href="#a:Parsing-and-Printing-kits">Parsing and Printing kits</a></li>
+    <li><a href="#a:Extending-syntax">Extending syntax</a></li>
+    <li><a href="#a:Pretty-printing">Pretty printing</a></li>
+    <li><a href="#a:Note:-the-revised-syntax">Note: the revised syntax</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Shell-usage">Shell usage</h2>
+
+<p>The main shell commands are:</p>
+
+<ul>
+  <li><tt>camlp5o</tt> : to treat files written in normal OCaml
+  syntax,</li>
+  <li><tt>camlp5r</tt> : to treat files written in an original syntax
+    named the <a href="revsynt.html"><em>revised syntax</em></a>.</li>
+</ul>
+
+<p>These commands can be given as parameters of the
+option <tt>-pp</tt> of the OCaml compiler. Examples:</p>
+
+<pre>
+  ocamlc -pp camlp5o foo.ml
+  ocamlc -pp camlp5r bar.ml
+</pre>
+
+<p>This way, the parsing is done by Camlp5. In case of syntax errors,
+the parsing fails with an error message and the compilation is
+aborted. Otherwise, the OCaml compiler continues with the syntax tree
+provided by Camlp5.</p>
+
+<p>In the toplevel, it is possible to preprocess the input phrases by
+loading one of the files "<tt>camlp5o.cma</tt>" or
+"<tt>camlp5r.cma</tt>".  The common usage is:</p>
+
+<pre>
+  ocaml -I +camlp5 camlp5o.cma
+  ocaml -I +camlp5 camlp5r.cma
+</pre>
+
+<p>It is possible that, in your installation, the Camlp5 library is
+  not in the OCaml directory. In this case, the commands must be:</p>
+
+<pre>
+  ocaml -I `camlp5 -where` camlp5o.cma
+  ocaml -I `camlp5 -where` camlp5r.cma
+</pre>
+
+<p>In general, in this documentation, when a command requires:</p>
+
+<pre>
+  -I +camlp5
+</pre>
+
+<p>it can be replaced by:</p>
+
+<pre>
+  -I `camlp5 -where`
+</pre>
+
+<p>or, by:</p>
+
+<pre>
+  -I &lt;directory&gt;
+</pre>
+
+<p>where "directory" is the directory path where the Camlp5 library
+  files are installed.</p>
+
+<h2 id="a:Parsing-and-Printing-kits">Parsing and Printing kits</h2>
+
+<p>Parsing and printing extensions are OCaml object files, i.e. files
+  with the extension "<tt>.cmo</tt>" or "<tt>.cma</tt>". They are the
+  result of the compilation of OCaml source files containing what is
+  necessary to do the parsing or printing. These object files are
+  named parsing and printing <em>kits</em>.</p>
+
+<p>These files cannot be linked to produce executables because they
+  generally call functions and use variables defined only in Camlp5
+  core, typically belonging to the module "<tt>Pcaml</tt>". The kits
+  are designed to be loaded by the Camlp5 commands, either through
+  their command arguments or through directives in the source
+  files.</p>
+
+<p>It is therefore important to compile the <em>kits</em> with the
+  option "<tt>-c</tt>" of the OCaml compiler (i.e. just compilation,
+  not producing an executable) and with the option "<tt>-I
+  +camlp5</tt>" (or "<tt>-I `camlp5 -where`</tt>") to inform the
+  compiler to find module interfaces in installed Camlp5 library.</p>
+
+<p>In the OCaml toplevel, it is possible to use a kit by simply
+  loading it with the directive "<tt>#load</tt>".</p>
+
+<h2 id="a:Extending-syntax">Extending syntax</h2>
+
+<p>A syntax extension is a Camlp5 parsing kit. There are two ways to
+  use a syntax extension:</p>
+
+<ul>
+  <li>Either by giving this object file as parameter to the Camlp5
+    command. For example:
+
+<pre>
+  ocamlc -pp "camlp5o ./myext.cmo" foo.ml
+</pre>
+
+  </li>
+  <li>Or by adding the directive "<tt>#load</tt>" in the source file:
+
+<pre>
+  #load "./myext.cmo";;
+</pre>
+
+and then compile it simply like this:
+
+<pre>
+  ocamlc -pp camlp5o foo.ml
+</pre>
+
+  </li>
+</ul>
+
+<p>Several syntax extensions can be used for a single file. The way to
+  create one's own syntax extensions is explained in this document.</p>
+
+<h2 id="a:Pretty-printing">Pretty printing</h2>
+
+<p>As for syntax extensions, the pretty printing is defined or
+  extended through Camlp5 printing kits. Some pretty printing kits are
+  provided by Camlp5, the main ones being:</p>
+
+<ul>
+  <li><tt>pr_o.cmo</tt>: to pretty print in normal syntax,</li>
+  <li><tt>pr_r.cmo</tt>: to pretty print in revised syntax.</li>
+</ul>
+
+<p>Examples: if we have a file, <tt>foo.ml</tt>, written in normal
+  syntax and and another one, <tt>bar.ml</tt>, written in revised
+  syntax, here are the commands to pretty print them in their own
+  syntax:</p>
+
+<pre>
+  camlp5o pr_o.cmo foo.ml
+  camlp5r pr_r.cmo bar.ml
+</pre>
+
+<p>And how to convert them into the other syntax:</p>
+
+<pre>
+  camlp5o pr_r.cmo foo.ml
+  camlp5r pr_o.cmo foo.ml
+</pre>
+
+<p>The way to create one's own pretty printing extensions is
+  explained in this document.</p>
+
+<h2 id="a:Note:-the-revised-syntax">Note: the revised syntax</h2>
+
+<p>The <em>revised syntax</em> is a specific syntax whose aim is to
+  resolve some problems and inconsistencies of the normal OCaml
+  syntax. A chapter will explain the differences between the normal
+  and the revised syntax.</p>
+
+<p>All examples of this documentation are written in that revised
+  syntax. Even if you don't know it, it is not difficult to
+  understand. The same examples can be written in normal syntax. In
+  case of problems, refer to the chapter describing it.</p>
+
+<a class="toplink" href="index.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

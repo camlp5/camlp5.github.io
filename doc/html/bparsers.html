@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- bparsers.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>backtracking parsers</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Backtracking parsers</h1>
+
+<p>Backtracking parsers are a second alternative
+  of <a href="parsers.html">stream parsers</a>
+  and <a href="fparsers.html">functional parsers</a>.</p>
+
+<p>Backtracking parsers are close to functional parsers: they use the
+  same stream type, "<tt>Fstream.t</tt>", and their syntax is almost
+  identical, its introducing keyword being "<tt>bparser</tt>" instead
+  of "<tt>fparser</tt>".</p>
+
+<p>The difference is that they are implemented with <em>full
+    backtracking</em> and that they return values of the type
+    "<tt>option</tt>" of the triplet: 1/ value, 2/ remaining stream
+    and 3/ continuation.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Syntax">Syntax</a></li>
+    <li><a href="#a:Semantics">Semantics</a>
+      <ul>
+        <li><a href="#b:Algorithm">Algorithm</a></li>
+        <li><a href="#b:Type">Type</a></li>
+        <li><a href="#b:Syntax-errors">Syntax errors</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Example">Example</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Syntax">Syntax</h2>
+
+<p>The syntax of backtracking parsers is added together with the
+  syntax of functional parsers, when the kit "pa_fstream.cmo" is
+  loaded. It is:</p>
+
+<pre>
+          expression ::= bparser
+                       | match-with-bparser
+             bparser ::= "bparser" pos-opt "[" parser-cases "]"
+                       | "bparser" pos-opt parser-case
+  match-with-bparser ::= "match" expression "with" bparser
+        parser-cases ::= parser-cases parser-case
+                       | &lt;nothing&gt;
+         parser-case ::= "[:" stream-pattern ":]" pos-opt "->" expression
+                       | "[:" ":]" pos-opt "->" expression
+      stream-pattern ::= stream-patt-comp
+                       | stream-patt-comp ";" stream-pattern
+    stream-patt-comp ::= "`" pattern
+                       | "`" pattern "when" expression
+                       | pattern "=" expression
+                       | pattern
+                       | "when" expression
+             pos-opt ::= pattern
+                       | &lt;nothing&gt;
+</pre>
+
+<h2 id="a:Semantics">Semantics</h2>
+
+<h3 id="b:Algorithm">Algorithm</h3>
+
+<p>The backtracking parsers, like classical parsers and functional
+  parsers, use a recursive descent algorithm. But:</p>
+
+<ul>
+  <li>If a stream pattern component does not match the current
+    position of the input stream, the control is given to the next
+    case of the stream pattern component before it. If it is the first
+    stream pattern component, the rule (the stream pattern) is left
+    and the next rule is tested.</li>
+</ul>
+
+<p>For example, the following grammar:</p>
+
+<pre>
+   E -> X Y
+   X -> a b | a
+   Y -> b
+</pre>
+
+<p>works, with the backtracking algorithm, for the input "<tt>a
+  b</tt>".</p>
+
+<p>Parsing with the non-terminal "<tt>E</tt>", the non-terminal
+  "<tt>X</tt>" first accepts the input "<tt>a b</tt>" with its first
+  rule. Then when "<tt>Y</tt>" is called, the parsing fails since
+  nothing remains in the input stream.</p>
+
+<p>In the rule "<tt>X Y</tt>" of the non-terminal "<tt>E</tt>", the
+  non-terminal "<tt>Y</tt>" having failed, the control is given the
+  the continuation of the non-terminal "<tt>X</tt>". This continuation
+  is its second rule containing only "<tt>a</tt>". Then "<tt>Y</tt>"
+  is called and accepted.</p>
+
+<p>This case does not work with functional parsers since when the rule
+  "<tt>a b</tt>" of the non-terminal "<tt>X</tt>" is accepted, it is
+  definitive. If the input starts with "<tt>a b</tt>", there is no way
+  to apply its second rule.</p>
+
+<p>Backtracking parsers are strictly more powerful than functional
+  parsers.</p>
+
+<h3 id="b:Type">Type</h3>
+
+<p>A backtracking parser whose stream elements are of type
+  "<tt>t1</tt>", and whose semantic actions are of some type
+  "<tt>t2</tt>", is of type:</p>
+
+<pre>
+   Fstream.t t1 -> option (t * Fstream.t t1 * Fstream.kont t1 t2)
+</pre>
+
+<p>If the backtracking parsers fails, its returning value is
+  "<tt>None</tt>".</p>
+
+<p>If it succeeds, its returning value is "<tt>Some (x, strm, k)</tt>"
+  where "<tt>x</tt>" is its result, "<tt>strm</tt>" the remaining
+  stream, and "<tt>k</tt>" the continuation.</p>
+
+<p>The continuation is internally used in the backtracking algorithm,
+  but is can also be used in the main call to compute the next
+  solution, using the function "<tt>Fstream.bcontinue</tt>".</p>
+
+<p>It is also possible to directly get the list of all solutions by
+  calling the function "<tt>Fstream.bparse_all</tt>".</p>
+
+<h3 id="b:Syntax-errors">Syntax errors</h3>
+
+<p>Like for <a href="fparsers.html">functional parsers</a>, in case of
+  syntax error, the error position can be found by using the function
+  "<tt>Fstream.count_unfrozen</tt>", the token in error being the
+  last unfrozen element of the stream.</p>
+
+<p>A syntax error is not really an error: for the backtracking
+  parsers, like for functional parsers, it is viewed as a
+  "non-working" case and another solution is searched.<p>
+
+<p>In the backtracking algorithm, depending on the grammar and the
+  input, the search of the next solution can be very long. A solution
+  is proposed for that in the <a href="grammars.html">extensible
+  grammars</a> system when the parsing algorithm is set to
+  "backtracking".</p>
+
+<h2 id="a:Example">Example</h2>
+
+<p>Here is an example which just shows the backtracking algorithm but
+  without parsing, an empty stream being given as parameter and never
+  referred.<p>
+
+<p>It creates a list of three strings, each of them being choosen
+  between <tt>"A"</tt>, <tt>"B"</tt> and <tt>"C"</tt>.</p>
+
+<p>The code is:</p>
+
+<pre>
+  #load "pa_fstream.cmo";
+  value choice = bparser [ [: :] -> "A" | [: :] -> "B" | [: :] -> "C" ];
+  value combine = bparser [: x = choice; y = choice; z = choice :] -> [x; y; z];
+</pre>
+
+<p>The function "combine" returns the first solution:</p>
+
+<pre>
+  # combine (fstream [: :]);
+  - : option (list string * Fstream.t '_a * Fstream.kont '_a (list string)) =
+  Some (["A"; "A"; "A"], &lt;abstr>, Fstream.K &lt;fun>)
+</pre>
+
+<p>The function "Fstream.bparse_all" returns the list of all solutions,
+  showing the interest of the backtracking:</p>
+
+<pre>
+  # Fstream.bparse_all combine (fstream [: :]);
+  - : list (list string) =
+  [["A"; "A"; "A"]; ["A"; "A"; "B"]; ["A"; "A"; "C"]; ["A"; "B"; "A"];
+   ["A"; "B"; "B"]; ["A"; "B"; "C"]; ["A"; "C"; "A"]; ["A"; "C"; "B"];
+   ["A"; "C"; "C"]; ["B"; "A"; "A"]; ["B"; "A"; "B"]; ["B"; "A"; "C"];
+   ["B"; "B"; "A"]; ["B"; "B"; "B"]; ["B"; "B"; "C"]; ["B"; "C"; "A"];
+   ["B"; "C"; "B"]; ["B"; "C"; "C"]; ["C"; "A"; "A"]; ["C"; "A"; "B"];
+   ["C"; "A"; "C"]; ["C"; "B"; "A"]; ["C"; "B"; "B"]; ["C"; "B"; "C"];
+   ["C"; "C"; "A"]; ["C"; "C"; "B"]; ["C"; "C"; "C"]]
+</pre>
+
+<a class="toplink" href="bparsers.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

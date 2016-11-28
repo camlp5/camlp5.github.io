@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- q_ast.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>q_ast.cmo</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Syntax tree quotations in user syntax</h1>
+
+<p>The quotation kit "<tt>q_ast.cmo</tt>" allows to use syntax tree
+  quotations in user syntax. It fully works only in "strict" mode. In
+  "transitional" mode, there is no way to use antiquotations, which
+  restricts its utility.</p>
+
+<p>If this kit is loaded, when a quotation of syntax tree is found,
+  the current OCaml language parser is called. Then, the resulting
+  tree is reified (except the antiquotations) to represent <em>the
+  syntax tree of the syntax tree</em>.</p>
+
+<h2 id="a:Antiquotations">Antiquotations</h2>
+
+<p>The OCaml langage parser used, and its possible extensions, must
+  have been built to allow the places of the antiquotations. The
+  symbols enclosed by the meta-symbol "<tt>V</tt>" (see the chapter
+  about <a href="grammars.html">extensible grammars</a>, section
+  "symbols"), define where antiquotations can take place.</p>
+
+<p>There is no need to specify antiquotations for the main types
+  defined in the AST tree module ("<tt>MLast</tt>"): "<tt>expr</tt>",
+  "<tt>patt</tt>", "<tt>expr</tt>", "<tt>str_item</tt>",
+  "<tt>sig_item</tt>", and so on. All syntax parts of these types are
+  automatically antiquotable.</p>
+
+<p>For example, in Camlp5 sources, the grammar rule defining the
+  "let..in" statement is:</p>
+
+<pre>
+   "let"; r = V (FLAG "rec") "flag" "opt";
+    l = V (LIST1 let_binding SEP "and"); "in"; x = expr
+</pre>
+
+<p>All symbols of these rules, except the keywords, are antiquotable:</p>
+
+<ul>
+  <li>The "rec" flag, because enclosed by the "V" meta symbol. The two
+    strings which follow it gives the possible antiquotation kinds:
+    "flag" (the normal antiquotation kind) and "opt" (kept by backward
+    compatibility, but not recommended). It is therefore possible to
+    antiquote it as: "<tt>$flag:...$</tt>" or "<tt>$opt:...$</tt>"
+    where the "<tt>...</tt>" is an expression or a pattern depending
+    on the position of the enclosing quotation</li>
+  <li>The binding list is also antiquotable, since it is also enclosed
+    by the "V" meta symbol. Its antiquotation kind is "list" (the
+    default when the meta symbol parameter is a list). It is therefore
+    possible to write "<tt>$list:...$</tt>" at the place of the
+    binding list.</li>
+  <li>The expression after the "in" is also antiquotable, because it
+    belongs to the main types defined in the module "<tt>MLast</tt>".</li>
+</ul>
+
+<p>In that example, the variable "<tt>r</tt>" is of type "<tt>Ploc.vala
+  bool</tt>", the variable "<tt>r</tt>" of type "<tt>Ploc.vala (list
+  (patt * expr))</tt>" and the variable "<tt>x</tt>" of type
+  "<tt>MLast.expr</tt>".</p>
+
+<p>... to be completed ...</p>
+
+<a class="toplink" href="q_ast.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

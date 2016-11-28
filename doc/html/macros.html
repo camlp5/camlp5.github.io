@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- macros.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>macros</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Macros</h1>
+
+<p>Camlp5 provides a system of macros, added by the parsing kit
+  "<tt>pa_macro.cmo</tt>". Macros are values evaluated at parsing
+  time.</p>
+
+<p>When loaded, the parsing kit extends the syntax of the language and
+  adds command options.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Added-syntax">Added syntax</a></li>
+    <li><a href="#a:Added-command-options">Added command options</a></li>
+    <li><a href="#a:Semantics">Semantics</a></li>
+    <li><a href="#a:Predefined-macros">Predefined macros</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Added-syntax">Added syntax</h2>
+
+<p>The parsing kit "<tt>pa_macro.cmo</tt>" extends the structure items
+  (= toplevel phrases), the expressions and the patterns by the
+  following grammar rules:</p>
+
+<pre>
+           str-item ::= str-macro-def
+           sig-item ::= sig-macro-def
+               expr ::= macro-expr
+               patt ::= macro-patt
+          cons-decl ::= macro-cons-decl
+       rec-lab-decl ::= macro-rec-lab-decl
+        match-assoc ::= macro-match-assoc
+      str_macro-def ::= "DEFINE" uident
+                      | "DEFINE" uident "=" expr
+                      | "DEFINE" uident params "=" expr
+                      | "UNDEF" uident
+                      | "IFDEF" dexpr "THEN" st-or-mac else-str "END"
+                      | "IFNDEF" dexpr "THEN" st-or-mac else-str "END"
+           else-str ::= "ELSIFDEF" dexpr "THEN" st-or-mac else-str
+                      | "ELSIFNDEF" dexpr "THEN" st-or-mac else-str
+                      | "ELSE" st-or-mac else-str
+                      | &lt;nothing&gt;
+      sig_macro-def ::= "DEFINE" uident
+                      | "DEFINE" uident params "=" type
+                      | "UNDEF" uident
+                      | "IFDEF" dexpr "THEN" sg-or-mac else-sig "END"
+                      | "IFNDEF" dexpr "THEN" sg-or-mac else-sig "END"
+           else-sig ::= "ELSIFDEF" dexpr "THEN" sg-or-mac else-sig
+                      | "ELSIFNDEF" dexpr "THEN" sg-or-mac else-sig
+                      | "ELSE" st-or-mac else-sig
+                      | &lt;nothing&gt;
+         macro-expr ::= "IFDEF" dexpr "THEN" expr else-expr "END"
+                      | "IFNDEF" dexpr "THEN" expr else-expr "END"
+                      | "__FILE__"
+                      | "__LOCATION__"
+          else-expr ::= "ELSIFDEF" dexpr "THEN" expr else-expr
+                      | "ELSIFNDEF" dexpr "THEN" expr else-expr
+                      | "ELSE" expr else-expr
+         macro-patt ::= "IFDEF" dexpr "THEN" patt "ELSE" patt "END"
+                      | "IFNDEF" dexpr "THEN" patt "ELSE" patt "END"
+    macro-cons-decl ::= "IFDEF" dexpr "THEN" cons-decl "END"
+                      | "IFDEF" dexpr "THEN" cons-decl
+                        "ELSE" cons-decl "END"
+                      | "IFNDEF" dexpr "THEN" cons-decl "END"
+                      | "IFNDEF" dexpr "THEN" cons-decl
+                        "ELSE" cons-decl "END"
+ macro-rec-lab-decl ::= "IFDEF" dexpr "THEN" rec-lab-decl "END"
+                      | "IFDEF" dexpr "THEN" rec-lab-decl
+                        "ELSE" rec-lab-decl "END"
+                      | "IFNDEF" dexpr "THEN" rec-lab-decl "END"
+                      | "IFNDEF" dexpr "THEN" rec-lab-decl
+                        "ELSE" rec-lab-decl "END"
+  macro-match-assoc ::= "IFDEF" dexpr "THEN" match_assoc "END"
+                      | "IFDEF" dexpr "THEN" match-assoc
+                        "ELSE" match-assoc "END"
+                      | "IFNDEF" dexpr "THEN" match-assoc "END"
+                      | "IFNDEF" dexpr "THEN" match-assoc
+                        "ELSE" match-assoc "END"
+          st-or-mac ::= str_macro-def
+                      | structure
+          sg-or-mac ::= sig-macro-def
+                      | signature
+             params ::= ident params
+                      | ident
+              dexpr ::= dexpr "OR" dexpr
+                      | dexpr "AND" dexpr
+                      | "NOT" dexpr
+                      | uident
+                      | "(" dexpr ")"
+             uident ::= 'A'-'Z' ident
+              ident ::= ident-char*
+         ident-char ::= ('a'-'a' | 'A'-'Z' | '0'-'9' | '_' | ''' |
+                         misc-byte)
+          misc-byte ::= '\128'-'\255'
+</pre>
+
+<p>When a macro has been defined, as name e.g. "NAME", the expressions
+  and patterns are extended this way:</p>
+
+<pre>
+        expr ::= "NAME"
+               | "NAME" "(" expr-params ")"
+        patt ::= "NAME"
+               | "NAME" "(" patt-params ")"
+  expr-params := expr "," expr-params
+               | expr
+  patt-params := patt "," patt-params
+               | patt
+</pre>
+
+<p>Notice that the identifiers "<tt>DEFINE</tt>", "<tt>UNDEF</tt>",
+  "<tt>IFDEF</tt>", "<tt>IFNDEF</tt>", "<tt>ELSE</tt>",
+  "<tt>END</tt>", "<tt>OR</tt>", "<tt>AND</tt>" and "<tt>NOT</tt>" are
+  new keywords (they cannot be used as identifiers of constructors or
+  modules.</p>
+
+<p>However, the identifiers "<tt>__FILE__</tt>" and
+  "<tt>__LOCATION__</tt>" and the new defined macro names are not new
+  identifiers.</p>
+
+<h2 id="a:Added-command-options">Added command options</h2>
+
+<p>The parsing kit "<tt>pa_macro.cmo</tt>" also add two options usable
+  in all Camlp5 commands:</p>
+
+<dl>
+  <dt><tt>-D uident</tt></dt>
+  <dd>Define the uident in question like would have been a DEFINE
+    (without parameter) in the code.</dd>
+  <dt><tt>-U uident</tt></dt>
+  <dd>Undefine the uident in question like would have been a UNDEF in
+    the code.</dd>
+  <dt><tt>-defined</tt></dt>
+  <dd>Print the defined macros and exit.</dd>
+</dl>
+
+<h2 id="a:Semantics">Semantics</h2>
+
+<p>The statement "<tt>DEFINE</tt>" defines a new macro with optional
+  parameters and an optional value. The macro name must start with an
+  uppercase letter.</p>
+
+<p>The test of a macro can be done either:
+  <ul>
+    <li>in structure items</li>
+    <li>in signature items</li>
+    <li>in expressions</li>
+    <li>in patterns</li>
+    <li>in a constructor declaration</li>
+    <li>in a match case</li>
+  </ul>
+  <p>using the statement "<tt>IFDEF</tt>". Its non-existence can be
+    tested by "<tt>IFNDEF</tt>".  In expressions and patterns, the
+    "<tt>ELSE</tt>" part is required, not in structure items.</p>
+
+<p>The expression behind the "<tt>IFDEF</tt>" or the "<tt>IFNDEF</tt>"
+  statement may use the operators "<tt>OR</tt>", "<tt>AND</tt>" and
+  "<tt>NOT</tt>" and contain parentheses.</p>
+
+<p>Notice that in an "<tt>IFDEF</tt>" where the value is True
+  (resp. False), the "<tt>ELSE</tt>" (resp "<tt>THEN</tt>") part does
+  not need to be semantically correct (well typed), since it does not
+  appear in the resulting syntax tree. Same for "<tt>IFNDEF</tt>" and
+  for possible macros parameters which are not used in the
+  associated expression.</p>
+
+<p>If a macro is defined twice, its first version is lost.</p>
+
+<p>The statement "<tt>UNDEF</tt>" removes a macro definition.</p>
+
+<p>When associated with a value, the "<tt>DEFINE</tt>" macro acts like
+  a variable (or like a function call if it has parameters), except that
+  the parameters are evaluated at parse time and can also be used also
+  in pattern positions. Notice that this is a way to define constants
+  by name in patterns. For example:</p>
+
+<pre>
+  DEFINE WW1 = 1914;
+  DEFINE WW2 = 1939;
+  value war_or_year =
+    fun
+    [ WW1 -> "world war I"
+    | WW2 -> "world war II"
+    | _ -> "not a war" ]
+  ;
+</pre>
+
+<p>In the definition of a macro, if the expression contains an
+  evaluation, the evaluation is not done by Camlp5 but just
+  transmitted as code. In this case, it does not work in pattern
+  position. Example in the toplevel:</p>
+
+<pre>
+  # DEFINE PLUS(x, y) = x + y;
+  # PLUS(3, 4);
+  - : int = 7
+  #   fun [ PLUS(3, 4) -> () ];
+  Toplevel input:
+  #   fun [ PLUS(3, 4) -> () ];
+            ^^^^^^^^^^
+  Failure: this is not a constructor, it cannot be applied in a pattern
+</pre>
+
+<p>On the other hand, if the expression does not contain evaluation,
+  this is possible:</p>
+
+<pre>
+  # DEFINE FOO(x, y) = (x, Some y);
+  # FOO(True, "bar");
+  - : (bool * option string) = (True, Some "bar")
+  # fun [ FOO(_, "hello") -> 0 | _ -> 1 ];
+  - : ('a * option string) -> int = &lt;fun>
+</pre>
+
+<p>The macro "<tt>__FILE__</tt>" is replaced by the current compiled source
+  file name. In the OCaml toplevel, its value is the empty string.</p>
+
+<p>The macro "<tt>__LOCATION__</tt>" is replaced by the the current location
+  (two integers in number of characters from the beginning of the file,
+  starting at zero) of the macro itself.</p>
+
+<p>In signatures, the macro definitions can return types which can be
+  used in type definitions.</p>
+
+<p>In constructor declarations and in match cases, it is possible to
+  conditionally define some cases by "<tt>IFDEF</tt>" or
+  "<tt>IFNDEF</tt>". For example:</p>
+
+<pre>
+  type t =
+    [ A of int
+    | IFNDEF FOO THEN
+        B of string
+      END
+    | C of bool ]
+  ;
+
+  match x with
+  [ A i -> j
+  | IFNDEF FOO THEN
+      B s -> toto
+    END
+  | C b -> e ];
+</pre>
+
+<h2 id="a:Predefined-macros">Predefined macros</h2>
+
+<p>The macro "<tt>CAMLP5</tt>" is always predefined.</p>
+
+<p>The macro "<tt>OCAML_oversion</tt>" is predefined, where
+  "<tt>oversion</tt>" is the OCaml version the Camlp5 program has been
+  compiled with, where all characters but numbers are replaced by
+  underscores. For example, if using OCaml 3.09.3, the macro
+  "<tt>OCAML_3_09_3</tt>" is defined.</p>
+
+<p>Moreover, for <em>some</em> Camlp5 versions (and all the versions
+  which follows them), the macro "<tt>CAMLP5_version</tt>" is defined
+  where "<tt>version</tt>" is the Camlp5 version where all characters
+  but numbers are replaced by underscores. For example, in version
+  4.02, the macro "<tt>CAMLP5_4_02</tt>" had been defined and this
+  macro have appeared in all versions of Camlp5 since 4.02.</p>
+
+<p>To see which macros are predefined, type:</p>
+
+<pre>
+  camlp5r pa_macro.cmo -defined
+</pre>
+
+<a class="toplink" href="macros.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

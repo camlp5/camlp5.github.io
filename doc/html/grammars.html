@@ -1,0 +1,1314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- grammars.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>extensible grammars</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Extensible grammars</h1>
+
+<p>This chapter describes the syntax and semantics of the extensible
+  grammars of Camlp5.</p>
+
+<p>The extensible grammars are the most advanced parsing tool of
+  Camlp5. They apply to streams of characters using a lexer which has
+  to be previously defined by the programmer. In Camlp5, the syntax of
+  the OCaml language is defined with extensible grammars, which makes
+  Camlp5 a bootstrapped system (it compiles its own features by
+  itself).</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Getting-started">Getting started</a></li>
+    <li><a href="#a:Syntax-of-the-EXTEND-statement">Syntax of the EXTEND statement</a></li>
+    <li><a href="#a:Semantics-of-the-EXTEND-statement">Semantics of the EXTEND statement</a>
+      <ul>
+        <li><a href="#b:GLOBAL-indicator">GLOBAL indicator</a></li>
+        <li><a href="#b:Entries-list">Entries list</a></li>
+        <li><a href="#b:Symbols">Symbols</a></li>
+        <li><a href="#b:Rules-insertion">Rules insertion</a></li>
+        <li><a href="#b:Semantic-action">Semantic action</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:The-DELETE_RULE-statement">The DELETE_RULE statement</a></li>
+    <li><a href="#a:Extensions-FOLD0-and-FOLD1">Extensions FOLD0 and FOLD1</a></li>
+    <li><a href="#a:Grammar-machinery">Grammar machinery</a>
+      <ul>
+        <li><a href="#b:Start-and-Continue">Start and Continue</a></li>
+        <li><a href="#b:Associativity">Associativity</a></li>
+        <li><a href="#b:Parsing-algorithm">Parsing algorithm</a></li>
+        <li><a href="#b:Errors-and-recovery">Errors and recovery</a></li>
+        <li><a href="#b:Tokens-starting-rules">Tokens starting rules</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:The-Grammar-module">The Grammar module</a></li>
+    <li><a href="#a:Interface-with-the-lexer">Interface with the lexer</a>
+      <ul>
+        <li><a href="#b:Token-patterns">Token patterns</a></li>
+        <li><a href="#b:The-lexer-record">The lexer record</a></li>
+        <li><a href="#b:Minimalist-version">Minimalist version</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Functorial-interface">Functorial interface</a>
+      <ul>
+        <li><a href="#b:The-lexer-type">The lexer type</a></li>
+        <li><a href="#b:The-functor-parameter">The functor parameter</a></li>
+        <li><a href="#b:The-resulting-grammar-module">The resulting grammar module</a></li>
+        <li><a href="#b:GEXTEND-and-GDELETE_RULE">GEXTEND and GDELETE_RULE</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:An-example:-arithmetic-calculator">An example: arithmetic calculator</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Getting-started">Getting started</h2>
+
+<p>The extensible grammars are a system to build <em>grammar
+    entries</em> which can be extended dynamically. A grammar entry is
+  an abstract value internally containing a stream parser. The type
+  of a grammar entry is <tt>"Grammar.Entry.e t"</tt>
+  where <tt>"t"</tt> is the type of the values returned by the
+  grammar entry.</p>
+
+<p>To start with extensible grammars, it is necessary to build
+  a <em>grammar</em>, a value of type "<tt>Grammar.g</tt>", using the
+  function "<tt>Grammar.gcreate</tt>":</p>
+
+<pre>
+  value g = Grammar.gcreate lexer;
+</pre>
+
+<p>where "<tt>lexer</tt>" is a lexer previously defined. See the
+  section explaining the interface with lexers. In a first time, it is
+  possible to use a lexer of the module "<tt>Plexer</tt>" provided by
+  Camlp5:</p>
+
+<pre>
+  value g = Grammar.gcreate (Plexer.gmake ());
+</pre>
+
+<p>Each grammar entry is associated with a grammar. Only grammar
+entries of the same grammar can call each other. To create a grammar
+entry, one has to use the function "<tt>Grammar.Entry.create</tt>" with
+takes the grammar as first parameter and a name as second parameter. This
+name is used in case of syntax errors. For example:</p>
+
+<pre>
+  value exp = Grammar.Entry.create g "expression";
+</pre>
+
+<p>To apply a grammar entry, the function
+  "<tt>Grammar.Entry.parse</tt>" can be used. Its first parameter is the
+  grammar entry, the second one a stream of characters:</p>
+
+<pre>
+  Grammar.Entry.parse exp (Stream.of_string "hello");
+</pre>
+
+<p>But if you experiment this, since the entry was just created
+  without any rules, you receive an error message:</p>
+
+<pre>
+  Stream.Error "entry [expression] is empty"
+</pre>
+
+<p>To add grammar rules to the grammar entry, it is necessary
+to <em>extend</em> it, using a specific syntactic statement:
+"<tt>EXTEND</tt>".</p>
+
+<h2 id="a:Syntax-of-the-EXTEND-statement">Syntax of the EXTEND statement</h2>
+
+<p>The "<tt>EXTEND</tt>" statement is added in the expressions of the
+  OCaml language when the syntax extension kit "<tt>pa_extend.cmo</tt>"
+  is loaded. Its syntax is:</p>
+
+<pre>
+    expression ::= extend
+        extend ::= "EXTEND" extend-body "END"
+   extend-body ::= global-opt entries
+    global-opt ::= "GLOBAL" ":" entry-names ";"
+                 | &lt;nothing&gt;
+   entry-names ::= entry-name entry-names
+                 | entry-name
+         entry ::= entry-name ":" position-opt "[" levels "]"
+  position-opt ::= "FIRST"
+                 | "LAST"
+                 | "BEFORE" label
+                 | "AFTER" label
+                 | "LIKE" string
+                 | "LEVEL" label
+                 | &lt;nothing&gt;
+        levels ::= level "|" levels
+                 | level
+         level ::= label-opt assoc-opt "[" rules "]"
+     label-opt ::= label
+                 | &lt;nothing&gt;
+     assoc-opt ::= "LEFTA"
+                 | "RIGHTA"
+                 | "NONA"
+                 | &lt;nothing&gt;
+         rules ::= rule "|" rules
+                 | rule
+          rule ::= psymbols-opt "->" expression
+                 | psymbols-opt
+  psymbols-opt ::= psymbols
+                 | &lt;nothing&gt;
+      psymbols ::= psymbol ";" psymbols
+                 | psymbol
+       psymbol ::= symbol
+                 | pattern "=" symbol
+        symbol ::= keyword
+                 | token
+                 | token string
+                 | entry-name
+                 | entry-name "LEVEL" label
+                 | "SELF"
+                 | "NEXT"
+                 | "LIST0" symbol
+                 | "LIST0" symbol "SEP" symbol opt-opt-sep
+                 | "LIST1" symbol
+                 | "LIST1" symbol "SEP" symbol opt-opt-sep
+                 | "OPT" symbol
+                 | "FLAG" symbol
+                 | "V" symbol opt-strings
+                 | "[" rules "]"
+                 | "(" symbol ")"
+   opt-opt-sep ::= "OPT_SEP"
+                 | &lt;nothing&gt;
+   opt-strings ::= string opt-strings
+                 | &lt;nothing&gt;
+       keyword ::= string
+         token ::= uident
+         label ::= string
+    entry-name ::= qualid
+        qualid ::= qualid "." qualid
+                 | uident
+                 | lident
+        uident ::= 'A'-'Z' ident
+        lident ::= ('a'-'z' | '_' | misc-letter) ident
+         ident ::= ident-char*
+    ident-char ::= ('a'-'a' | 'A'-'Z' | '0'-'9' | '_' | ''' | misc-letter)
+   misc-letter ::= '\128'-'\255'
+</pre>
+
+<p>Other statements, "<tt>GEXTEND</tt>", "<tt>DELETE_RULE</tt>",
+  "<tt>GDELETE_RULE</tt>" are also defined by the same syntax extension
+  kit. See further.</p>
+
+<p>In the description above, only "<tt>EXTEND</tt>" and "<tt>END</tt>"
+  are new keywords (reserved words which cannot be used in variables,
+  constructors or module names). The other strings
+  (e.g. "<tt>GLOBAL</tt>", "<tt>LEVEL</tt>", "<tt>LIST0</tt>",
+  "<tt>LEFTA</tt>", etc.) are not reserved.</p>
+
+<h2 id="a:Semantics-of-the-EXTEND-statement">Semantics of the EXTEND statement</h2>
+
+<p>The EXTEND statement starts with the "<tt>EXTEND</tt>" keyword and ends
+  with the "<tt>END</tt>" keyword.</p>
+
+<h3 id="b:GLOBAL-indicator">GLOBAL indicator</h3>
+
+<p>After the first keyword, it is possible to see the identifier
+"<tt>GLOBAL</tt>" followed by a colon, a list of entries names and a
+semicolon. It says that these entries correspond to visible
+(previously defined) entry variables, in the context of the EXTEND
+statement, the other ones being locally and silently defined
+inside.</p>
+
+<ul>
+  <li>If an entry, which is extended in the EXTEND statement, is in the
+    GLOBAL list, but is not defined in the context of the EXTEND
+    statement, the OCaml compiler will fail with the error "unbound
+    value".</li>
+  <li>If there is no GLOBAL indicator, and an entry, which is extended
+    in the EXTEND statement, is not defined in the contex of the EXTEND
+    statement, the OCaml compiler will also fail with the error "unbound
+    value".</li>
+</ul>
+
+<p>Example:</p>
+
+<pre>
+  value exp = Grammar.Entry.create g "exp";
+  EXTEND
+    GLOBAL: exp;
+    exp: [ [ x = foo; y = bar ] ];
+    foo: [ [ "foo" ] ];
+    bar: [ [ "bar" ] ];
+  END;
+</pre>
+
+<p>The entry "exp" is an existing variable (defined by value exp =
+...). On the other hand, the entries "foo" and "bar" have not been
+defined. Because of the GLOBAL indicator, the system define them
+locally.</p>
+
+<p>Without the GLOBAL indicator, the three entries would have been
+considered as global variables, therefore the OCaml compiler would
+say "unbound variable" under the first undefined entry, "foo".</p>
+
+<h3 id="b:Entries-list">Entries list</h3>
+
+<p>Then the list of entries extensions follow. An entry extension
+starts with the entry name followed by a colon. An entry may have
+several levels corresponding to several stream parsers which call the
+ones the others (see further).</p>
+
+<h4>Optional position</h4>
+
+<p>After the colon, it is possible to specify a where to insert the
+defined levels:</p>
+
+<ul>
+  <li>The identifier "<tt>FIRST</tt>" (resp. "<tt>LAST</tt>")
+    indicates that the level must be inserted before (resp. after) all
+    possibly existing levels of the entry. They become their first
+    (resp. last) levels.</li>
+  <li>The identifier "<tt>BEFORE</tt>" (resp. "<tt>AFTER</tt>")
+    followed by a level label (a string) indicates that the levels
+    must be inserted before (resp. after) that level, if it exists. If
+    it does not exist, the extend statement fails at run time.</li>
+  <li>The identifier "<tt>LIKE</tt>" followed by a string indicates
+    that the first level defined in the extend statement must be
+    inserted in the first already existing level with a rule
+    containing this string as keyword or token name. For example,
+    "<tt>LIKE "match"</tt>" is the first level having "<tt>match</tt>"
+    as keyword. If there is no level with this string, the extend
+    statement fails at run time.</li>
+  <li>The identifier "<tt>LEVEL</tt>" followed by a level label
+    indicates that the first level defined in the extend statement
+    must be inserted at the given level, extending and modifying
+    it. The other levels defined in the statement are inserted after
+    this level, and before the possible levels following this
+    level. If there is no level with this label, the extend statement
+    fails at run time.</li>
+  <li>By default, if the entry has no level, the levels defined in the
+    statement are inserted in the entry. Otherwise the first defined
+    level is inserted at the first level of the entry, extending or
+    modifying it. The other levels are inserted afterwards (before the
+    possible second level which may previously exist in the entry).</li>
+</ul>
+
+<h4>Levels</h4>
+
+<p>After the optional "position", the <em>level</em> list follow. The
+  levels are separated by vertical bars, the whole list being between
+  brackets.</p>
+
+<p>A level starts with an optional label, which corresponds to its
+  name. This label is useful to specify this level in case of future
+  extensions, using the <em>position</em> (see previous section) or
+  for possible direct calls to this specific level.</p>
+
+<p>The level continues with an optional associativity indicator, which
+  can be:</p>
+
+<ul>
+  <li>LEFTA for left associativity (default),</li>
+  <li>RIGHTA for right associativity,</li>
+  <li>NONA for no associativity.</li>
+</ul>
+
+<h4>Rules</h4>
+
+<p>At last, the grammar <em>rule</em> list appear. The rules are
+separated by vertical bars, the whole list being brackets.</p>
+
+<p>A rule looks like a match case in the "<tt>match</tt>" statement or
+a parser case in the "<tt>parser</tt>" statement: a list of psymbols
+(see next paragraph) separated by semicolons, followed by a right
+arrow and an expression, the semantic action. Actually, the right
+arrow and expression are optional: in this case, it is equivalent to
+an expression which would be the unit "<tt>()</tt>" constructor.</p>
+
+<p>A psymbol is either a pattern, followed with the equal sign and a
+symbol, or by a symbol alone. It corresponds to a test of this symbol,
+whose value is bound to the pattern if any.</p>
+
+<h3 id="b:Symbols">Symbols</h3>
+
+<p>A symbol is an item in a grammar rule. It is either:</p>
+
+<ul>
+  <li>a keyword (a string): the input must match this keyword,</li>
+  <li>a token name (an identifier starting with an uppercase
+    character), optionally followed by a string: the input must match
+    this token (any value if no string, or that string if a string
+    follows the token name), the list of the available tokens
+    depending on the associated lexer (the list of tokens available
+    with "Plexer.gmake ()" is: LIDENT, UIDENT, TILDEIDENT,
+    TILDEIDENTCOLON, QUESTIONIDENT, INT, INT_l, INT_L, INT_n, FLOAT,
+    CHAR, STRING, QUOTATION, ANTIQUOT and EOI; other lexers may
+    propose other lists of tokens),
+</li>
+  <li>an entry name, which correspond to a call to this entry,</li>
+  <li>an entry name followed by the identifier "<tt>LEVEL</tt>" and a
+    level label, which correspond to the call to this entry at that
+    level,</li>
+  <li>the identifier "<tt>SELF</tt>" which is a recursive call to the
+    present entry, according to the associativity (i.e. it may be a
+    call at the current level, to the next level, or to the top level
+    of the entry): "<tt>SELF</tt>" is equivalent to the name of the
+    entry itself,</li>
+  <li>the identifier "<tt>NEXT</tt>", which is a call to the next level
+    of the current entry,</li>
+  <li>a left brace, followed by a list of rules separated by vertical
+    bars, and a right brace: equivalent to a call to an entry, with
+    these rules, inlined,</li>
+  <li>a meta symbol (see further),</li>
+  <li>a symbol between parentheses.</li>
+</ul>
+
+<p>The syntactic analysis follow the list of symbols. If it fails,
+depending on the first items of the rule (see the section about the
+kind of grammars recognized):</p>
+
+<ul>
+  <li>the parsing may fail by raising the exception
+    "<tt>Stream.Error</tt>"</li>
+  <li>the parsing may continue with the next rule.</li>
+</ul>
+
+<h4>Meta symbols</h4>
+
+<p>Extra symbols exist, allowing to manipulate lists or optional
+symbols. They are:</p>
+
+<ul>
+  <li>LIST0 followed by a symbol: this is a list of this symbol,
+    possibly empty,</li>
+  <li>LIST0 followed by a symbol, SEP and another symbol, and optional
+    OPT_SEP: this is a list, possibly empty, of the first symbol
+    separated by the second one, possibly ended with the separator if
+    OPT_SEP is present,</li>
+  <li>LIST1 followed by a symbol: this is a list of this symbol,
+    with at least one element,</li>
+  <li>LIST1 followed by a symbol, SEP and another symbol, and optional
+    OPT_SEP: this is a list, with at least one element, of the first
+    symbol separated by the second one, possibly ended with the
+    separator if OPT_SEP is present,</li>
+  <li>OPT followed by a symbol: equivalent to "this symbol or
+    nothing" returning a value of type "<tt>option</tt>".</li>
+  <li>FLAG followed by a symbol: equivalent to "this symbol or
+    nothing", returning a boolean.</li>
+</ul>
+
+<h4>The V meta symbol</h4>
+
+<p>The V meta symbol is destinated to allow antiquotations while using
+  the syntax tree quotation
+  kit <a href="q_ast.html"><tt>q_ast.cmo</tt></a>. It works only in
+  strict mode. In transitional mode, it is just equivalent to its
+  symbol parameter.</p>
+
+<h5>Antiquotation kind</h5>
+
+<p>The antiquotation kind is the optional identifier between the
+  starting "<tt>$</tt>" (dollar) and the "<tt>:</tt>" (colon) in a
+  quotation of syntax tree (see the
+  chapter <a href="ml_ast.html">syntax tree</a>).</p>
+
+<p>The optional list of strings following the "V" meta symbol and its
+  symbol parameter gives the allowed antiquotations kinds.</p>
+
+<p>By default, this string list, i.e. the available antiquotation
+  kinds, is:</p>
+
+<ul>
+  <li><tt>["flag"]</tt> for FLAG</li>
+  <li><tt>["list"]</tt> for LIST0 and LIST1</li>
+  <li><tt>["opt"]</tt> for OPT</li>
+</ul>
+
+<p>For example, the symbol:</p>
+
+<pre>
+  V (FLAG "rec")
+</pre>
+
+<p>is like "FLAG" while normally parsing, allowing to parse the keyword
+  "<tt>rec</tt>". While using it in quotations, also allows the parse
+  the keyword "<tt>rec</tt>" but, moreover, the antiquotation
+  "<tt>$flag:..$</tt>" where "<tt>..</tt>" is an expression or a pattern
+  depending on the position of the quotation.</p>
+
+<p>There are also default antiquotations kinds for the tokens used in
+  the OCaml language predefined parsers "<tt>pa_r.cmo</tt>" (revised
+  syntax) and "<tt>pa_o.cmo</tt>" (normal syntax), actually all
+  parsers using the provided lexer "<tt>Plexer</tt>" (see the
+  chapter <a href="library.html">Library</a>). They are:</p>
+
+<ul>
+  <li><tt>["chr"]</tt> for CHAR</li>
+  <li><tt>["flo"]</tt> for FLOAT</li>
+  <li><tt>["int"]</tt> for INT</li>
+  <li><tt>["int32"]</tt> for INT_l</li>
+  <li><tt>["int64"]</tt> for INT_L</li>
+  <li><tt>["nativeint"]</tt> for INT_n</li>
+  <li><tt>["lid"]</tt> for LIDENT</li>
+  <li><tt>["str"]</tt> for STRING</li>
+  <li><tt>["uid"]</tt> for UIDENT</li>
+</ul>
+
+<p>It is also possible to use the "V" meta symbol over non-terminals
+  (grammars entries), but there is no default antiquotation kind. For
+  example, while parsing a quotation, the symbol:</p>
+
+<pre>
+  V foo "bar" "oops"
+</pre>
+
+<p>corresponds to either a call to the grammar entry "<tt>foo</tt>",
+  or to the antiquotations "<tt>$bar:...$</tt>" or
+  "<tt>$oops:...$</tt>".</p>
+
+<h5>Type</h5>
+
+<p>The type of the value returned by a V meta symbol is:</p>
+
+<ul>
+  <li>in transitional mode, the type of its symbol parameter,</li>
+  <li>in strict mode, "<tt>Ploc.vala t</tt>", where "<tt>t</tt>" is
+    its symbol parameter.</li>
+</ul>
+
+<p>In strict mode, if the symbol parameter is found, whose value is,
+  say, "<tt>x</tt>", the result is "<tt>Ploc.VaVal x</tt>". If an
+  antiquotation is found the result is "<tt>Ploc.VaAnt s</tt>" where
+  "<tt>s</tt>" is some string containing the antiquotation text and
+  some other internal information.</p>
+
+<h3 id="b:Rules-insertion">Rules insertion</h3>
+
+<p>Remember that "<tt>EXTEND</tt>" is a statement, not a declaration:
+the rules are added in the entries at run time. Each rule is
+internally inserted in a tree, allowing the left factorization of the
+rule. For example, with this list of rules (borrowed from the Camlp5
+sources):</p>
+
+<pre>
+  "method"; "private"; "virtual"; l = label; ":"; t = poly_type
+  "method"; "virtual"; "private"; l = label; ":"; t = poly_type
+  "method"; "virtual"; l = label; ":"; t = poly_type
+  "method"; "private"; l = label; ":"; t = poly_type; "="; e = expr
+  "method"; "private"; l = label; sb = fun_binding
+  "method"; l = label; ":"; t = poly_type; "="; e = expr
+  "method"; l = label; sb = fun_binding
+</pre>
+
+<p>the rules are inserted in a tree and the result looks like:</p>
+
+<pre>
+  "method"
+     |-- "private"
+     |       |-- "virtual"
+     |       |       |-- label
+     |       |             |-- ":"
+     |       |                  |-- poly_type
+     |       |-- label
+     |             |-- ":"
+     |             |    |-- poly_type
+     |             |            |-- ":="
+     |             |                 |-- expr
+     |             |-- fun_binding
+     |-- "virtual"
+     |       |-- "private"
+     |       |       |-- label
+     |       |             |-- ":"
+     |       |                  |-- poly_type
+     |       |-- label
+     |             |-- ":"
+     |                  |-- poly_type
+     |-- label
+           |-- ":"
+           |    |-- poly_type
+           |            |-- "="
+           |                 |-- expr
+           |-- fun_binding
+</pre>
+
+<p>This tree is built as long as rules are inserted. When used, by
+  applying the function "<tt>Grammar.Entry.parse</tt>" to the current
+  entry, the input is matched with that tree, starting from the tree
+  root, descending on it as long as the parsing advances.</p>
+
+<p>There is a different tree by entry level.</p>
+
+<h3 id="b:Semantic-action">Semantic action</h3>
+
+<p>The semantic action, i.e. the expression following the right arrow
+  in rules, contains in its environment:</p>
+
+<ul>
+  <li>the variables bound by the patterns of the symbols found in the
+    rules,</li>
+  <li>the specific variable "<tt>loc</tt>" which contain the location
+    of the whole rule in the source.</li>
+</ul>
+
+<p>The location is an abstract type defined in the module
+  "<tt>Ploc</tt>" of Camlp5.</p>
+
+<p>It is possible to change the name of this variable by using the option
+"<tt>-loc</tt>" of Camlp5. For example, compiling a file like this:</p>
+
+<pre>
+  camlp5r -loc foobar file.ml
+</pre>
+
+<p>the variable name, for the location will be "<tt>foobar</tt>"
+instead of "<tt>loc</tt>".</p>
+
+<h2 id="a:The-DELETE_RULE-statement">The DELETE_RULE statement</h2>
+
+<p>The "<tt>DELETE_RULE</tt>" statement is also added in the
+  expressions of the OCaml language when the syntax extension kit
+  "<tt>pa_extend.cmo</tt>" is loaded. Its syntax is:</p>
+
+<pre>
+        expression ::= delete-rule
+       delete-rule ::= "DELETE_RULE" delete-rule-body "END"
+  delete-rule-body ::= entry-name ":" symbols
+           symbols ::= symbol symbols
+                     | symbol
+</pre>
+
+<p>See the syntax of the EXTEND statement for the meaning of the syntax
+  entries not defined above.</p>
+
+<p>The entry is scanned for a rule matching the giving symbol
+  list. When found, the rule is removed. If no rule is found, the
+  exception "<tt>Not_found</tt>" is raised.</p>
+
+<h2 id="a:Extensions-FOLD0-and-FOLD1">Extensions FOLD0 and FOLD1</h2>
+
+<p>When loading "<tt>pa_extfold.cmo</tt>" after
+  "<tt>pa_extend.cmo</tt>", the entry "<tt>symbol</tt>" of the EXTEND
+  statement is extended with what is named the <em>fold
+  iterators</em>, like this:</p>
+
+<pre>
+       symbol ::= "FOLD0" simple_expr simple_expr symbol
+                | "FOLD1" simple_expr simple_expr symbol
+                | "FOLD0" simple_expr simple_expr symbol "SEP" symbol
+                | "FOLD1" simple_expr simple_expr symbol "SEP" symbol
+  simple_expr ::= expr (level "simple")
+</pre>
+
+<p>Like their equivalent with the lists iterators: "<tt>LIST0</tt>",
+  "<tt>LIST1</tt>", "<tt>LIST0SEP</tt>", "<tt>LIST1SEP</tt>", they
+  read a sequence of symbols, possibly with the separators, but
+  instead of building the list of these symbols, apply a fold function
+  to each symbol, starting at the second "expr" (which must be a
+  expression node) and continuing with the first "expr" (which must be
+  a function taking two expressions and returing a new
+  expression).</p>
+
+<p>The list iterators can be seen almost as a specific case of these
+  fold iterators where the initial "expr" would be:</p>
+
+<pre>
+  &lt;:expr&lt; [] >>
+</pre>
+
+<p>and the fold function would be:</p>
+
+<pre>
+  fun e1 e2 -> &lt;:expr&lt; [$e1$ :: $e2$ ] >>
+</pre>
+
+<p>except that, implemented like that, they would return the list in
+  reverse order.</p>
+
+<p>Actually, a program using them can be written with the lists
+  iterators with the semantic action applying the function
+  "<tt>List.fold_left</tt>" to the returned list, except that with the
+  fold iterators, this operation is done as long as the symbols
+  are read on the input, no intermediate list being built.</p>
+
+<p>Example, file "sum.ml":</p>
+
+<pre>
+  #load "pa_extend.cmo";
+  #load "pa_extfold.cmo";
+  #load "q_MLast.cmo";
+  let loc = Ploc.dummy in
+  EXTEND
+    Pcaml.expr:
+      [ [ "sum";
+          e =
+            FOLD0 (fun e1 e2 -> &lt;:expr&lt; $e2$ + $e1$ >>) &lt;:expr&lt; 0 >>
+              Pcaml.expr SEP ";";
+          "end" -> e ] ]
+    ;
+  END;
+</pre>
+
+<p>which can be compiled like this:</p>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 -c sum.ml
+</pre>
+
+<p>and tested:</p>
+
+<pre>
+  ocaml -I +camlp5 camlp5r.cma sum.cmo
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # sum 3;4;5 end;
+- : int = 12
+</pre>
+
+<h2 id="a:Grammar-machinery">Grammar machinery</h2>
+
+<p>We explain here the detail of the mechanism of the parsing of an
+  entry.</p>
+
+<h3 id="b:Start-and-Continue">Start and Continue</h3>
+
+<p>At each entry level, the rules are separated into two trees:</p>
+
+<ul>
+  <li>The tree of the rules <em>not</em> starting with the current entry
+    name nor by "<tt>SELF</tt>".</li>
+  <li>The tree of the rules starting with the current entry name or by
+    the identifier "<tt>SELF</tt>", this symbol not being included in
+    the tree.</li>
+</ul>
+
+<p>They determine two functions:</p>
+
+<ul>
+  <li>The function named "start", analyzing the first tree.</li>
+  <li>The function named "continue", taking, as parameter, a value
+    previously parsed, and analyzing the second tree.</li>
+</ul>
+
+<p>A call to an entry, using "<tt>Grammar.Entry.parse</tt>" correspond
+  to a call to the "start" function of the first level of the
+  entry.</p>
+
+<p>The "start" function tries its associated tree. If it works, it
+  calls the "continue" function of the same level, giving the result
+  of "start" as parameter. If this "continue" function fails, this
+  parameter is simply returned. If the "start" function fails, the
+  "start" function of the next level is tested. If there is no more
+  levels, the parsing fails.</p>
+
+<p>The "continue" function first tries the "continue" function of the
+  next level. If it fails, or if it is the last level, it tries its
+  associated tree, then calls itself again, giving the result as
+  parameter. If its associated tree fails, it returns its extra
+  parameter.</p>
+
+<h3 id="b:Associativity">Associativity</h3>
+
+<p>While testing the tree, there is a special case for rules ending
+  with SELF or with the current entry name. For this last symbol,
+  there is a call to the "start" function: of the current level if the
+  level is right associative, or of the next level otherwise.</p>
+
+<p>There is no behaviour difference between left and non associative,
+  because, in case of syntax error, the system attempts to recover the
+  error by applying the "continue" function of the previous symbol (if
+  this symbol is a call to an entry).</p>
+
+<p>When a SELF or the current entry name is encountered in the middle
+  of the rule (i.e. if it is not the last symbol), there is a call to
+  the "start" function of the first level of the current entry.</p>
+
+<p>Example. Let us consider the following grammar:</p>
+
+<pre>
+  EXTEND
+    expr:
+      [ "minus" LEFTA
+        [ x = SELF; "-"; y = SELF -> x -. y ]
+      | "power" RIGHTA
+        [ x = SELF; "**"; y = SELF -> x ** y ]
+      | "simple"
+        [ "("; x = SELF; ")" -> x
+        | x = INT -> float_of_int x ] ]
+    ;
+  END
+</pre>
+
+<p>The left "SELF"s of the two levels "minus" and "power" correspond
+  to a call to the next level. In the level "minus", the right "SELF"
+  also, and the left associativity is treated by the fact that the
+  "continue" function is called (starting with the keyword "-" since
+  the left "SELF" is not part of the tree). On the other hand, for the
+  level "power", the right "SELF" corresponds to a call to the current
+  level, i.e. the level "power" again. At end, the "SELF" between
+  parentheses of the level "simple" correspond to a call to the first
+  level, namely "minus" in this grammar.</p>
+
+<h3 id="b:Parsing-algorithm">Parsing algorithm</h3>
+
+<p>By default, the kind of grammar is predictive parsing grammar,
+  i.e. recursive descent parsing without backtrack. But with some
+  nuances, due to the improvements (error recovery and token starting
+  rules) indicated in the next sections.</p>
+
+<p>However, it is possible to change the parsing algorithm, by calling
+  the function "<tt>Grammar.set_algorithm</tt>". The possible values
+  are:</p>
+
+<dl>
+  <dt><tt>Grammar.Predictive</tt></dt>
+  <dd>internally using <a href="parsers.html">normal parsers</a>, with
+    a predictive (recursive descent without backtracking)
+    algorithm.</dd>
+  <dt><tt>Grammar.Backtracking</tt></dt>
+  <dd>internally using <a href="bparsers.html">backtracking
+    parsers</a>, with a full backtracking algorithm,</dd>
+  <dt><tt>Grammar.DefaultAlgorithm</tt></dt>
+  <dd>the parsing algorithm is determined by the environment variable
+    "CAMLP5PARAM". If this environment variable exists and contains
+    "b", the parsing algorithm is "backtracking". Otherwise it is
+    "predictive".</dd>
+</dl>
+
+<p>An interesting function, when using then backtracking algorithm, is
+  "<tt>Grammar.Entry.parse_all</tt>" which returns all solutions of a
+  given input.</p>
+
+<p>See details in the chapter <a href="library.html">Library</a>,
+  section "Grammar module".</p>
+
+<h3 id="b:Errors-and-recovery">Errors and recovery</h3>
+
+<p>In extensible grammars, the exceptions are encapsulated with the
+  exception "Ploc.Exc" giving the location of the error together with
+  the exception itself.</p>
+
+<p>If the parsing algorithm is "<tt>Grammar.Predictive</tt>", the
+  system internally uses <a href="parsers.html">stream
+  parsers</a>. Two exceptions may happen: "Stream.Failure" or
+  "Stream.Error". "Stream.Failure" indicates that the parsing just
+  could not start. "Stream.Error" indicates that the parsing started
+  but failed further.</p>
+
+<p>With this algorithm, when the first symbol of a rule has been
+  accepted, all the symbols of the same rule must be accepted,
+  otherwise the exception "Stream.Error" is raised.</p>
+
+<p>If the parsing algorithm is "<tt>Grammar.Backtracking</tt>", the
+  system internally uses <a href="bparsers.html">backtracking
+  parsers</a>. If no solution is found, the exception
+  "<tt>Stream.Error</tt>" is raised and the location of the error is
+  the location of the last unfrozen token, i.e. where the stream
+  advanced the farthest.</p>
+
+<p>In extensible grammars, unlike stream parsers, before the
+  "Stream.Error" exception, the system attempts to recover the error
+  by the following trick: if the previous symbol of the rule was a
+  call to another entry, the system calls the "continue" function of
+  that entry, which may resolve the problem.</p>
+
+<h3 id="b:Tokens-starting-rules">Tokens starting rules</h3>
+
+<p>Another improvement (other than error recovery) is that when a rule
+  starts with several tokens and/or keywords, all these tokens and
+  keywords are tested in one time, and the possible "Stream.Error" may
+  happen, only from the symbol following them on, if any.</p>
+
+<h2 id="a:The-Grammar-module">The Grammar module</h2>
+
+<p>See its <a href="library.html#a:Grammar-module">section</a> in the
+  chapter "Library".</p>
+
+<h2 id="a:Interface-with-the-lexer">Interface with the lexer</h2>
+
+<p>To create a grammar, the function "<tt>Grammar.gcreate</tt>" must
+  be called, with a lexer as parameter.</p>
+
+<p>A simple solution, as possible lexer, is the predefined lexer built
+  by "<tt>Plexer.gmake ()</tt>", lexer used for the OCaml grammar of
+  Camlp5. In this case, you can just put it as parameter of
+  "<tt>Grammar.gcreate</tt>" and it is not necessary to read this
+  section.</p>
+
+<p>The section first introduces the notion of "token patterns" which
+  are the way the tokens and keywords symbols in the EXTEND statement
+  are represented. Then follow the description of the type of the
+  parameter of "<tt>Grammar.gcreate</tt>".</p>
+
+<h3 id="b:Token-patterns">Token patterns</h3>
+
+<p>A token pattern is a value of the type defined like this:</p>
+
+<pre>
+  type pattern = (string * string);
+</pre>
+
+<p>This type represents values of the token and keywords symbols in
+  the grammar rules.</p>
+
+<p>For a token symbol in the grammar rules, the first string is the
+  token constructor name (starting with an uppercase character), the
+  second string indicates whether the match is "any" (the empty
+  string) or some specific value of the token (an non-empty
+  string).</p>
+
+<p>For a keyword symbol, the first string is empty and the second
+  string is the keyword itself.</p>
+
+<p>For example, given this grammar rule:</p>
+
+<pre>
+  "for"; i = LIDENT; "="; e1 = SELF; "to"; e2 = SELF
+</pre>
+
+<p>the different symbols and keywords are represented by the following
+  couples of strings:</p>
+
+<ul>
+  <li>the keyword "for" is represented by <tt>("", "for")</tt>,</li>
+  <li>the keyword "=" by <tt>("", "=")</tt>,</li>
+  <li>the keyword "to" by <tt>("", "to")</tt>),</li>
+  <li>and the token symbol <tt>LIDENT</tt> by <tt>("LIDENT", "")</tt>.</li>
+</ul>
+
+<p>The symbol <tt>UIDENT "Foo"</tt> in a rule would be represented
+  by the token pattern:</p>
+
+<pre>
+  ("UIDENT", "Foo")
+</pre>
+
+<p>Notice that the symbol "<tt>SELF</tt>" is a specific symbol of the
+  EXTEND syntax: it does not correspond to a token pattern and is
+  represented differently. A token constructor name must not belong to
+  the specific symbols: SELF, NEXT, LIST0, LIST1, OPT and FLAG.</p>
+
+<h3 id="b:The-lexer-record">The lexer record</h3>
+
+<p>The type of the parameter of the function
+  "<tt>Grammar.gcreate</tt>" is "<tt>lexer</tt>", defined in the
+  module "<tt>Plexing</tt>". It is a record type with the following
+  fields:</p>
+
+<h4><tt>tok_func</tt></h4>
+
+<p>It is the lexer itself. Its type is:</p>
+
+<pre>
+  Stream.t char -> (Stream.t (string * string) * location_function);
+</pre>
+
+<p>The lexer takes a character stream as parameter and return a couple
+  of containing: a token stream (the tokens being represented by a
+  couple of strings), and a location function.</p>
+
+<p>The location function is a function taking, as parameter, a integer
+  corresponding to a token number in the stream (starting from zero),
+  and returning the location of this token in the source. This is
+  important to get good locations in the semantic actions of the
+  grammar rules.</p>
+
+<p>Notice that, despite the lexer taking a character stream as
+  parameter, it is not mandatory to use the stream parsers technology
+  to write the lexer. What is important is that it does the job.</p>
+
+<h4><tt>tok_using</tt></h4>
+
+<p>Is a function of type:</p>
+
+<pre>
+  pattern -> unit
+</pre>
+
+<p>The parameter of this function is the representation of a token
+  symbol or a keyword symbol in grammar rules. See the section about
+  token patterns.</p>
+
+<p>This function is called for each token symbol and each keyword
+  encountered in the grammar rules of the EXTEND statement. Its goal
+  is to allow the lexer to check that the tokens and keywords do
+  respect the lexer rules. It checks that the tokens exist and are not
+  mispelled. It can be also used to enter the keywords in the lexer
+  keyword tables.</p>
+
+<p>Setting it as the function that does nothing is possible, but the
+  check of correctness of tokens is not done.</p>
+
+<p>In case or error, the function must raise the exception
+  "<tt>Plexing.Error</tt>" with an error message as parameter.</p>
+
+<h4><tt>tok_removing</tt></h4>
+
+<p>Is a function of type:</p>
+
+<pre>
+  pattern -> unit
+</pre>
+
+<p>It is possibly called by the DELETE_RULE statement for tokens and
+  keywords no longer used in the grammar. The grammar system maintains
+  a number of usages of all tokens and keywords and calls this
+  function only when this number reaches zero. This can be interesting
+  for keywords: the lexer can remove them from its tables.</p>
+
+<h4><tt>tok_match</tt></h4>
+
+<p>Is a function of type:</p>
+
+<pre>
+  pattern -> ((string * string) -> unit)
+</pre>
+
+<p>The function tells how a token of the input stream is matched
+  against a token pattern. Both are represented by a couple of
+  strings.</p>
+
+<p>This function takes a token pattern as parameter and return a
+  function matching a token, returning the matched string or raising
+  the exception "<tt>Stream.Failure</tt>" if the token does not
+  match.</p>
+
+<p>Notice that, for efficiency, it is necessary to write this function
+  as a match of token patterns returning, for each case, the function
+  which matches the token, <em>not</em> a function matching the token
+  pattern and the token together and returning a string for each
+  case.</p>
+
+<p>An acceptable function is provided in the module "<tt>Plexing</tt>"
+  and is named "default_match". Its code looks like this:</p>
+
+<pre>
+  value default_match =
+    fun
+    [ (p_con, "") ->
+        fun (con, prm) -> if con = p_con then prm else raise Stream.Failure
+    | (p_con, p_prm) ->
+        fun (con, prm) ->
+          if con = p_con &amp;&amp; prm = p_prm then prm else raise Stream.Failure ]
+  ;
+</pre>
+
+<h4><tt>tok_text</tt></h4>
+
+<p>Is a function of type:</p>
+
+<pre>
+  pattern -> string
+</pre>
+
+<p>Designed for error messages, it takes a token pattern as parameter
+  and returns the string giving its name.</p>
+
+<p>It is possible to use the predefined function "<tt>lexer_text</tt>"
+  of the Plexing module. This function just returns the name of the
+  token pattern constructor and its parameter if any.</p>
+
+<p>For example, with this default function, the token symbol IDENT
+  would be written as IDENT in error message (e.g. "IDENT expected").
+  The "text" function may decide to print it differently, e.g., as
+  "identifier".</p>
+
+<h4><tt>tok_comm</tt></h4>
+
+<p>Is a mutable field of type:</p>
+
+<pre>
+  option (list location)
+</pre>
+
+<p>It asks the lexer (the lexer function should do it) to record the
+  locations of the comments in the program. Setting this field to
+  "None" indicates that the lexer must not record them. Setting it to
+  "Some []" indicated that the lexer must put the comments location
+  list in the field, which is mutable.</p>
+
+<h3 id="b:Minimalist-version">Minimalist version</h3>
+
+<p>If a lexer have been written, named "<tt>lexer</tt>", here is the
+  minimalist version of the value suitable as parameter to
+  "<tt>Grammar.gcreate</tt>":</p>
+
+<pre>
+  {Plexing.tok_func = lexer;
+   Plexing.tok_using _ = (); Plexing.tok_removing _ = ();
+   Plexing.tok_match = Plexing.default_match;
+   Plexing.tok_text = Plexing.lexer_text;
+   Plexing.tok_comm = None}
+</pre>
+
+<h2 id="a:Functorial-interface">Functorial interface</h2>
+
+<p>The normal interface for grammars described in the previous sections
+  has two drawbacks:</p>
+
+<ul>
+  <li>First, the type of tokens of the lexers must be "<tt>(string *
+      string)</tt>"</li>
+  <li>Second, since the entry type has no parameter to specify the
+    grammar it is bound to, there is no static check that entries are
+    compatible, i.e.  belong to the same grammar. The check is done at
+    run time.</li>
+</ul>
+
+<p>The functorial interface resolve these two problems. The functor
+  takes a module as parameter where the token type has to be defined,
+  together with the lexer returning streams of tokens of this
+  type. The resulting module define entries compatible the ones to the
+  other, and this is controlled by the OCaml type checker.</p>
+
+<p>The syntax extension must be done with the statement GEXTEND, instead
+  of EXTEND, and deletion by GDELETE_RULE instead of DELETE_RULE.</p>
+
+<h3 id="b:The-lexer-type">The lexer type</h3>
+
+<p>In the section about the interface with the lexer, we presented the
+  "<tt>Plexing.lexer</tt>" type as a record without type
+  parameter. Actually, this type is defined as:</p>
+
+<pre>
+  type lexer 'te =
+    { tok_func : lexer_func 'te;
+      tok_using : pattern -> unit;
+      tok_removing : pattern -> unit;
+      tok_match : pattern -> 'te -> string;
+      tok_text : pattern -> string;
+      tok_comm : mutable option (list location) }
+  ;
+</pre>
+
+<p>where the type parameter is the type of the token, which can be any
+  type, different from "<tt>(string * string)</tt>", providing the
+  lexer function (<tt>tok_func</tt>) returns a stream of this token
+  type and the match function (<tt>tok_match</tt>) indicates how to
+  match values of this token type against the token patterns (which
+  remain defined as "<tt>(string * string)</tt>").</p>
+
+<p>Here is an example of an user token type and the associated match
+  function:</p>
+
+<pre>
+  type mytoken =
+    [ Ident of string
+    | Int of int
+    | Comma | Equal
+    | Keyw of string  ]
+  ;
+
+  value mymatch =
+    fun
+    [ ("IDENT", "") ->
+        fun [ Ident s -> s | _ -> raise Stream.Failure ]
+    | ("INT", "") ->
+        fun [ Int i -> string_of_int i | _ -> raise Stream.Failure ]
+    | ("", ",") ->
+        fun [ Comma -> "" | _ -> raise Stream.Failure ]
+    | ("", "=") ->
+        fun [ Equal -> "" | _ -> raise Stream.Failure ]
+    | ("", s) ->
+        fun
+        [ Keyw k -> if k = s then "" else raise Stream.Failure
+        | _ -> raise Stream.Failure ]
+    | _ -> raise (Plexing.Error "bad token in match function") ]
+  ;
+</pre>
+
+<h3 id="b:The-functor-parameter">The functor parameter</h3>
+
+<p>The type of the functor parameter is defined as:</p>
+
+<pre>
+  module type GLexerType =
+    sig
+      type te = 'x;
+      value lexer : Plexing.lexer te;
+    end;
+</pre>
+
+<p>The token type must be specified (type "<tt>te</tt>") and the lexer
+  also, with the interface for lexers, of the lexer type defined
+  above, the record fields being described in the section "interface
+  with the lexer", but with a general token type.</p>
+
+<h3 id="b:The-resulting-grammar-module">The resulting grammar module</h3>
+
+<p>Once a module of type "<tt>GLexerType</tt>" has been built
+  (previous section), it is possible to create a grammar module by
+  applying the functor "<tt>Grammar.GMake</tt>". For example:</p>
+
+<pre>
+  module MyGram = Grammar.GMake MyLexer;
+</pre>
+
+<p>Notice that the function "<tt>Entry.parse</tt>" of this resulting
+  module does not take a character stream as parameter, but a value of
+  type "<tt>parsable</tt>". This function is equivalent to the
+  function "<tt>parse_parsable</tt>" of the non functorial
+  interface. In short, the parsing of some character stream
+  "<tt>cs</tt>" by some entry "<tt>e</tt>" of the example grammar
+  above, must be done by:</p>
+
+<pre>
+  MyGram.Entry.parse e (MyGram.parsable cs)
+</pre>
+
+<p>instead of:</p>
+
+<pre>
+  MyGram.Entry.parse e cs
+</pre>
+
+<h3 id="b:GEXTEND-and-GDELETE_RULE">GEXTEND and GDELETE_RULE</h3>
+
+<p>The "<tt>GEXTEND</tt>" and "<tt>GDELETE_RULE</tt>" statements are
+  also added in the expressions of the OCaml language when the syntax
+  extension kit "<tt>pa_extend.cmo</tt>" is loaded. They must be used
+  for grammars defined with the functorial interface. Their syntax
+  is:</p>
+
+<pre>
+           expression ::= gextend
+                        | gdelete-rule
+         gdelete-rule ::= "GDELETE_RULE" gdelete-rule-body "END"
+              gextend ::= "GEXTEND" gextend-body "END"
+         gextend-body ::= grammar-module-name extend-body
+    gdelete-rule-body ::= grammar-module-name delete-rule-body
+  grammar-module-name ::= qualid
+</pre>
+
+<p>See the syntax of the EXTEND statement for the meaning of the syntax
+  entries not defined above.</p>
+
+<h2 id="a:An-example:-arithmetic-calculator">An example: arithmetic calculator</h2>
+
+<p>Here is a small calculator of expressions. They are given as
+  parameters of the command.</p>
+
+<p>File "calc.ml":</p>
+
+<pre>
+  #load "pa_extend.cmo";
+
+  value g = Grammar.gcreate (Plexer.gmake ());
+  value e = Grammar.Entry.create g "expression";
+
+  EXTEND
+    e:
+      [ [ x = e; "+"; y = e -> x + y
+        | x = e; "-"; y = e -> x - y ]
+      | [ x = e; "*"; y = e -> x * y
+        | x = e; "/"; y = e -> x / y ]
+      | [ x = INT -> int_of_string x
+        | "("; x = e; ")" -> x ] ]
+    ;
+  END;
+
+  open Printf;
+
+  for i = 1 to Array.length Sys.argv - 1 do {
+    let r = Grammar.Entry.parse e (Stream.of_string Sys.argv.(i)) in
+    printf "%s = %d\n" Sys.argv.(i) r;
+    flush stdout;
+  };
+</pre>
+
+<p>The link needs the library "gramlib.cma" provided with Camlp5:</p>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 gramlib.cma test/calc.ml -o calc
+</pre>
+
+<p>Examples:</p>
+
+<pre>
+  $ ./calc '239*4649'
+  239*4649 = 1111111
+  $ ./calc '(47+2)/3'
+  (47+2)/3 = 16
+</pre>
+
+<a class="toplink" href="grammars.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

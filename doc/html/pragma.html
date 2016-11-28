@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- pragma.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>pragma</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Pragma directive</h1>
+
+<p>The directive "<code>#pragma</code>" allows to evaluate expressions
+at parse time, useful, for example, to test syntax extensions by the
+statement EXTEND without having to compile it in a separate file.</p>
+
+<p>To use it, add the syntax extension "<code>pa_pragma.cmo</code>" in
+the Camlp5 command line. It adds the ability to use this directive.</p>
+
+<p>As an example, let's add syntax for the statement 'repeat' and
+use it immediately:</p>
+
+<pre>
+  #pragma
+    EXTEND
+      GLOBAL: expr;
+      expr: LEVEL "top"
+        [ [ "repeat"; e1 = sequence; "until"; e2 = SELF ->
+              &lt;:expr&lt; do { $e1$; while not $e2$ do { $e1$ } } &gt;&gt; ] ]
+      ;
+      sequence:
+        [ [ el = LIST1 expr_semi -> &lt;:expr&lt; do { $list:el$ } &gt;&gt; ] ]
+      ;
+      expr_semi:
+        [ [ e = expr; ";" -> e ] ]
+      ;
+    END;
+
+  let i = ref 1 in
+  repeat print_int i.val; print_endline ""; incr i; until i.val = 10;
+</pre>
+
+<p>The compilation of this example (naming it "foo.ml") can be done with
+the command:</p>
+
+<pre>
+  ocamlc -pp "camlp5r q_MLast.cmo pa_extend.cmo pa_pragma.cmo" -I +camlp5 foo.ml
+</pre>
+
+<p>Notice that it is still experimental and probably incomplete, for the
+moment.</p>
+
+<a class="toplink" href="pragma.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

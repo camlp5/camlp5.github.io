@@ -1,0 +1,3414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- ast_strict.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>AST - strict</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+  <style type="text/css">
+    .nodelist { margin-left: 2cm }
+    table { margin-left: 1cm }
+    td { padding-right: 2mm }
+  </style>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Syntax tree - strict mode</h1>
+
+<p>This chapter presents the Camlp5 syntax tree when Camlp5 is installed
+  in <em>strict</em> mode.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Introduction">Introduction</a></li>
+    <li><a href="#a:Location">Location</a>
+      <ul>
+        <li><a href="#b:In-expressions">In expressions</a></li>
+        <li><a href="#b:In-patterns">In patterns</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Antiquotations">Antiquotations</a></li>
+    <li><a href="#a:Two-kinds-of-antiquotations">Two kinds of antiquotations</a>
+      <ul>
+        <li><a href="#b:Preliminary-remark">Preliminary remark</a></li>
+        <li><a href="#b:Antiquoting">Antiquoting</a></li>
+        <li><a href="#b:Remarks">Remarks</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Nodes-and-Quotations">Nodes and Quotations</a>
+      <ul>
+        <li><a href="#b:expr">expr</a></li>
+        <li><a href="#b:patt">patt</a></li>
+        <li><a href="#b:ctyp">ctyp</a></li>
+        <li><a href="#b:modules---">modules...</a></li>
+        <li><a href="#b:classes---">classes...</a></li>
+        <li><a href="#b:other">other</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Nodes-without-quotations">Nodes without quotations</a>
+      <ul>
+        <li><a href="#b:type_var">type_var</a></li>
+        <li><a href="#b:class_infos">class_infos</a></li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h2 id="a:Introduction">Introduction</h2>
+
+<p>This syntax tree is defined in the module "<tt>MLast</tt>" provided
+  by Camlp5. Each node corresponds to a syntactic entity of the
+  corresponding type.</p>
+
+<p>For example, the syntax tree of the statement "<tt>if</tt>" can
+  be written:</p>
+
+<pre>
+  MLast.ExIfe loc e1 e2 e3
+</pre>
+
+<p>where "<tt>loc</tt>" is the location in the source, and
+  "<tt>e1</tt>", "<tt>e2</tt>" and "<tt>e3</tt>" are
+  respectively the expression after the "<tt>if</tt>", the one after
+  the "<tt>then</tt>" and the one after the "<tt>else</tt>".</p>
+
+<p>If a program needs to manipulate syntax trees, it can use the nodes
+  defined in the module "<tt>MLast</tt>". The programmer must know how
+  the concrete syntax is transformed into this abstract syntax.</p>
+
+<p>A simpler solution is to use one of the quotation kits
+  "<tt>q_MLast.cmo</tt>" or "<tt>q_ast.cmo</tt>". Both propose
+  <a href="quot.html">quotations</a> which represent the abstract
+  syntax (the nodes of the module "<tt>MLast</tt>") into concrete
+  syntax with antiquotations to bind variables inside. The example
+  above can be written:</p>
+
+<pre>
+  &lt;:expr&lt; if $e1$ then $e2$ else $e3$ >>
+</pre>
+
+<p>This representation is very interesting when one wants to
+  manipulate complicated syntax trees. Here is an example taken from
+  the Camlp5 sources themselves:</p>
+
+<pre>
+  &lt;:expr&lt;
+    match try Some $f$ with [ Stream.Failure -> None ] with
+    [ Some $p$ -> $e$
+    | _ -> raise (Stream.Error $e2$) ]
+  >>
+</pre>
+
+<p>This example was in a position of a pattern. In abstract syntax, it
+  should have been written:</p>
+
+<pre>
+  MLast.ExMat _
+    (MLast.ExTry _ (MLast.ExApp _ (MLast.ExUid _ (Ploc.VaVal "Some")) f)
+       (Ploc.VaVal
+          [(MLast.PaAcc _ (MLast.PaUid _ (Ploc.VaVal "Stream"))
+             (MLast.PaUid _ (Ploc.VaVal "Failure")),
+            Ploc.VaVal None, MLast.ExUid _ (Ploc.VaVal "None"))]))
+    (Ploc.VaVal
+       [(MLast.PaApp _ (MLast.PaUid _ (Ploc.VaVal "Some")) p,
+         Ploc.VaVal None, e);
+        (MLast.PaAny _, Ploc.VaVal None,
+         MLast.ExApp _ (MLast.ExLid _ (Ploc.VaVal "raise"))
+           (MLast.ExApp _
+              (MLast.ExAcc _ (MLast.ExUid _ (Ploc.VaVal "Stream"))
+                 (MLast.ExUid _ (Ploc.VaVal "Error")))
+              e2))])
+</pre>
+
+<p>Which is less readable and much more complicated to build and
+  update.</p>
+
+<p>Instead of thinking of "a syntax tree", the programmer can think of
+  "a piece of program".</p>
+
+<h2 id="a:Location">Location</h2>
+
+<p>In all syntax tree nodes, the first parameter is the source
+  location of the node.</p>
+
+<h3 id="b:In-expressions">In expressions</h3>
+
+<p>When a quotation is in the context of an expression, the location
+  parameter is "<tt>loc</tt>" in the node and in all its possible
+  sub-nodes. Example: if we consider the quotation:</p>
+
+<pre>
+  &lt;:sig_item&lt; value foo : int -> bool >>
+</pre>
+
+<p>This quotation, in a context of an expression, is equivalent
+  to:</p>
+
+<pre>
+  MLast.SgVal loc (Ploc.VaVal "foo")
+    (MLast.TyArr loc (MLast.TyLid loc (Ploc.VaVal "int"))
+       (MLast.TyLid loc (Ploc.VaVal "bool")));
+</pre>
+
+<p>The name "<tt>loc</tt>" is predefined. However, it is possible to
+  change it, using the argument "<tt>-loc</tt>" of the Camlp5 shell
+  commands.</p>
+
+<p>Consequently, if there is no variable "<tt>loc</tt>" defined in the
+  context of the quotation, or if it is not of the good type, a
+  semantic error occur in the OCaml compiler ("Unbound value
+  loc").</p>
+
+<p>Note that in the <a href="grammars.html">extensible grammars</a>,
+  the variable "<tt>loc</tt>" is bound, in all semantic actions, to
+  the location of the rule.</p>
+
+<p>If the created node has no location, the programmer can define a
+  variable named "<tt>loc</tt>" equal to "<tt>Ploc.dummy</tt>".</p>
+
+<h3 id="b:In-patterns">In patterns</h3>
+
+<p>When a quotation is in the context of a pattern, the location
+  parameter of all nodes and possible sub-nodes is set to the wildcard
+  ("<tt>_</tt>"). The same example above:</p>
+
+<pre>
+  &lt;:sig_item&lt; value foo : int -> bool >>
+</pre>
+
+<p>is equivalent, in a pattern, to:</p>
+
+<pre>
+  MLast.SgVal _ (Ploc.VaVal "foo")
+    (MLast.TyArr _ (MLast.TyLid _ (Ploc.VaVal "int"))
+       (MLast.TyLid _ (Ploc.VaVal "bool")))
+</pre>
+
+<p>However, it is possible to generate a binding of the variable
+  "<tt>loc</tt>" on the top node by writing a "colon" before the
+  "less" in the quotation. The same example:</p>
+
+<pre>
+  &lt;:sig_item:&lt; value foo : int -> bool >>
+</pre>
+
+<p>is equivalent to:</p>
+
+<pre>
+  MLast.SgVal loc (Ploc.VaVal "foo")
+    (MLast.TyArr _ (MLast.TyLid _ (Ploc.VaVal "int"))
+       (MLast.TyLid _ (Ploc.VaVal "bool")))
+</pre>
+
+<h2 id="a:Antiquotations">Antiquotations</h2>
+
+<p>The expressions or patterns between dollar ($) characters are
+  called <em>antiquotations</em>. In opposition to quotations which
+  has its own syntax rules, the antiquotation is an area in the syntax
+  of the enclosing context (expression or pattern). See the chapter
+  about <a href="quot.html">quotations</a>.</p>
+
+<p>If a quotation is in the context of an expression, the
+  antiquotation must be an expression. It could be any expression,
+  including function calls. Examples:</p>
+
+<pre>
+  value f e el = &lt;:expr&lt; [$e$ :: $loop False el$] >>;
+  value patt_list p pl = &lt;:patt&lt; ( $list:[p::pl]$) >>;
+</pre>
+
+<p>If a quotation is in the context of an pattern, the antiquotation
+  is a pattern. Any pattern is possible, including the wildcard
+  character ("<tt>_</tt>"). Examples:</p>
+
+<pre>
+   fun [ &lt;:expr&lt; $lid:op$ $_$ $_$ >> -> op ]
+   match p with [ &lt;:patt&lt; $_$ | $_$ >> -> Some p ]
+</pre>
+
+<h2 id="a:Two-kinds-of-antiquotations">Two kinds of antiquotations</h2>
+
+<h3 id="b:Preliminary-remark">Preliminary remark</h3>
+
+<p>In strict mode, we remark that most constructors defined of the
+  module "<tt>MLast</tt>" are of type "<tt>Ploc.vala</tt>". This type
+  is defined like this:</p>
+
+<pre>
+  type vala 'a =
+    [ VaAnt of string
+    | VaVal of 'a ]
+  ;
+</pre>
+
+<p>The type argument is the real type of the node. For example, a
+  value of type "<tt>bool</tt>" in transitional mode is frequently
+  represented by a value of type "<tt>Ploc.vala bool</tt>".</p>
+
+<p>The first case of the type "<tt>vala</tt>" corresponds to an
+  antiquotation in the concrete syntax. The second case to a normal
+  syntax situation, without antiquotation.</p>
+
+<p>Example: in the "let" statement, the fact that it is "rec" or not
+  is represented by a boolean. This boolean is, in the syntax tree,
+  encapsulated with the type "<tt>Ploc.vala</tt>". The syntax tree of
+  the two following lines:</p>
+
+<pre>
+  let x = y in z
+  let rec x = y in z
+</pre>
+
+<p>start with, respectively:</p>
+
+<pre>
+  MLast.ExLet loc (Ploc.VaVal False)
+    ... (* and so on *)
+</pre>
+
+<p>and:</p>
+
+<pre>
+  MLast.ExLet loc (Ploc.VaVal True)
+    ... (* and so on *)
+</pre>
+
+<p>The case "<tt>Ploc.VaAnt s</tt>" is internally used by the parsers
+  and by the quotation kit "<tt>q_ast.cmo</tt>" to record
+  antiquotation strings representing the expression or the patterns
+  having this value. For example, in this "let" statement:</p>
+
+<pre>
+  MLast.ExLet loc (Ploc.VaAnt s)
+    ... (* and so on *)
+</pre>
+
+<p>The contents of this "<tt>s</tt>" is internally handled. For
+  information, it contains the antiquotation string (kind included)
+  together with representation of the location of the antiquotation
+  in the quotation. See the next section.</p>
+
+<h3 id="b:Antiquoting">Antiquoting</h3>
+
+<p>To antiquotate the fact that the "let" is with or without rec (a flag
+  of type boolean), there are two ways.</p>
+
+<h4>direct antiquoting</h4>
+
+<p>The first way, hidding the type "<tt>Ploc.val</tt>", can be
+  written with the antiquotation kind "flag":</p>
+
+<pre>
+  &lt;:expr&lt; let $flag:rf$ x = y in z >>
+</pre>
+
+<p>This corresponds to the syntax tree:</p>
+
+<pre>
+  MLast.ExLet loc (Ploc.VaVal rf)
+     ... (* and so on *)
+</pre>
+
+<p>And, therefore, the type of the variable "<tt>rf</tt>" is simply
+  "<tt>bool</tt>".</p>
+
+<h4>general antiquoting</h4>
+
+<p>The second way, introducing variables of type "<tt>Ploc.vala</tt>"
+  can be written a kind prefixed by "<tt>_</tt>", namely here
+  "<tt>_flag</tt>":</p>
+
+<pre>
+  &lt;:expr&lt; let $_flag:rf$ x = y in z >>
+</pre>
+
+<p>In that case, it corresponds to the syntax tree:</p>
+
+<pre>
+  MLast.ExLet loc rf
+     ... (* and so on *)
+</pre>
+
+<p>And, therefore, the type of the variable "<tt>rf</tt>" is now
+  "<tt>Ploc.vala bool</tt>".</p>
+
+<h3 id="b:Remarks">Remarks</h3>
+
+<p>The first form of antiquotation ensures the compatibility with
+  previous versions of Camlp5. The syntax tree is <em>not</em> the
+  same, but the bound variables keep the same type.</p>
+
+<p>All antiquotations kinds have these two forms: one with some name
+  (e.g. "flag") and one with the same name prefixed by "a"
+  (e.g. "aflag").</p>
+
+<h2 id="a:Nodes-and-Quotations">Nodes and Quotations</h2>
+
+<p>This section describes all nodes defined in the module "MLast" of
+  Camlp5 and how to write them with quotations. Notice that, inside
+  quotations, one is not restricted to these elementary cases, but
+  any complex value can be used, resulting on possibly complex combined
+  nodes.</p>
+
+<p>The quotation forms are described here
+    in <a href="revsynt.html">revised syntax</a> (like the rest of
+    this document). In reality, it depends on which quotation kit is
+    loaded:</p>
+
+<ul>
+  <li>If "<tt>q_MLast.cmo</tt>" is used, the revised syntax is
+    mandatory: the quotations must be in that syntax without any
+    extension.</li>
+  <li>If "<tt>q_ast.cmo</tt>" is used, the quotation
+    syntax <em>must</em> be in the current user syntax with
+    all extensions added to compile the file.</li>
+</ul>
+
+<p>Last remark: in the following tables, the variables names give
+  information of their types. The details can be found in the
+  distributed source file "<tt>mLast.mli</tt>".</p>
+
+<ul>
+  <li><tt>e</tt>, <tt>e1</tt>, <tt>e2</tt>, <tt>e3</tt>: expr</li>
+  <li><tt>p</tt>, <tt>p1</tt>, <tt>p2</tt>, <tt>p3</tt>: patt</li>
+  <li><tt>t</tt>, <tt>t1</tt>, <tt>t2</tt>, <tt>e3</tt>: ctyp</li>
+  <li><tt>s</tt>: string</li>
+  <li><tt>b</tt>: bool</li>
+  <li><tt>me</tt>, <tt>me1</tt>, <tt>me2</tt>: module_expr</li>
+  <li><tt>mt</tt>, <tt>mt1</tt>, <tt>mt2</tt>: module_type</li>
+  <li><tt>le</tt>: list expr</li>
+  <li><tt>lp</tt>: list patt</li>
+  <li><tt>lt</tt>: list ctyp</li>
+  <li><tt>ls</tt>: list string</li>
+  <li><tt>lse</tt>: list (string * expr)</li>
+  <li><tt>lpe</tt>: list (patt * expr)</li>
+  <li><tt>lpp</tt>: list (patt * patt)</li>
+  <li><tt>lpoee</tt>: list (patt * option expr * expr)</li>
+  <li><tt>op</tt>: option patt</li>
+  <li><tt>lcstri</tt>: list class_str_item</li>
+  <li><tt>lcsigi</tt>: list class_sig_item</li>
+</ul>
+
+<h3 id="b:expr">expr</h3>
+
+<p>Expressions of the language.</p>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e1$ . $e2$ >></tt><br/>
+    <tt style="color:red">MLast.ExAcc loc e1 e2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- antiquotation <a href="#expr_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $anti:e$ >></tt><br/>
+    <tt style="color:red">MLast.ExAnt loc e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e1$ $e2$ >></tt><br/>
+    <tt style="color:red">MLast.ExApp loc e1 e2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- array element</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e1$ .( $e2$ ) >></tt><br/>
+    <tt style="color:red">MLast.ExAre loc e1 e2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- array</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; [| $list:le$ |] >></tt><br/>
+    <tt style="color:red">MLast.ExArr loc (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; [| $_list:le$ |] >></tt><br/>
+    <tt style="color:red">MLast.ExArr loc le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- assert</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; assert $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExAsr loc e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- assignment</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e1$ := $e2$ >></tt><br/>
+    <tt style="color:red">MLast.ExAss loc e1 e2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- big array element</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e$ .{ $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExBae loc e (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $e$ .{ $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExBae loc e le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- character constant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $chr:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExChr loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_chr:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExChr loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- coercion</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ($e$ :> $t2$) >></tt><br/>
+    <tt style="color:red">MLast.ExCoe loc e None t2</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ($e$ : $t1$ :> $t2$) >></tt><br/>
+    <tt style="color:red">MLast.ExCoe loc e (Some t1) t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- float constant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $flo:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExFlo loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_flo:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExFlo loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- for (increasing)</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ to $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal True) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ to $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal True) le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- for (decreasing)</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ downto $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal False) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ downto $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal False) le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- for</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ $to:b$ $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal b) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ $to:b$ $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 (Ploc.VaVal b) le</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ $_to:b$ $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 b (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $lid:s$ = $e1$ $_to:b$ $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc (Ploc.VaVal s) e1 e2 b le</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ to $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal True) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ to $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal True) le</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ downto $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal False) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ downto $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal False) le</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ $to:b$ $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal b) (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ $to:b$ $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 (Ploc.VaVal b) le</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ $_to:b$ $e2$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 b (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; for $_lid:s$ = $e1$ $_to:b$ $e2$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExFor loc s e1 e2 b le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- function</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; fun [ $list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExFun loc (Ploc.VaVal lpee)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; fun [ $_list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExFun loc lpee</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- if</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; if $e1$ then $e2$ else $e3$ >></tt><br/>
+    <tt style="color:red">MLast.ExIfe loc e1 e2 e3</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer constant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $int:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc (Ploc.VaVal s1) ""</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_int:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc s1 ""</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer 32 bits</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $int32:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc (Ploc.VaVal s1) "l"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_int32:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc s1 "l"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer 64 bits</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $int64:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc (Ploc.VaVal s1) "L"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_int64:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc s1 "L"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- native integer</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $nativeint:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc (Ploc.VaVal s1) "n"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_nativeint:s1$ >></tt><br/>
+    <tt style="color:red">MLast.ExInt loc s1 "n"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ~{$p$} >></tt><br/>
+    <tt style="color:red">MLast.ExLab loc p (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ~{$p$ = $e$} >></tt><br/>
+    <tt style="color:red">MLast.ExLab loc p (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ~{$p$ $opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.ExLab loc p (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ~{$p$ $_opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.ExLab loc p oe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lazy</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; lazy $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLaz loc e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; let rec $list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal True) (Ploc.VaVal lpe) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let rec $_list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal True) lpe e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let not rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; let $list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal False) (Ploc.VaVal lpe) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let $_list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal False) lpe e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; let $flag:b$ $list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal b) (Ploc.VaVal lpe) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let $flag:b$ $_list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc (Ploc.VaVal b) lpe e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let $_flag:b$ $list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc b (Ploc.VaVal lpe) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let $_flag:b$ $_list:lpe$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLet loc b lpe e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lowercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExLid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExLid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let module</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; let module $uid:s$ = $me$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLmd loc (Ploc.VaVal s) me e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; let module $_uid:s$ = $me$ in $e$ >></tt><br/>
+    <tt style="color:red">MLast.ExLmd loc s me e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- match</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; match $e$ with [ $list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExMat loc e (Ploc.VaVal lpee)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; match $e$ with [ $_list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExMat loc e lpee</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- new</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; new $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.ExNew loc (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; new $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.ExNew loc ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- object expression</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; object $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal None) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal None) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object ($p$) $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal (Some p)) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object ($p$) $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal (Some p)) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object $opt:op$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal op) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object $opt:op$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc (Ploc.VaVal op) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object $_opt:op$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc op (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; object $_opt:op$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.ExObj loc op lcsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- option label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ?{$p$} >></tt><br/>
+    <tt style="color:red">MLast.ExOlb loc p (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ?{$p$ = $e$} >></tt><br/>
+    <tt style="color:red">MLast.ExOlb loc p (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ?{$p$ $opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.ExOlb loc p (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ?{$p$ $_opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.ExOlb loc p oe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- override</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; {&lt; $list:lse$ >} >></tt><br/>
+    <tt style="color:red">MLast.ExOvr loc (Ploc.VaVal lse)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; {&lt; $_list:lse$ >} >></tt><br/>
+    <tt style="color:red">MLast.ExOvr loc lse</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module packing</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; (module $me$) >></tt><br/>
+    <tt style="color:red">MLast.ExPck loc me None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; (module $me$ : $mt$) >></tt><br/>
+    <tt style="color:red">MLast.ExPck loc me (Some mt)</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- record</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; {$list:lpe$} >></tt><br/>
+    <tt style="color:red">MLast.ExRec loc (Ploc.VaVal lpe) None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; {($e$) with $list:lpe$} >></tt><br/>
+    <tt style="color:red">MLast.ExRec loc (Ploc.VaVal lpe) (Some e)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; {$_list:lpe$} >></tt><br/>
+    <tt style="color:red">MLast.ExRec loc lpe None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; {($e$) with $_list:lpe$} >></tt><br/>
+    <tt style="color:red">MLast.ExRec loc lpe (Some e)</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- sequence</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExSeq loc (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExSeq loc le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- method call</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e$ # $s$ >></tt><br/>
+    <tt style="color:red">MLast.ExSnd loc e (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $e$ # $_:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExSnd loc e s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- string element</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $e1$ .[ $e2$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExSte loc e1 e2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- string</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $str:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExStr loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_str:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExStr loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- try</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; try $e$ with [ $list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExTry loc e (Ploc.VaVal lpee)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; try $e$ with [ $_list:lpee$ ] >></tt><br/>
+    <tt style="color:red">MLast.ExTry loc e lpee</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- t-uple</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ($list:le$) >></tt><br/>
+    <tt style="color:red">MLast.ExTup loc (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ($_list:le$) >></tt><br/>
+    <tt style="color:red">MLast.ExTup loc le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ($e$ : $t$) >></tt><br/>
+    <tt style="color:red">MLast.ExTyc loc e t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- uppercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExUid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExUid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- variant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; ` $s$ >></tt><br/>
+    <tt style="color:red">MLast.ExVrn loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; ` $_:s$ >></tt><br/>
+    <tt style="color:red">MLast.ExVrn loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- while</dt>
+  <dd>
+    <tt style="color:blue">&lt;:expr&lt; while $e$ do { $list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExWhi loc e (Ploc.VaVal le)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:expr&lt; while $e$ do { $_list:le$ } >></tt><br/>
+    <tt style="color:red">MLast.ExWhi loc e le</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#expr_2">(2)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.ExXtr loc s oe</tt>
+  </dd>
+</dl>
+
+<div id="expr_1" style="margin: 5mm 0 0 1cm">(1)
+  <p>Node used in the quotation expanders to tells at conversion to
+    OCaml compiler syntax tree time, that all locations of the
+    sub-tree is correcty located in the quotation. By default, in
+    quotations, the locations of all generated nodes are the location
+    of the whole quotation. This node allows to make an exception to
+    this rule, since we know that the antiquotation belongs to the
+    universe of the enclosing program. See the chapter
+    about <a href="quot.html">quotations</a> and, in particular, its
+    section about antiquotations.</p>
+</div>
+
+<div id="expr_2" style="margin: 5mm 0 0 1cm">(2)
+  <p>Extra node internally used by the quotation kit
+    "<tt>q_ast.cmo</tt>" to build antiquotations of expressions.</p>
+</div>
+
+<h3 id="b:patt">patt</h3>
+
+<p>Patterns of the language.</p>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $p1$ . $p2$ >></tt><br/>
+    <tt style="color:red">MLast.PaAcc loc p1 p2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- alias</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ($p1$ as $p2$) >></tt><br/>
+    <tt style="color:red">MLast.PaAli loc p1 p2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- antiquotation <a href="#patt_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $anti:p$ >></tt><br/>
+    <tt style="color:red">MLast.PaAnt loc p</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- wildcard</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; _ >></tt><br/>
+    <tt style="color:red">MLast.PaAny loc</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $p1$ $p2$ >></tt><br/>
+    <tt style="color:red">MLast.PaApp loc p1 p2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- array</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; [| $list:lp$ |] >></tt><br/>
+    <tt style="color:red">MLast.PaArr loc (Ploc.VaVal lp)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; [| $_list:lp$ |] >></tt><br/>
+    <tt style="color:red">MLast.PaArr loc lp</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- character</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $chr:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaChr loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_chr:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaChr loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- float</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $flo:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaFlo loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_flo:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaFlo loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer constant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $int:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc (Ploc.VaVal s1) ""</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_int:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc s1 ""</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer 32 bits</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $int32:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc (Ploc.VaVal s1) "l"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_int32:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc s1 "l"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- integer 64 bits</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $int64:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc (Ploc.VaVal s1) "L"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_int64:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc s1 "L"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- native integer</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $nativeint:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc (Ploc.VaVal s1) "n"</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_nativeint:s1$ >></tt><br/>
+    <tt style="color:red">MLast.PaInt loc s1 "n"</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ~{$p1$} >></tt><br/>
+    <tt style="color:red">MLast.PaLab loc p1 (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ~{$p1$ = $p2$} >></tt><br/>
+    <tt style="color:red">MLast.PaLab loc p1 (Ploc.VaVal (Some p2))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ~{$p1$ $opt:op2$} >></tt><br/>
+    <tt style="color:red">MLast.PaLab loc p1 (Ploc.VaVal op2)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ~{$p1$ $_opt:op2$} >></tt><br/>
+    <tt style="color:red">MLast.PaLab loc p1 op2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lazy</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; lazy $p$ >></tt><br/>
+    <tt style="color:red">MLast.PaLaz loc p</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lowercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaLid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaLid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- new type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; (type $lid:s$) >></tt><br/>
+    <tt style="color:red">MLast.PaNty loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; (type $_lid:s$) >></tt><br/>
+    <tt style="color:red">MLast.PaNty loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- option label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ?{$p$} >></tt><br/>
+    <tt style="color:red">MLast.PaOlb loc p (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ?{$p$ = $e$} >></tt><br/>
+    <tt style="color:red">MLast.PaOlb loc p (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ?{$p$ $opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.PaOlb loc p (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ?{$p$ $_opt:oe$} >></tt><br/>
+    <tt style="color:red">MLast.PaOlb loc p oe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- or</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $p1$ | $p2$ >></tt><br/>
+    <tt style="color:red">MLast.PaOrp loc p1 p2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- record</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; { $list:lpp$ } >></tt><br/>
+    <tt style="color:red">MLast.PaRec loc (Ploc.VaVal lpp)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; { $_list:lpp$ } >></tt><br/>
+    <tt style="color:red">MLast.PaRec loc lpp</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- range</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $p1$ .. $p2$ >></tt><br/>
+    <tt style="color:red">MLast.PaRng loc p1 p2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- string</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $str:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaStr loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_str:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaStr loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- t-uple</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ($list:lp$) >></tt><br/>
+    <tt style="color:red">MLast.PaTup loc (Ploc.VaVal lp)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ($_list:lp$) >></tt><br/>
+    <tt style="color:red">MLast.PaTup loc lp</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ($p$ : $t$) >></tt><br/>
+    <tt style="color:red">MLast.PaTyc loc p t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type pattern</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; # $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.PaTyp loc (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; # $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.PaTyp loc ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- uppercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaUid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaUid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module unpacking</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; (module $uid:s$) >></tt><br/>
+    <tt style="color:red">MLast.PaUnp loc (Ploc.VaVal s) None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; (module $uid:s$ : $mt$) >></tt><br/>
+    <tt style="color:red">MLast.PaUnp loc (Ploc.VaVal s) (Some mt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; (module $_uid:s$) >></tt><br/>
+    <tt style="color:red">MLast.PaUnp loc s None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; (module $_uid:s$ : $mt$) >></tt><br/>
+    <tt style="color:red">MLast.PaUnp loc s (Some mt)</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- variant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:patt&lt; ` $s$ >></tt><br/>
+    <tt style="color:red">MLast.PaVrn loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:patt&lt; ` $_:s$ >></tt><br/>
+    <tt style="color:red">MLast.PaVrn loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#patt_2">(2)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.PaXtr loc s op</tt>
+  </dd>
+</dl>
+
+<div id="patt_1" style="margin: 5mm 0 0 1cm">(1)
+  Node used to specify an antiquotation area, like for the
+  equivalent node in expressions. See above.
+</div>
+
+<div id="patt_2" style="margin: 5mm 0 0 1cm">(2)
+  Extra node internally used by the quotation kit "<tt>q_ast.cmo</tt>"
+    to build antiquotations of patterns.
+</div>
+
+<h3 id="b:ctyp">ctyp</h3>
+
+<p>Type expressions of the language.</p>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ . $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyAcc loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- alias</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ as $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyAli loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- wildcard</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; _ >></tt><br/>
+    <tt style="color:red">MLast.TyAny loc</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyApp loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- arrow</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ -> $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyArr loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- class</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; # $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.TyCls loc (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; # $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.TyCls loc ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; ~$s$: $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyLab loc (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; ~$_:s$: $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyLab loc s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lowercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.TyLid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.TyLid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- manifest</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ == private $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyMan loc t1 (Ploc.VaVal True) t2</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ == $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyMan loc t1 (Ploc.VaVal False) t2</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ == $priv:b$ $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyMan loc t1 (Ploc.VaVal b) t2</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; $t1$ == $_priv:b$ $t2$ >></tt><br/>
+    <tt style="color:red">MLast.TyMan loc t1 b t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- object</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $list:lst$ .. > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc (Ploc.VaVal lst) (Ploc.VaVal True)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $list:lst$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc (Ploc.VaVal lst) (Ploc.VaVal False)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $list:lst$ $flag:b$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc (Ploc.VaVal lst) (Ploc.VaVal b)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $list:lst$ $_flag:b$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc (Ploc.VaVal lst) b</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $_list:lst$ .. > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc lst (Ploc.VaVal True)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $_list:lst$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc lst (Ploc.VaVal False)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $_list:lst$ $flag:b$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc lst (Ploc.VaVal b)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; &lt; $_list:lst$ $_flag:b$ > >></tt><br/>
+    <tt style="color:red">MLast.TyObj loc lst b</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- option label</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; ?$s$: $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyOlb loc (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; ?$_:s$: $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyOlb loc s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- package</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; (module $mt$) >></tt><br/>
+    <tt style="color:red">MLast.TyPck loc mt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- polymorph</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; ! $list:ls$ . $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyPol loc (Ploc.VaVal ls) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; ! $_list:ls$ . $t$ >></tt><br/>
+    <tt style="color:red">MLast.TyPol loc ls t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- variable</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; '$s$ >></tt><br/>
+    <tt style="color:red">MLast.TyQuo loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; '$_:s$ >></tt><br/>
+    <tt style="color:red">MLast.TyQuo loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- record</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; { $list:llsbt$ } >></tt><br/>
+    <tt style="color:red">MLast.TyRec loc (Ploc.VaVal llsbt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; { $_list:llsbt$ } >></tt><br/>
+    <tt style="color:red">MLast.TyRec loc llsbt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- sum</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; [ $list:llslt$ ] >></tt><br/>
+    <tt style="color:red">MLast.TySum loc (Ploc.VaVal llslt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ $_list:llslt$ ] >></tt><br/>
+    <tt style="color:red">MLast.TySum loc llslt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- t-uple</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; ( $list:lt$ ) >></tt><br/>
+    <tt style="color:red">MLast.TyTup loc (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; ( $_list:lt$ ) >></tt><br/>
+    <tt style="color:red">MLast.TyTup loc lt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- uppercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.TyUid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.TyUid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- variant</dt>
+  <dd>
+    <tt style="color:blue">&lt;:ctyp&lt; [ = $list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc (Ploc.VaVal lpv) None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ > $list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc (Ploc.VaVal lpv) (Some None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc (Ploc.VaVal lpv) (Some (Some (Ploc.VaVal [])))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $list:lpv$ > $list:ls$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc (Ploc.VaVal lpv) (Some (Some (Ploc.VaVal ls)))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $list:lpv$ > $_list:ls$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc (Ploc.VaVal lpv) (Some (Some ls))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ = $_list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc lpv None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ > $_list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc lpv (Some None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $_list:lpv$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc lpv (Some (Some (Ploc.VaVal [])))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $_list:lpv$ > $list:ls$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc lpv (Some (Some (Ploc.VaVal ls)))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:ctyp&lt; [ &lt; $_list:lpv$ > $_list:ls$ ] >></tt><br/>
+    <tt style="color:red">MLast.TyVrn loc lpv (Some (Some ls))</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#ctyp_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.TyXtr loc s ot</tt>
+  </dd>
+</dl>
+
+<div id="ctyp_1" style="margin: 5mm 0 0 1cm">(1)
+  Extra node internally used by the quotation kit "<tt>q_ast.cmo</tt>"
+    to build antiquotations of types.
+</div>
+
+<h3 id="b:modules---">modules...</h3>
+
+<h4>str_item</h4>
+
+<p>Structure items, i.e. phrases in a ".ml" file or "struct"
+  elements.</p>
+
+<dl class="nodelist">
+  <dt>- class declaration</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; class $list:lcice$ >></tt><br/>
+    <tt style="color:red">MLast.StCls loc (Ploc.VaVal lcice)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; class $_list:lcice$ >></tt><br/>
+    <tt style="color:red">MLast.StCls loc lcice</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- class type declaration</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; class type $list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.StClt loc (Ploc.VaVal lcict)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; class type $_list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.StClt loc lcict</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- declare</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; declare $list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.StDcl loc (Ploc.VaVal lsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; declare $_list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.StDcl loc lsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- directive</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; # $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc (Ploc.VaVal s) (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $lid:s$ $e$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc (Ploc.VaVal s) (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $lid:s$ $opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc (Ploc.VaVal s) (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $lid:s$ $_opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc (Ploc.VaVal s) oe</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc s (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_lid:s$ $e$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc s (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_lid:s$ $opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc s (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_lid:s$ $_opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.StDir loc s oe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- exception</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal []) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal lt) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal []) (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $list:lt$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal lt) (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal []) ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $list:lt$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) (Ploc.VaVal lt) ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) lt (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $_list:lt$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) lt (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $uid:s$ of $_list:lt$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc (Ploc.VaVal s) lt ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal []) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal lt) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal []) (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $list:lt$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal lt) (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal []) ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $list:lt$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s (Ploc.VaVal lt) ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s lt (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $_list:lt$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s lt (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; exception $_uid:s$ of $_list:lt$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExc loc s lt ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- expression</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; $exp:e$ >></tt><br/>
+    <tt style="color:red">MLast.StExp loc e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- external</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; external $s$ : $t$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExt loc (Ploc.VaVal s) t (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; external $s$ : $t$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExt loc (Ploc.VaVal s) t ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; external $_:s$ : $t$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExt loc s t (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; external $_:s$ : $t$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StExt loc s t ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- include</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; include $me$ >></tt><br/>
+    <tt style="color:red">MLast.StInc loc me</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; module rec $list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal True) (Ploc.VaVal lsme)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module rec $_list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal True) lsme</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module non rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; module $list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal False) (Ploc.VaVal lsme)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module $_list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal False) lsme</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; module $flag:b$ $list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal b) (Ploc.VaVal lsme)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module $flag:b$ $_list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc (Ploc.VaVal b) lsme</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module $_flag:b$ $list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc b (Ploc.VaVal lsme)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module $_flag:b$ $_list:lsme$ >></tt><br/>
+    <tt style="color:red">MLast.StMod loc b lsme</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; module type $s$ = $mt$ >></tt><br/>
+    <tt style="color:red">MLast.StMty loc (Ploc.VaVal s) mt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; module type $_:s$ = $mt$ >></tt><br/>
+    <tt style="color:red">MLast.StMty loc s mt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- open</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; open $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StOpn loc (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; open $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.StOpn loc ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type declaration</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; type $list:ltd$ >></tt><br/>
+    <tt style="color:red">MLast.StTyp loc (Ploc.VaVal ltd)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; type $_list:ltd$ >></tt><br/>
+    <tt style="color:red">MLast.StTyp loc ltd</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- ... internal use ... <a href="#t_str_item_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; # $str:s$ $list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.StUse loc (Ploc.VaVal s) (Ploc.VaVal lsil)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $str:s$ $_list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.StUse loc (Ploc.VaVal s) lsil</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_str:s$ $list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.StUse loc s (Ploc.VaVal lsil)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; # $_str:s$ $_list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.StUse loc s lsil</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; value rec $list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal True) (Ploc.VaVal lpe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; value rec $_list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal True) lpe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value non rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; value $list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal False) (Ploc.VaVal lpe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; value $_list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal False) lpe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value</dt>
+  <dd>
+    <tt style="color:blue">&lt;:str_item&lt; value $flag:b$ $list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal b) (Ploc.VaVal lpe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; value $flag:b$ $_list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc (Ploc.VaVal b) lpe</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; value $_flag:b$ $list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc b (Ploc.VaVal lpe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:str_item&lt; value $_flag:b$ $_list:lpe$ >></tt><br/>
+    <tt style="color:red">MLast.StVal loc b lpe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#str_item_2">(2)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.StXtr loc s ot</tt>
+  </dd>
+</dl>
+
+<div id="t_str_item_1" style="margin: 5mm 0 0 1cm">(1)
+  <p>Node internally used to specify a different file name applying to
+    the whole subtree. This is generated by the directive "use" and
+    used when converting to the OCaml syntax tree which needs the file
+    name in its location type.</p>
+</div>
+
+<div id="str_item_2" style="margin: 5mm 0 0 1cm">(2)
+  <p>Extra node internally used by the quotation kit
+    "<tt>q_ast.cmo</tt>" to build antiquotations of structure
+    items.</p>
+</div>
+
+<h4>sig_item</h4>
+
+<p>Signature items, i.e. phrases in a ".mli" file or elements
+  inside "sig ... end".</p>
+
+<dl class="nodelist">
+  <dt>- class</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; class $list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.SgCls loc (Ploc.VaVal lcict)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; class $_list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.SgCls loc lcict</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- class type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; class type $list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.SgClt loc (Ploc.VaVal lcict)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; class type $_list:lcict$ >></tt><br/>
+    <tt style="color:red">MLast.SgClt loc lcict</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- declare</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; declare $list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.SgDcl loc (Ploc.VaVal lsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; declare $_list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.SgDcl loc lsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- directive</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; # $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc (Ploc.VaVal s) (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $lid:s$ $e$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc (Ploc.VaVal s) (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $lid:s$ $opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc (Ploc.VaVal s) (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $lid:s$ $_opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc (Ploc.VaVal s) oe</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc s (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_lid:s$ $e$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc s (Ploc.VaVal (Some e))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_lid:s$ $opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc s (Ploc.VaVal oe)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_lid:s$ $_opt:oe$ >></tt><br/>
+    <tt style="color:red">MLast.SgDir loc s oe</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- exception</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $s$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc (Ploc.VaVal s) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc (Ploc.VaVal s) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc (Ploc.VaVal s) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $_:s$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc s (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $_:s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc s (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; exception $_:s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.SgExc loc s lt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- external</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; external $s$ : $t$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgExt loc (Ploc.VaVal s) t (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; external $s$ : $t$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgExt loc (Ploc.VaVal s) t ls</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; external $_:s$ : $t$ = $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgExt loc s t (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; external $_:s$ : $t$ = $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgExt loc s t ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- include</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; include $mt$ >></tt><br/>
+    <tt style="color:red">MLast.SgInc loc mt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; module rec $list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal True) (Ploc.VaVal lsmt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module rec $_list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal True) lsmt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module non rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; module $list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal False) (Ploc.VaVal lsmt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module $_list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal False) lsmt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; module $flag:b$ $list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal b) (Ploc.VaVal lsmt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module $flag:b$ $_list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc (Ploc.VaVal b) lsmt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module $_flag:b$ $list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc b (Ploc.VaVal lsmt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module $_flag:b$ $_list:lsmt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMod loc b lsmt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; module type $s$ = $mt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMty loc (Ploc.VaVal s) mt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; module type $_:s$ = $mt$ >></tt><br/>
+    <tt style="color:red">MLast.SgMty loc s mt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- open</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; open $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgOpn loc (Ploc.VaVal ls)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; open $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.SgOpn loc ls</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type declaration</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; type $list:ltd$ >></tt><br/>
+    <tt style="color:red">MLast.SgTyp loc (Ploc.VaVal ltd)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; type $_list:ltd$ >></tt><br/>
+    <tt style="color:red">MLast.SgTyp loc ltd</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- ... internal use ... <a href="#t_sig_item_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; # $str:s$ $list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.SgUse loc (Ploc.VaVal s) (Ploc.VaVal lsil)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $str:s$ $_list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.SgUse loc (Ploc.VaVal s) lsil</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_str:s$ $list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.SgUse loc s (Ploc.VaVal lsil)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; # $_str:s$ $_list:lsil$ >></tt><br/>
+    <tt style="color:red">MLast.SgUse loc s lsil</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value</dt>
+  <dd>
+    <tt style="color:blue">&lt;:sig_item&lt; value $s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.SgVal loc (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:sig_item&lt; value $_:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.SgVal loc s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#sig_item_2">(2)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.SgXtr loc s ot</tt>
+  </dd>
+</dl>
+
+<div id="t_sig_item_1" style="margin: 5mm 0 0 1cm">(1)
+  Same remark as for "<tt>str_item</tt>" above.
+</div>
+
+<div id="sig_item_2" style="margin: 5mm 0 0 1cm">(2)
+  Extra node internally used by the quotation kit "<tt>q_ast.cmo</tt>"
+    to build antiquotations of signature items.
+</div>
+
+<h4>module_expr</h4>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; $me1$ . $me2$ >></tt><br/>
+    <tt style="color:red">MLast.MeAcc loc me1 me2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; $me1$ $me2$ >></tt><br/>
+    <tt style="color:red">MLast.MeApp loc me1 me2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- functor</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; functor ($s$ : $mt$) -> $me$ >></tt><br/>
+    <tt style="color:red">MLast.MeFun loc (Ploc.VaVal s) mt me</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_expr&lt; functor ($_:s$ : $mt$) -> $me$ >></tt><br/>
+    <tt style="color:red">MLast.MeFun loc s mt me</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- struct</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; struct $list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.MeStr loc (Ploc.VaVal lsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_expr&lt; struct $_list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.MeStr loc lsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; ($me$ : $mt$) >></tt><br/>
+    <tt style="color:red">MLast.MeTyc loc me mt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- uppercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MeUid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_expr&lt; $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MeUid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- module unpacking</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_expr&lt; (value $e$) >></tt><br/>
+    <tt style="color:red">MLast.MeUnp loc e None</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_expr&lt; (value $e$ : $mt$) >></tt><br/>
+    <tt style="color:red">MLast.MeUnp loc e (Some mt)</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#module_expr_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.MeXtr loc s ot</tt>
+  </dd>
+</dl>
+
+<div id="module_expr_1" style="margin: 5mm 0 0 1cm">(1)
+  Extra node internally used by the quotation kit "<tt>q_ast.cmo</tt>"
+    to build antiquotations of module expressions.
+</div>
+
+<h4>module_type</h4>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; $mt1$ . $mt2$ >></tt><br/>
+    <tt style="color:red">MLast.MtAcc loc mt1 mt2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; $mt1$ $mt2$ >></tt><br/>
+    <tt style="color:red">MLast.MtApp loc mt1 mt2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- functor</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; functor ($s$ : $mt1$) -> $mt2$ >></tt><br/>
+    <tt style="color:red">MLast.MtFun loc (Ploc.VaVal s) mt1 mt2</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; functor ($_:s$ : $mt1$) -> $mt2$ >></tt><br/>
+    <tt style="color:red">MLast.MtFun loc s mt1 mt2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- lowercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; $lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MtLid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; $_lid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MtLid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- abstract</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; ' $s$ >></tt><br/>
+    <tt style="color:red">MLast.MtQuo loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; ' $_:s$ >></tt><br/>
+    <tt style="color:red">MLast.MtQuo loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- signature</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; sig $list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.MtSig loc (Ploc.VaVal lsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; sig $_list:lsi$ end >></tt><br/>
+    <tt style="color:red">MLast.MtSig loc lsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- of module expression</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; module type of $me$ >></tt><br/>
+    <tt style="color:red">MLast.MtTyo loc me</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- uppercase identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; $uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MtUid loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; $_uid:s$ >></tt><br/>
+    <tt style="color:red">MLast.MtUid loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- with construction</dt>
+  <dd>
+    <tt style="color:blue">&lt;:module_type&lt; $mt$ with $list:lwc$ >></tt><br/>
+    <tt style="color:red">MLast.MtWit loc mt (Ploc.VaVal lwc)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:module_type&lt; $mt$ with $_list:lwc$ >></tt><br/>
+    <tt style="color:red">MLast.MtWit loc mt lwc</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- extra node <a href="#module_type_1">(1)</a></dt>
+  <dd>
+    <tt style="color:blue">... no representation ...</tt><br/>
+    <tt style="color:red">MLast.MtXtr loc s ot</tt>
+  </dd>
+</dl>
+
+<div id="module_type_1" style="margin: 5mm 0 0 1cm">(1)
+  Extra node internally used by the quotation kit "<tt>q_ast.cmo</tt>"
+    to build antiquotations of module types.
+</div>
+
+<h3 id="b:classes---">classes...</h3>
+
+<h4>class_expr</h4>
+
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; $ce$ $e$ >></tt><br/>
+    <tt style="color:red">MLast.CeApp loc ce e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- constructor</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; [ $list:lt$ ] $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.CeCon loc (Ploc.VaVal ls) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; [ $_list:lt$ ] $list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.CeCon loc (Ploc.VaVal ls) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; [ $list:lt$ ] $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.CeCon loc ls (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; [ $_list:lt$ ] $_list:ls$ >></tt><br/>
+    <tt style="color:red">MLast.CeCon loc ls lt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- function</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; fun $p$ -> $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeFun loc p ce</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; let rec $list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal True) (Ploc.VaVal lpe) ce</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; let rec $_list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal True) lpe ce</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let non rec</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; let $list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal False) (Ploc.VaVal lpe) ce</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; let $_list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal False) lpe ce</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- let</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; let $flag:b$ $list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal b) (Ploc.VaVal lpe) ce</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; let $flag:b$ $_list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc (Ploc.VaVal b) lpe ce</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; let $_flag:b$ $list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc b (Ploc.VaVal lpe) ce</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; let $_flag:b$ $_list:lpe$ in $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CeLet loc b lpe ce</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- object</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; object $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal None) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal None) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object ($p$) $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal (Some p)) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object ($p$) $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal (Some p)) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object $opt:op$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal op) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object $opt:op$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc (Ploc.VaVal op) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object $_opt:op$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc op (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_expr&lt; object $_opt:op$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CeStr loc op lcsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- class type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_expr&lt; ($ce$ : $ct$) >></tt><br/>
+    <tt style="color:red">MLast.CeTyc loc ce ct</tt>
+  </dd>
+</dl>
+
+<h4>class_type</h4>
+
+<dl class="nodelist">
+  <dt>- access</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; $ct1$ . $ct2$ >></tt><br/>
+    <tt style="color:red">MLast.CtAcc loc ct1 ct2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- application</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; $ct1$ $ct2$ >></tt><br/>
+    <tt style="color:red">MLast.CtApp loc ct1 ct2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- constructor</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; $ct$ [ $list:lt$ ] >></tt><br/>
+    <tt style="color:red">MLast.CtCon loc ct (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; $ct$ [ $_list:lt$ ] >></tt><br/>
+    <tt style="color:red">MLast.CtCon loc ct lt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- arrow</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; [ $t$ ] -> $ct$ >></tt><br/>
+    <tt style="color:red">MLast.CtFun loc t ct</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- identifier</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; $id:s$ >></tt><br/>
+    <tt style="color:red">MLast.CtIde loc (Ploc.VaVal s)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; $_id:s$ >></tt><br/>
+    <tt style="color:red">MLast.CtIde loc s</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- object</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_type&lt; object $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal None) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal None) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object ($t$) $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal (Some t)) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object ($t$) $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal (Some t)) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object $opt:ot$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal ot) (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object $opt:ot$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc (Ploc.VaVal ot) lcsi</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object $_opt:ot$ $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc ot (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_type&lt; object $_opt:ot$ $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CtSig loc ot lcsi</tt>
+  </dd>
+</dl>
+
+<h4>class_str_item</h4>
+
+<dl class="nodelist">
+  <dt>- type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; type $t1$ = $t2$ >></tt><br/>
+    <tt style="color:red">MLast.CrCtr loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- declaration list</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; declare $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CrDcl loc (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; declare $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CrDcl loc lcsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- inheritance</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; inherit $ce$ >></tt><br/>
+    <tt style="color:red">MLast.CrInh loc ce (Ploc.VaVal None)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; inherit $ce$ $opt:Some s$ >></tt><br/>
+    <tt style="color:red">MLast.CrInh loc ce (Ploc.VaVal (Some s))</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; inherit $ce$ $opt:os$ >></tt><br/>
+    <tt style="color:red">MLast.CrInh loc ce (Ploc.VaVal os)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; inherit $ce$ $_opt:os$ >></tt><br/>
+    <tt style="color:red">MLast.CrInh loc ce os</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- initialization</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; initializer $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrIni loc e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- method</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! private $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal True) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal False) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) (Ploc.VaVal b2) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method! $_priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal True) b2 s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method private $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal True) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal False) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) (Ploc.VaVal b2) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal False) b2 s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ private $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal True) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal False) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) (Ploc.VaVal b2) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $!:b1$ $_priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc (Ploc.VaVal b1) b2 s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ private $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal True) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal False) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 (Ploc.VaVal b2) s ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 (Ploc.VaVal s) (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 (Ploc.VaVal s) (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 (Ploc.VaVal s) (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 (Ploc.VaVal s) ot e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 s (Ploc.VaVal None) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $_lid:s$ : $t$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 s (Ploc.VaVal (Some t)) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $_lid:s$ $opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 s (Ploc.VaVal ot) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method $_!:b1$ $_priv:b2$ $_lid:s$ $_opt:ot$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrMth loc b1 b2 s ot e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! mutable $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal True) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! mutable $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal True) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal False) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal False) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal b2) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) (Ploc.VaVal b2) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $_flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) b2 (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value! $_flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal True) b2 s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value mutable $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal True) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value mutable $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal True) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal False) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal False) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal b2) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) (Ploc.VaVal b2) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) b2 (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal False) b2 s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ mutable $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal True) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ mutable $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal True) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal False) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal False) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal b2) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) (Ploc.VaVal b2) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $_flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) b2 (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $!:b1$ $_flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc (Ploc.VaVal b1) b2 s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ mutable $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal True) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ mutable $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal True) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal False) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal False) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal b2) (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 (Ploc.VaVal b2) s e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $_flag:b2$ $lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 b2 (Ploc.VaVal s) e</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value $_!:b1$ $_flag:b2$ $_lid:s$ = $e$ >></tt><br/>
+    <tt style="color:red">MLast.CrVal loc b1 b2 s e</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- virtual value</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual mutable $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal True) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual mutable $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal True) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal False) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal False) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal b) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc (Ploc.VaVal b) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $_flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc b (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; value virtual $_flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVav loc b s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- virtual method</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual private $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal True) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual private $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal True) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal False) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal False) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal b) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc (Ploc.VaVal b) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $_flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc b (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_str_item&lt; method virtual $_flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CrVir loc b s t</tt>
+  </dd>
+</dl>
+
+<h4>class_sig_item</h4>
+
+<dl class="nodelist">
+  <dt>- type constraint</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; type $t1$ = $t2$ >></tt><br/>
+    <tt style="color:red">MLast.CgCtr loc t1 t2</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- declare</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; declare $list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CgDcl loc (Ploc.VaVal lcsi)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; declare $_list:lcsi$ end >></tt><br/>
+    <tt style="color:red">MLast.CgDcl loc lcsi</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- inheritance</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; inherit $ct$ >></tt><br/>
+    <tt style="color:red">MLast.CgInh loc ct</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- method</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method private $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal True) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method private $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal True) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal False) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal False) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal b) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc (Ploc.VaVal b) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $_flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc b (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method $_flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgMth loc b s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- value</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value mutable $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal True) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value mutable $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal True) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal False) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal False) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal b) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc (Ploc.VaVal b) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $_flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc b (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; value $_flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVal loc b s t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- virtual method</dt>
+  <dd>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual private $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal True) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual private $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal True) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal False) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal False) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal b) (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc (Ploc.VaVal b) s t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $_flag:b$ $lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc b (Ploc.VaVal s) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:class_sig_item&lt; method virtual $_flag:b$ $_lid:s$ : $t$ >></tt><br/>
+    <tt style="color:red">MLast.CgVir loc b s t</tt>
+  </dd>
+</dl>
+
+<h3 id="b:other">other</h3>
+
+<h4>type_decl</h4>
+
+<p>What is after 'type' or 'and' in a type declaration.</p>
+
+<p>The type "<tt>type_decl</tt>" is a record type corresponding to
+  a type declaration. Its definition is:</p>
+
+<pre>
+  type type_decl =
+    { tdNam : (loc * Ploc.vaval string);
+      tdPrm : Ploc.vala (list type_var);
+      tdPrv : Ploc.vala bool;
+      tdDef : ctyp;
+      tdCon : Ploc.vala (list (ctyp * ctyp)) }
+  ;
+</pre>
+
+<p>The field "<tt>tdNam</tt>" is the type identifier (together with its
+  location in the source).</p>
+
+<p>The field "<tt>tdPrm</tt>" is the list of its possible parameters.</p>
+
+<p>The field "<tt>tdPrv</tt>" tells if the type is private or not.</p>
+
+<p>The field "<tt>tdDef</tt>" is the definition of the type.</p>
+
+<p>The field "<tt>tdCon</tt>" is the possible list of type constraints.</p>
+
+<dl>
+  <dt>&nbsp;</dt>
+  <dd>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = private $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = private $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $_priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $list:ltv$ = $_priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = private $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = private $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $_priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $tp:ls$ $_list:ltv$ = $_priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = Ploc.VaVal ls; MLast.tdPrm = ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = private $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = private $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $_priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $list:ltv$ = $_priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = Ploc.VaVal ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = private $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = private $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal True; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal False; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = Ploc.VaVal b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $_priv:b$ $t$ $list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = Ploc.VaVal ltt}</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:type_decl&lt; $_tp:ls$ $_list:ltv$ = $_priv:b$ $t$ $_list:ltt$ >></tt><br/>
+    <tt style="color:red">{MLast.tdNam = ls; MLast.tdPrm = ltv; MLast.tdPrv = b; MLast.tdDef = t; MLast.tdCon = ltt}</tt>
+  </dd>
+</dl>
+
+<h4>with_constr</h4>
+
+<p>"With" possibly following a module type.</p>
+
+<dl class="nodelist">
+  <dt>- with module</dt>
+  <dd>
+    <tt style="color:blue">&lt;:with_constr&lt; module $list:ls$ = $me$ >></tt><br/>
+    <tt style="color:red">MLast.WcMod loc (Ploc.VaVal ls) me</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; module $_list:ls$ = $me$ >></tt><br/>
+    <tt style="color:red">MLast.WcMod loc ls me</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- with module substitution</dt>
+  <dd>
+    <tt style="color:blue">&lt;:with_constr&lt; module $list:ls$ := $me$ >></tt><br/>
+    <tt style="color:red">MLast.WcMos loc (Ploc.VaVal ls) me</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; module $_list:ls$ := $me$ >></tt><br/>
+    <tt style="color:red">MLast.WcMos loc ls me</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- with type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $list:ltv$ = private $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) (Ploc.VaVal ltv) (Ploc.VaVal True) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $list:ltv$ = $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) (Ploc.VaVal ltv) (Ploc.VaVal False) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $list:ltv$ = $flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) (Ploc.VaVal ltv) (Ploc.VaVal b) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $list:ltv$ = $_flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) (Ploc.VaVal ltv) b t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $_list:ltv$ = private $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) ltv (Ploc.VaVal True) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $_list:ltv$ = $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) ltv (Ploc.VaVal False) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $_list:ltv$ = $flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) ltv (Ploc.VaVal b) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $_list:ltv$ = $_flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc (Ploc.VaVal ls) ltv b t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $list:ltv$ = private $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls (Ploc.VaVal ltv) (Ploc.VaVal True) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $list:ltv$ = $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls (Ploc.VaVal ltv) (Ploc.VaVal False) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $list:ltv$ = $flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls (Ploc.VaVal ltv) (Ploc.VaVal b) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $list:ltv$ = $_flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls (Ploc.VaVal ltv) b t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $_list:ltv$ = private $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls ltv (Ploc.VaVal True) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $_list:ltv$ = $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls ltv (Ploc.VaVal False) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $_list:ltv$ = $flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls ltv (Ploc.VaVal b) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $_list:ltv$ = $_flag:b$ $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTyp loc ls ltv b t</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- with type substitution</dt>
+  <dd>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $list:ltv$ := $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTys loc (Ploc.VaVal ls) (Ploc.VaVal ltv) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $list:ls$ $_list:ltv$ := $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTys loc (Ploc.VaVal ls) ltv t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $list:ltv$ := $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTys loc ls (Ploc.VaVal ltv) t</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:with_constr&lt; type $_list:ls$ $_list:ltv$ := $t$ >></tt><br/>
+    <tt style="color:red">MLast.WcTys loc ls ltv t</tt>
+  </dd>
+</dl>
+
+<h4>poly_variant</h4>
+
+<p>Polymorphic variants.</p>
+
+<dl class="nodelist">
+  <dt>- constructor</dt>
+  <dd>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal True) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of &amp; $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal True) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of &amp; $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal True) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal False) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal False) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $flag:b$ $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal b) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $flag:b$ $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) (Ploc.VaVal b) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $_flag:b$ $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) b (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$s$ of $_flag:b$ $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc (Ploc.VaVal s) b lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal True) (Ploc.VaVal [])</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of &amp; $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal True) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of &amp; $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal True) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal False) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal False) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $flag:b$ $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal b) (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $flag:b$ $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s (Ploc.VaVal b) lt</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $_flag:b$ $list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s b (Ploc.VaVal lt)</tt>
+    <br/><br/>
+    <tt style="color:blue">&lt;:poly_variant&lt; `$_:s$ of $_flag:b$ $_list:lt$ >></tt><br/>
+    <tt style="color:red">MLast.PvTag loc s b lt</tt>
+  </dd>
+</dl>
+<dl class="nodelist">
+  <dt>- type</dt>
+  <dd>
+    <tt style="color:blue">&lt;:poly_variant&lt; $t$ >></tt><br/>
+    <tt style="color:red">MLast.PvInh loc t</tt>
+  </dd>
+</dl>
+
+<h2 id="a:Nodes-without-quotations">Nodes without quotations</h2>
+
+<p>Some types defined in the AST tree module "<tt>MLast</tt>" don't
+  have an associated quotation. They are:</p>
+
+<ul>
+  <li><tt>type_var</tt></li>
+  <li><tt>class_infos</tt></li>
+</ul>
+
+<h3 id="b:type_var">type_var</h3>
+
+<p>The type "<tt>type_var</tt>" is defined as:</p>
+
+<pre>
+  type type_var = (Ploc.vala string * (bool * bool));
+</pre>
+
+<p>The first boolean is "<tt>True</tt>" if the type variable is
+  prefixed by "<tt>+</tt>" ("plus" sign). The second boolean is
+  "<tt>True</tt>" if the type variable is prefixed by "<tt>-</tt>"
+  ("minus" sign).</p>
+
+<h3 id="b:class_infos">class_infos</h3>
+
+<p>The type "<tt>class_infos</tt>" is a record type parametrized with
+  a type variable. It is common to:</p>
+
+<ul>
+  <li>the "class declaration" ("<tt>class ...</tt>" as structure item),
+    the type variable being "<tt>class_expr</tt>",</li>
+  <li>the "class description" ("<tt>class ...</tt>" as signature item),
+    the type variable being "<tt>class_type</tt>",</li>
+  <li>the "class type declaration" ("<tt>class type ...</tt>"), the
+    type variable being "<tt>class_type</tt>".</li>
+</ul>
+
+<p>It is defined as:</p>
+
+<pre>
+  type class_infos 'a =
+    { ciLoc : loc;
+      ciVir : Ploc.vala bool;
+      ciPrm : (loc * Ploc.vala (list type_var));
+      ciNam : Ploc.vala string;
+      ciExp : 'a }
+  ;
+</pre>
+
+<p>The field "<tt>ciLoc</tt>" is the location of the whole definition.</p>
+
+<p>The field "<tt>ciVir</tt>" tells whether the type is virtual or not.</p>
+
+<p>The field "<tt>ciPrm</tt>" is the list of its possible parameters.</p>
+
+<p>The field "<tt>ciNam</tt>" is the class identifier.</p>
+
+<p>The field "<tt>ciExp</tt>" is the class definition, depending of its
+  kind.</p>
+
+<a class="toplink" href="ast_strict.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

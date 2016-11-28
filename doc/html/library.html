@@ -1,0 +1,1525 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- library.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>Library</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Library</h1>
+
+<p>All modules defined in "gramlib.cma", but <em>not</em> including
+  all Camlp5 modules used by the Camlp5 commands and kits.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Ploc-module">Ploc module</a>
+      <ul>
+        <li><a href="#b:located-exceptions">located exceptions</a></li>
+        <li><a href="#b:making-locations">making locations</a></li>
+        <li><a href="#b:getting-location-info">getting location info</a></li>
+        <li><a href="#b:combining-locations">combining locations</a></li>
+        <li><a href="#b:miscellaneous">miscellaneous</a></li>
+        <li><a href="#b:pervasives">pervasives</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Plexing-module">Plexing module</a>
+      <ul>
+        <li><a href="#b:lexer-type">lexer type</a></li>
+        <li><a href="#b:lexers-from-parsers-or-ocamllex">lexers from parsers or ocamllex</a></li>
+        <li><a href="#b:function-to-build-a-stream-and-a-location-function">function to build a stream and a location function</a></li>
+        <li><a href="#b:useful-functions-and-values">useful functions and values</a></li>
+        <li><a href="#b:backward-compatibilities">backward compatibilities</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Plexer-module">Plexer module</a>
+      <ul>
+        <li><a href="#b:lexer">lexer</a></li>
+        <li><a href="#b:flags">flags</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Gramext-module">Gramext module</a>
+      <ul>
+        <li><a href="#b:grammar-type">grammar type</a></li>
+        <li><a href="#b:entry-type">entry type</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Grammar-module">Grammar module</a>
+      <ul>
+        <li><a href="#b:main-types-and-values">main types and values</a></li>
+        <li><a href="#b:printing-grammar-entries">printing grammar entries</a></li>
+        <li><a href="#b:clearing-grammars-and-entries">clearing grammars and entries</a></li>
+        <li><a href="#b:scan-entries">scan entries</a></li>
+        <li><a href="#b:parsing-algorithm">parsing algorithm</a></li>
+        <li><a href="#b:functorial-interface">functorial interface</a></li>
+        <li><a href="#b:grammar-flags">grammar flags</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Diff-module">Diff module</a></li>
+    <li><a href="#a:Extfold-module">Extfold module</a></li>
+    <li><a href="#a:Extfun-module">Extfun module</a></li>
+    <li><a href="#a:Eprinter-module">Eprinter module</a></li>
+    <li><a href="#a:Fstream-module">Fstream module</a>
+      <ul>
+        <li><a href="#b:Functional-streams">Functional streams</a></li>
+        <li><a href="#b:Backtracking-parsers">Backtracking parsers</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Pprintf-module">Pprintf module</a></li>
+    <li><a href="#a:Pretty-module">Pretty module</a></li>
+    <li><a href="#a:Deprecated-modules-Stdpp-and-Token">Deprecated modules Stdpp and Token</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Ploc-module">Ploc module</h2>
+
+<p>Building and combining locations. This module also contains some
+  pervasive types and functions.</p>
+
+<dl>
+  <dt><tt>type t = 'abstract;</tt></dt>
+  <dd>Location type.</dd>
+</dl>
+
+<h3 id="b:located-exceptions">located exceptions</h3>
+
+<dl>
+  <dt><tt>exception Exc of location and exn;</tt></dt>
+  <dd>"<tt>Ploc.Exc loc e</tt>" is an encapsulation of the exception
+    "<tt>e</tt>" with the input location "<tt>loc</tt>". To be used to
+    specify a location for an error. This exception must not be raised
+    by the OCaml function "<tt>raise</tt>", but rather by
+    "<tt>Ploc.raise</tt>" (see below), to prevent the risk of several
+    encapsulations of "<tt>Ploc.Exc</tt>".</dd>
+  <dt><tt>value raise : t -> exn -> 'a;</tt></dt>
+  <dd>"<tt>Ploc.raise loc e</tt>", if "<tt>e</tt>" is already the
+    exception "<tt>Ploc.Exc</tt>", re-raise it (ignoring the new
+    location "<tt>loc</tt>"), else raise the exception
+    "<tt>Ploc.Exc loc e</tt>".</dd>
+</dl>
+
+<h3 id="b:making-locations">making locations</h3>
+
+<dl>
+  <dt><tt>value make_loc : string -> int -> int -> (int * int) -> string -> t;</tt></dt>
+  <dd>"<tt>Ploc.make_loc fname line_nb bol_pos (bp, ep) comm</tt>"
+    creates a location starting at line number "<tt>line_nb</tt>",
+    where the position of the beginning of the line is
+    "<tt>bol_pos</tt>" and between the positions "<tt>bp</tt>"
+    (included) and "<tt>ep</tt>" excluded. And "<tt>comm</tt>" is the
+    comment before the location. The positions are in number of
+    characters since the begin of the stream.</dd>
+  <dt><tt>value make_unlined : (int * int) -> t;</tt></dt>
+  <dd>"<tt>Ploc.make_unlined</tt>" is like "<tt>Ploc.make</tt>" except
+    that the line number is not provided (to be used e.g. when the
+    line number is unknown).</dd>
+</dl>
+
+<dl>
+  <dt><tt>value dummy : t;</tt></dt>
+  <dd>"<tt>Ploc.dummy</tt>" is a dummy location, used in situations
+    when location has no meaning.</dd>
+</dl>
+
+<h3 id="b:getting-location-info">getting location info</h3>
+
+<dl>
+  <dt><tt>value file_name : t -> string;</tt></dt>
+  <dd>"<tt>Ploc.file_name loc</tt>" returns the file name of the
+    location.</dd>
+  <dt><tt>value first_pos : t -> int;</tt></dt>
+  <dd>"<tt>Ploc.first_pos loc</tt>" returns the initial position
+    of the location in number of characters since the beginning of the
+    stream.</dd>
+  <dt><tt>value last_pos : t -> int;</tt></dt>
+  <dd>"<tt>Ploc.last_pos loc</tt>" returns the final position plus one
+    of the location in number of characters since the
+    beginning of the stream.</dd>
+  <dt><tt>value line_nb : t -> int;</tt></dt>
+  <dd>"<tt>Ploc.line_nb loc</tt>" returns the line number of the
+    location or "<tt>-1</tt>" if the location does not contain a line
+    number (i.e. built with "<tt>Ploc.make_unlined</tt>" above).</dd>
+  <dt><tt>value bol_pos : t -> int;</tt></dt>
+  <dd>"<tt>Ploc.bol_pos loc</tt>" returns the position of the
+    beginning of the line of the location in number of characters
+    since the beginning of the stream, or "<tt>0</tt>" if the location
+    does not contain a line number (i.e. built the with
+    "<tt>Ploc.make_unlined</tt>" above).</dd>
+  <dt><tt>value comment : t -> string;</tt></dt>
+  <dd>"<tt>Ploc.comment loc</tt>" returns the comment before the
+    location.</dd>
+</dl>
+
+<h3 id="b:combining-locations">combining locations</h3>
+
+<dl>
+  <dt><tt>value encl : t -> t -> t;</tt></dt>
+  <dd>"<tt>Ploc.encl loc1 loc2</tt>" returns the location starting at
+    the smallest start and ending at the greatest end of the locations
+    "<tt>loc1</tt>" and "<tt>loc2</tt>". In other words, it is the
+    location enclosing "<tt>loc1</tt>" and "<tt>loc2</tt>".</dd>
+  <dt><tt>value shift : int -> t -> t;</tt></dt>
+  <dd>"<tt>Ploc.shift sh loc</tt>" returns the location "<tt>loc</tt>"
+    shifted with "<tt>sh</tt>" characters. The line number is not
+    recomputed.</dd>
+  <dt><tt>value sub : t -> int -> int -> t;</tt></dt>
+  <dd>"<tt>Ploc.sub loc sh len</tt>" is the location "<tt>loc</tt>"
+    shifted with "<tt>sh</tt>" characters and with length
+    "<tt>len</tt>". The previous ending position of the location is
+    lost.</dd>
+  <dt><tt>value after : t -> int -> int -> t;</tt></dt>
+  <dd>"<tt>Ploc.after loc sh len</tt>" is the location just after loc
+    (starting at the end position of "<tt>loc</tt>") shifted with
+    "<tt>sh</tt>" characters and of length "<tt>len</tt>".</dd>
+  <dt><tt>value with_comment : t -> string -> t;</tt></dt>
+  <dd>Change the comment part of the given location</dd>
+</dl>
+
+<h3 id="b:miscellaneous">miscellaneous</h3>
+
+<dl>
+  <dt><tt>value name : ref string;</tt></dt>
+  <dd>"<tt>Ploc.name.val</tt>" is the name of the location variable
+    used in grammars and in the predefined quotations for OCaml syntax
+    trees. Default: "<tt>"loc"</tt>".</dd>
+</dl>
+
+<dl>
+  <dt><tt>value get : string -> t -> (int * int * int * int * int);</tt></dt>
+  <dd>"<tt>Ploc.get fname loc</tt>" returns in order: 1/ the line
+       number of the begin of the location, 2/ its column, 3/ the line
+       number of the first character not in the location, 4/ its
+       column and 5/ the length of the location. The parameter
+       "<tt>fname</tt>" is the file where the location occurs.</dd>
+  <dt><tt>value from_file : string -> t -> (string * int * int * int);</tt></dt>
+  <dd>"<tt>Ploc.from_file fname loc</tt>" reads the file
+    "<tt>fname</tt>" up to the location "<tt>loc</tt>" and returns the
+    real input file, the line number and the characters location in
+    the line; the real input file can be different from
+    "<tt>fname</tt>" because of possibility of line directives
+    typically generated by /lib/cpp.</dd>
+</dl>
+
+<h3 id="b:pervasives">pervasives</h3>
+
+<pre style="border:0; margin-left: 1cm">
+type vala 'a =
+  [ VaAnt of string
+  | VaVal of 'a ]
+;
+</pre>
+
+<dl><dd>
+    Encloser of many abstract syntax tree notes types, in
+    "strict" mode. This allow the system of antiquotations of
+    abstract syntax tree quotations to work when using the quotation
+    kit "<tt>q_ast.cmo</tt>".
+</dd></dl>
+
+<dl>
+  <dt><tt>value call_with : ref 'a -> 'a -> ('b -> 'c) -> 'b -> 'c;</tt></dt>
+  <dd>"<tt>Ploc.call_with r v f a</tt>" sets the reference
+    "<tt>r</tt>" to the value "<tt>v</tt>", then calls "<tt>f a</tt>",
+    and resets "<tt>r</tt>" to its initial value. If "<tt>f a</tt>"
+    raises an exception, its initial value is also reset and the
+    exception is reraised. The result is the result of "<tt>f
+    a</tt>".</dd>
+</dl>
+
+<h2 id="a:Plexing-module">Plexing module</h2>
+
+<p>Lexing for Camlp5 grammars.</p>
+
+<p>This module defines the Camlp5 lexer type to be used in extensible
+  grammars (see module "<tt>Grammar</tt>"). It also provides some
+  useful functions to create lexers.</p>
+
+<dl>
+  <dt><tt>type pattern = (string * string);</tt></dt>
+  <dd>Type for values used by the generated code of the EXTEND
+    statement to represent terminals in entry rules.
+  <ul>
+    <li>The first string is the constructor name (must start with an
+      uppercase character). When empty, the second string should
+      be a keyword.</li>
+    <li>The second string is the constructor parameter. Empty if it
+      has no parameter (corresponding to the 'wildcard' pattern).</li>
+    <li>The way tokens patterns are interpreted to parse tokens is
+      done by the lexer, function "<tt>tok_match</tt>" below.</li>
+    </ul>
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>exception Error of string;</tt></dt>
+  <dd>A lexing error exception to be used by lexers.</dd>
+</dl>
+
+<h3 id="b:lexer-type">lexer type</h3>
+
+<pre style="border:0; margin-left: 1cm">
+type lexer 'te =
+  { tok_func : lexer_func 'te;
+    tok_using : pattern -> unit;
+    tok_removing : pattern -> unit;
+    tok_match : mutable pattern -> 'te -> string;
+    tok_text : pattern -> string;
+    tok_comm : mutable option (list Ploc.t) }
+</pre>
+
+<dl><dd>
+    The type for lexers compatible with Camlp5 grammars. The parameter
+    type "<tt>'te</tt>" is the type of the tokens.
+    <ul>
+      <li>The field "<tt>tok_func</tt>" is the main lexer
+        function. See "<tt>lexer_func</tt>" type below.</li>
+      <li>The field "<tt>tok_using</tt>" is a function called by the
+        "<tt>EXTEND</tt>" statement to warn the lexer that a rule uses
+        this pattern (given as parameter). This allow the lexer 1/ to
+        check that the pattern constructor is really among its
+        possible constructors 2/ to enter the keywords in its
+        tables.</li>
+      <li>The field "<tt>tok_removing</tt>" is a function possibly
+        called by the "<tt>DELETE_RULE</tt>" statement to warn the
+        lexer that this pattern (given as parameter) is no longer used
+        in the grammar (the grammar system maintains a number of usages
+        of all patterns and calls this function when this number falls
+        to zero). If it is a keyword, this allows the lexer to remove
+        it in its tables.</li>
+      <li>The field "<tt>tok_match</tt>" is a function called by the
+        Camlp5 grammar system to ask the lexer how the input tokens
+        should be matched against the patterns. Warning: for
+        efficiency, this function must be written as a function
+        taking patterns as parameters and, for each pattern value,
+        returning a function matching a token, <em>not</em> as a
+        function with two parameters.</li>
+      <li>The field "<tt>tok_text</tt>" is a function called by the
+        grammar system to get the name of the tokens for the error
+        messages, in case of syntax error, or for the displaying of
+        the rules of an entry.</li>
+      <li>The field "<tt>tok_comm</tt>" is a mutable place where the
+        lexer can put the locations of the comments, if its initial
+        value is not "<tt>None</tt>". If it is "<tt>None</tt>",
+        nothing has to be done by the lexer.</li>
+    </ul>
+</dd></dl>
+
+<dl>
+  <dt><tt>and lexer_func 'te = Stream.t char -> (Stream.t 'te *
+      location_function)</tt></dt>
+  <dd>The type of a lexer function (field "<tt>tok_func</tt>" of the
+    type "<tt>lexer</tt>"). The character stream is the input stream
+    to be lexed. The result is a pair of a token stream and a location
+    function (see below) for this tokens stream.</dd>
+</dl>
+
+<dl>
+  <dt><tt>and location_function = int -> Ploc.t;</tt></dt>
+  <dd>The type of a function giving the location of a token in the
+    source from the token number in the stream (starting from
+    zero).</dd>
+</dl>
+
+<dl>
+  <dt><tt>value lexer_text : pattern -> string;</tt></dt>
+  <dd>A simple "<tt>tok_text</tt>" function.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value default_match : pattern -> (string * string) ->
+      string;</tt></dt>
+  <dd>A simple "<tt>tok_match</tt>" function, appling to the token
+       type "<tt>(string * string)</tt>".</dd>
+</dl>
+
+<h3 id="b:lexers-from-parsers-or-ocamllex">lexers from parsers or ocamllex</h3>
+
+<p>The functions below create lexer functions either from a "<tt>char
+   stream</tt>" parser or for an "<tt>ocamllex</tt>" function. With
+   the returned function "<tt>f</tt>", it is possible to get a simple
+   lexer (of the type "<tt>Plexing.lexer</tt>" above):</p>
+
+<pre>
+   {Plexing.tok_func = f;
+    Plexing.tok_using = (fun _ -> ());
+    Plexing.tok_removing = (fun _ -> ());
+    Plexing.tok_match = Plexing.default_match;
+    Plexing.tok_text = Plexing.lexer_text}
+</pre>
+
+<p>Note that a better "<tt>tok_using</tt>" function would check the
+  used tokens and raise "<tt>Plexing.Error</tt>" for incorrect
+  ones. The other functions "<tt>tok_removing</tt>",
+  "<tt>tok_match</tt>" and "<tt>tok_text</tt>" may have other
+  implementations as well.</p>
+
+<pre style="border:0; margin-left: 1cm">
+value lexer_func_of_parser :
+  ((Stream.t char * ref int * ref int) -> ('te * Ploc.t)) -> lexer_func 'te;
+</pre>
+
+<dl><dd>A lexer function from a lexer written as a char stream parser
+    returning the next token and its location. The two references
+    with the char stream contain the current line number and the
+    position of the beginning of the current line.
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+value lexer_func_of_ocamllex : (Lexing.lexbuf -> 'te) -> lexer_func 'te;
+</pre>
+
+<dl><dd>
+    A lexer function from a lexer created by "<tt>ocamllex</tt>".
+</dd></dl>
+
+<h3 id="b:function-to-build-a-stream-and-a-location-function">function to build a stream and a location function</h3>
+
+<pre style="border:0; margin-left: 1cm">
+value make_stream_and_location :
+  (unit -> ('te * Ploc.t)) -> (Stream.t 'te * location_function);
+</pre>
+
+<h3 id="b:useful-functions-and-values">useful functions and values</h3>
+
+<dl>
+  <dt><tt>value eval_char : string -> char;</tt></dt>
+  <dt><tt>value eval_string : Ploc.t -> string -> string;</tt></dt>
+  <dd>Convert a char or a string token, where the backslashes are not
+    been interpreted into a real char or string; raise
+    "<tt>Failure</tt>" if a bad backslash sequence is found;
+    "<tt>Plexing.eval_char (Char.escaped c)</tt>" returns "<tt>c</tt>"
+    and "<tt>Plexing.eval_string (String.escaped s)</tt>"
+    returns <tt>s</tt>.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value restore_lexing_info : ref (option (int * int));</tt></dt>
+  <dt><tt>value line_nb : ref (ref int);</tt></dt>
+  <dt><tt>value bol_pos : ref (ref int);</tt></dt>
+  <dd>Special variables used to reinitialize line numbers and position
+    of beginning of line with their correct current values when a parser
+    is called several times with the same character stream. Necessary
+    for directives (e.g. #load or #use) which interrupt the parsing.
+    Without usage of these variables, locations after the directives
+    can be wrong.</dd>
+</dl>
+
+<h3 id="b:backward-compatibilities">backward compatibilities</h3>
+
+<p>Deprecated since version 4.08.</p>
+
+<dl>
+  <dt><tt>type location = Ploc.t;</tt></dt>
+  <dt><tt>value make_loc : (int * int) -> location;</tt></dt>
+  <dt><tt>value dummy_loc : location;</tt></dt>
+</dl>
+
+<h2 id="a:Plexer-module">Plexer module</h2>
+
+<p>This module contains a lexer used for OCaml syntax (revised and
+  normal).</p>
+
+<h3 id="b:lexer">lexer</h3>
+
+<dl>
+  <dt><tt>value gmake : unit -> Plexing.lexer (string * string);</tt></dt>
+  <dd>"<tt>gmake ()</tt>" returns a lexer compatible with the
+    extensible grammars.  The returned tokens follow the normal syntax
+    and the revised syntax lexing rules.</dd>
+</dl>
+
+<p>The token type is "<tt>(string * string)</tt>" just like the pattern
+  type.</p>
+
+<p>The meaning of the tokens are:</p>
+
+<ul>
+  <li><tt>("", s)</tt> is the keyword <tt>s</tt>,</li>
+  <li><tt>("LIDENT", s)</tt> is the ident <tt>s</tt> starting with a
+    lowercase letter,</li>
+  <li><tt>("UIDENT", s)</tt> is the ident <tt>s</tt> starting with an
+    uppercase letter,</li>
+  <li><tt>("INT", s)</tt> is an integer constant whose string source
+    is <tt>s</tt>,</li>
+  <li><tt>("INT_l", s)</tt> is an 32 bits integer constant whose
+    string source is <tt>s</tt>,</li>
+  <li><tt>("INT_L", s)</tt> is an 64 bits integer constant whose
+    string source is <tt>s</tt>,</li>
+  <li><tt>("INT_n", s)</tt> is an native integer constant whose string
+    source is <tt>s</tt>,</li>
+  <li><tt>("FLOAT", s)</tt> is a float constant whose string source is
+    <tt>s</tt>,</li>
+  <li><tt>("STRING", s)</tt> is the string constant <tt>s</tt>,</li>
+  <li><tt>("CHAR", s)</tt> is the character constant <tt>s</tt>,</li>
+  <li><tt>("TILDEIDENT", s)</tt> is the tilde character "<tt>~</tt>"
+    followed by the ident <tt>s</tt>,</li>
+  <li><tt>("TILDEIDENTCOLON", s)</tt> is the tilde character
+    "<tt>~</tt>" followed by the ident <tt>s</tt> and a colon
+    "<tt>:</tt>",</li>
+  <li><tt>("QUESTIONIDENT", s)</tt> is the question mark "<tt>?</tt>"
+    followed by the ident <tt>s</tt>,</li>
+  <li><tt>("QUESTIONIDENTCOLON", s)</tt> is the question mark
+    "<tt>?</tt>" followed by the ident <tt>s</tt> and a colon
+    "<tt>:</tt>",</li>
+  <li><tt>("QUOTATION", "t:s")</tt> is a quotation "<tt>t</tt>"
+    holding the string <tt>s</tt>,</li>
+  <li><tt>("ANTIQUOT", "t:s")</tt> is an antiquotation "<tt>t</tt>"
+    holding the string <tt>s</tt>,</li>
+  <li><tt>("EOI", "")</tt> is the end of input.</li>
+</ul>
+
+<p>The associated token patterns in the EXTEND statement hold the same
+  names as the first string (constructor name) of the tokens
+  expressions above.</p>
+
+<p>Warning: the string associated with the "<tt>STRING</tt>"
+  constructor is the string found in the source without any
+  interpretation. In particular, the backslashes are not
+  interpreted. For example, if the input is <tt>"\n"</tt> the string
+  is *not* a string with one element containing the "newline"
+  character, but a string of two elements: the backslash and the
+  <tt>"n"</tt> letter.</p>
+
+<p>Same thing for the string associated with the "<tt>CHAR</tt>"
+  constructor.</p>
+
+<p>The functions "<tt>Plexing.eval_string</tt>" and
+  "<tt>Plexing.eval_char</tt>" allow to convert them into the real
+  corresponding string or char value.</p>
+
+<h3 id="b:flags">flags</h3>
+
+<dl>
+  <dt><tt>value dollar_for_antiquotation : ref bool;</tt></dt>
+  <dd>When True (default), the next call to "<tt>Plexer.gmake ()</tt>"
+    returns a lexer where the dollar sign is used for antiquotations.
+    If False, there is no antiquotations and the dollar sign can be
+    used as normal token.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value specific_space_dot : ref bool;</tt></dt>
+  <dd>When "<tt>False</tt>" (default), the next call to
+    "<tt>Plexer.gmake ()</tt>" returns a lexer where there is no
+    difference between dots which have spaces before and dots which
+    don't have spaces before. If "<tt>True</tt>", dots which have
+    spaces before return the keyword <tt>" ."</tt> (space dot) and the
+    ones which don't have spaces before return the
+    keyword <tt>"."</tt>  (dot alone).</dd>
+</dl>
+
+<dl>
+  <dt><tt>value no_quotations : ref bool;</tt></dt>
+  <dd>When "<tt>True</tt>", all lexers built by "<tt>Plexer.gmake
+      ()</tt>" do not lex the quotation syntax. Default is
+      "<tt>False</tt>" (quotations are lexed).</dd>
+</dl>
+
+<dl>
+  <dt><tt>value utf8_lexing : ref bool;</tt></dt>
+  <dd>When "<tt>True</tt>", all lexers built by "<tt>Plexer.gmake
+       ()]</tt>" use utf-8 encoding to specify letters and punctuation
+       marks. Default is False (all characters between '\128' and
+       '\255' are considered as letters).</dd>
+</dl>
+
+<h2 id="a:Gramext-module">Gramext module</h2>
+
+<p>This module is not intended to be used by the casual programmer.</p>
+
+<p>It shows, in clear, the implementations of grammars and entries
+ types, the normal access being through the "<tt>Grammar</tt>" module
+ where these types are abstract. It can be useful for programmers
+ interested in scanning the contents of grammars and entries, for
+ example to make analyses on them.</p>
+
+<h3 id="b:grammar-type">grammar type</h3>
+
+<pre style="border:0; margin-left: 1cm">
+type grammar 'te =
+  { gtokens : Hashtbl.t Plexing.pattern (ref int);
+    glexer : mutable Plexing.lexer 'te }
+;
+</pre>
+
+<dl><dd>
+  The visible type of grammars, i.e. the implementation of the abstract
+  type "<tt>Grammar.g</tt>". It is also the implementation of an internal
+  grammar type used in the Grammar functorial interface.
+</dd></dl>
+
+<dl><dd>
+  The type parameter "<tt>'te</tt>" is the type of the tokens, which
+  is "<tt>(string * string)</tt>" for grammars built with
+  "<tt>Grammar.gcreate</tt>", and any type for grammars built with the
+  functorial interface. The field "<tt>gtokens</tt>" records the
+  count of usages of each token pattern, allowing to call the lexer
+  function "<tt>tok_removing</tt>" (see the
+    <a href="#a:Plexing-module">Plexing module</a>) when this count
+    reaches zero. The field "<tt>lexer</tt>" is the lexer.
+</dd></dl>
+
+<h3 id="b:entry-type">entry type</h3>
+
+<pre style="border:0; margin-left: 1cm">
+type g_entry 'te =
+  { egram : grammar 'te;
+    ename : string;
+    elocal : bool;
+    estart : mutable int -> Stream.t 'te -> Obj.t;
+    econtinue : mutable int -> int -> Obj.t -> Stream.t 'te -> Obj.t;
+    edesc : mutable g_desc 'te }
+</pre>
+
+<dl><dd>
+    The visible type for grammar entries, i.e. the implementation of
+    the abstract type "<tt>Grammar.Entry.e</tt>" and the type of
+    entries in the Grammar functorial interface. Notice that these
+    entry types have a type parameter which does not appear in the
+    "<tt>g_entry</tt>" type (the "<tt>'te</tt>" parameter is, as for
+    grammars above, the type of the tokens). This is due to the
+    specific typing system of the EXTEND statement which sometimes
+    must hide real types, the OCaml normal type system not being
+    able to type Camlp5 grammars.
+</dd></dl>
+
+<dl><dd>
+    Meaning of the fields:
+    <ul>
+      <li><tt>egram</tt> : the associated grammar</li>
+      <li><tt>ename</tt> : the entry name</li>
+      <li><tt>elocal</tt> : True if the entry is local (local entries
+        are written with a star character "*" by Grammar.Entry.print)</li>
+      <li><tt>estart</tt> and <tt>econtinue</tt> are parsers of the
+        entry used in
+        the <a href="grammars.html#a:Grammar-machinery">grammar
+        machinery</a></li>
+      <li><tt>edesc</tt> : the entry description (see below)</li>
+    </ul>
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+and g_desc 'te =
+  [ Dlevels of list (g_level 'te)
+  | Dparser of Stream.t 'te -> Obj.t ]
+</pre>
+
+<dl><dd>
+    The entry description.
+    <ul>
+      <li>The constructor "<tt>Dlevels</tt>" is for entries built by
+        "<tt>Grammar.Entry.create</tt>" and extendable by the EXTEND
+        statement.</li>
+      <li>The constructor "<tt>Dparser</tt>" is for entries built by
+        "<tt>Grammar.Entry.of_parser</tt>".</li>
+    </ul>
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+and g_level 'te =
+  { assoc : g_assoc;
+    lname : option string;
+    lsuffix : g_tree 'te;
+    lprefix : g_tree 'te }
+and g_assoc = [ NonA | RightA | LeftA ]
+</pre>
+
+<dl><dd>
+    Description of an entry level.
+    <ul>
+      <li><tt>assoc</tt> : the level associativity</li>
+      <li><tt>lname</tt> : the level name, if any</li>
+      <li><tt>lsuffix</tt> : the tree composed of the rules starting with
+        "<tt>SELF</tt>"</li>
+      <li><tt>lprefix</tt> : the tree composed of the rules not
+        starting with "<tt>SELF</tt>"</li>
+    </ul>
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+and g_symbol 'te =
+  [ Smeta of string and list (g_symbol 'te) and Obj.t
+  | Snterm of g_entry 'te
+  | Snterml of g_entry 'te and string
+  | Slist0 of g_symbol 'te
+  | Slist0sep of g_symbol 'te and g_symbol 'te
+  | Slist1 of g_symbol 'te
+  | Slist1sep of g_symbol 'te and g_symbol 'te
+  | Sopt of g_symbol 'te
+  | Sflag of g_symbol 'te
+  | Sself
+  | Snext
+  | Stoken of Plexing.pattern
+  | Stree of g_tree 'te ]
+</pre>
+
+<dl><dd>
+    Description of a rule symbol.
+    <ul>
+      <li>The constructor "<tt>Smeta</tt>" is used by the extensions
+        <a href="grammars.html#a:Extensions-FOLD0-and-FOLD1">FOLD0 and
+        FOLD1</a></li>
+      <li>The constructor "<tt>Snterm</tt>" is the representation of a
+        non-terminal (a call to another entry)</li>
+      <li>The constructor "<tt>Snterml</tt>" is the representation of a
+        non-terminal at some given level</li>
+      <li>The constructor "<tt>Slist0</tt>" is the representation of
+        the symbol LIST0</li>
+      <li>The constructor "<tt>Slist0sep</tt>" is the representation
+        of the symbol LIST0 followed by SEP</li>
+      <li>The constructor "<tt>Slist1</tt>" is the representation of
+        the symbol LIST1</li>
+      <li>The constructor "<tt>Slist1sep</tt>" is the representation
+        of the symbol LIST1 followed by SEP</li>
+      <li>The constructor "<tt>Sopt</tt>" is the representation
+        of the symbol OPT</li>
+      <li>The constructor "<tt>Sflag</tt>" is the representation
+        of the symbol FLAG</li>
+      <li>The constructor "<tt>Sself</tt>" is the representation
+        of the symbol SELF</li>
+      <li>The constructor "<tt>Snext</tt>" is the representation
+        of the symbol NEXT</li>
+      <li>The constructor "<tt>Stoken</tt>" is the representation
+        of a token pattern</li>
+      <li>The constructor "<tt>Stree</tt>" is the representation
+        of a anonymous rule list (between brackets).</li>
+    </ul>
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+and g_action = Obj.t
+</pre>
+
+<dl><dd>
+    The semantic action, represented by a type "<tt>Obj.t</tt>" due
+    to the specific typing of the EXTEND statement (the semantic action
+    being able to be any function type, depending on the rule).
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+and g_tree 'te =
+  [ Node of g_node 'te
+  | LocAct of g_action and list g_action
+  | DeadEnd ]
+and g_node 'te =
+  { node : g_symbol 'te; son : g_tree 'te; brother : g_tree 'te }
+;
+</pre>
+
+<dl><dd>
+    The types of tree and tree nodes, representing a list of
+    factorized rules in an entry level.
+    <ul>
+      <li>The constructor "<tt>Node</tt>" is a representation of a
+        symbol (field "<tt>node</tt>"), the rest of the rule tree
+        (field "<tt>son</tt>"), and the following node, if this node
+        fails (field "<tt>brother</tt>")</li>
+      <li>The constructor "<tt>LocAct</tt>" is the representation of an
+        action, which is a function having all pattern variables of
+        the rule as parameters and returning the rule semantic action.
+        The list of actions in the constructor correspond to possible
+        previous actions when it happens that rules are masked by
+        other rules.</li>
+      <li>The constructor "<tt>DeadEnd</tt>" is a representation of a
+        nodes where the tree fails or is in syntax error.</li>
+    </ul>
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+type position =
+  [ First
+  | Last
+  | Before of string
+  | After of string
+  | Level of string ]
+;
+</pre>
+
+<dl><dd>
+    The type of position where an entry extension takes place.
+    <ul>
+      <li><tt>First</tt> : corresponds to FIRST</li>
+      <li><tt>Last</tt> : corresponds to LAST</li>
+      <li><tt>Before s</tt> : corresponds to BEFORE "s"</li>
+      <li><tt>After s</tt> : corresponds to AFTER "s"</li>
+      <li><tt>Level s</tt> : corresponds to LEVEL "s"</li>
+    </ul>
+</dd></dl>
+
+<p>The module contains other definitions but for internal use.</p>
+
+<h2 id="a:Grammar-module">Grammar module</h2>
+
+<p>Extensible grammars.</p>
+
+<p>This module implements the Camlp5 extensible grammars system.
+  Grammars entries can be extended using the <tt>EXTEND</tt>
+  statement, added by loading the Camlp5 "<tt>pa_extend.cmo</tt>"
+  file.</p>
+
+<h3 id="b:main-types-and-values">main types and values</h3>
+
+<dl>
+  <dt><tt>type g = 'abstract;</tt></dt>
+  <dd>
+    The type of grammars, holding entries.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value gcreate : Plexing.lexer (string * string) -> g;</tt></dt>
+  <dd>
+    Create a new grammar, without keywords, using the given lexer.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value tokens : g -> string -> list (string * int);</tt></dt>
+  <dd>
+    Given a grammar and a token pattern constructor, returns the list of
+    the corresponding values currently used in all entries of this grammar.
+    The integer is the number of times this pattern value is used.
+
+    Examples:
+
+    <ul>
+      <li>The call: <tt>Grammar.tokens g ""</tt> returns the keywords
+        list.</li>
+      <li>The call: <tt>Grammar.tokens g "IDENT"</tt> returns the
+        list of all usages of the pattern "IDENT" in
+        the <tt>EXTEND</tt> statements.</li>
+    </ul>
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value glexer : g -> Plexing.lexer token;</tt></dt>
+  <dd>
+    Return the lexer used by the grammar
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>type parsable = 'abstract;</tt></dt>
+  <dt><tt>value parsable : g -> Stream.t char -> parsable;</tt></dt>
+  <dd>
+    Type and value allowing to keep the same token stream between
+    several calls of entries of the same grammar, to prevent loss of
+    tokens. To be used with <tt>Entry.parse_parsable</tt> below
+  </dd>
+</dl>
+
+<pre style="border:0; margin-left: 1cm">
+module Entry =
+  sig
+    type e 'a = 'x;
+    value create : g -> string -> e 'a;
+    value parse : e 'a -> Stream.t char -> 'a;
+    value parse_all : e 'a -> Stream.t char -> list 'a;
+    value parse_token : e 'a -> Stream.t token -> 'a;
+    value parse_parsable : e 'a -> parsable -> 'a;
+    value name : e 'a -> string;
+    value of_parser : g -> string -> (Stream.t token -> 'a) -> e 'a;
+    value print : e 'a -> unit;
+    value find : e 'a -> string -> e Obj.t;
+    external obj : e 'a -> Gramext.g_entry token = "%identity";
+  end;
+</pre>
+
+<dl><dd>
+    Module to handle entries.
+    <ul>
+      <li><tt>Grammar.Entry.e</tt> : type for entries returning values
+        of type "<tt>'a</tt>".</li>
+      <li><tt>Grammar.Entry.create g n</tt> : creates a new entry
+        named "<tt>n</tt>" in the grammar "<tt>g</tt>".</li>
+      <li><tt>Grammar.Entry.parse e</tt> : returns the stream parser
+        of the entry "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.parse_all e</tt> : returns the stream
+        parser returning all possible values while parsing with the
+        entry "<tt>e</tt>": may return more than one value when the
+        parsing algorithm is "<tt>Grammar.Backtracking</tt>".</li>
+      <li><tt>Grammar.Entry.parse_token e</tt> : returns the token
+        parser of the entry "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.parse_parsable e</tt> : returns the
+        parsable parser of the entry "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.name e</tt> : returns the name of the
+        entry "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.of_parser g n p</tt> : makes an entry from
+        a token stream parser.</li>
+      <li><tt>Grammar.Entry.print e</tt> : displays the entry
+        "<tt>e</tt>" using "<tt>Format</tt>".</li>
+      <li><tt>Grammar.Entry.find e s</tt> : finds the entry named
+        <tt>s</tt> in the rules of "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.obj e</tt> : converts an entry into a
+        "<tt>Gramext.g_entry</tt>" allowing to see what it holds.</li>
+    </ul>
+</dd></dl>
+
+<dl>
+  <dt><tt>value of_entry : Entry.e 'a -> g;</tt></dt>
+  <dd>Return the grammar associated with an entry.</dd>
+</dl>
+
+<h3 id="b:printing-grammar-entries">printing grammar entries</h3>
+
+<p>The function "<tt>Grammar.Entry.print</tt>" displays the current
+  contents of an entry. Interesting for debugging, to look at the
+  result of a syntax extension, to see the names of the levels.</p>
+
+<p>Try, for example, in the OCaml toplevel:</p>
+
+<pre>
+  Grammar.Entry.print Format.std_formatter Pcaml.expr
+</pre>
+
+<p>The display does not include the patterns nor the semantic actions,
+  whose sources are not recorded in the grammar entries data.</p>
+
+<p>Moreover, the local entries (not specified in the GLOBAL indicator
+  of the EXTEND statement) are indicated with a star ("<tt>*</tt>") to
+  inform that they are not directly accessible.</p>
+
+<h3 id="b:clearing-grammars-and-entries">clearing grammars and entries</h3>
+
+<pre style="border:0; margin-left: 1cm">
+module Unsafe :
+  sig
+    value gram_reinit : g -> Plexing.lexer token -> unit;
+    value clear_entry : Entry.e 'a -> unit;
+  end;
+</pre>
+
+<dl><dd>
+   Module for clearing grammars and entries. To be manipulated
+   with care, because: 1) reinitializing a grammar destroys all tokens
+   and there may be problems with the associated lexer if there are
+   keywords; 2) clearing an entry does not destroy the tokens used
+   only by itself.
+   <ul>
+     <li><tt>Grammar.Unsafe.reinit_gram g lex</tt> removes the tokens
+       of the grammar and sets "<tt>lex</tt>" as a new lexer for
+       "<tt>g</tt>". Warning: the lexer itself is not
+       reinitialized.</li>
+     <li><tt>Grammar.Unsafe.clear_entry e</tt> removes all rules of
+       the entry "<tt>e</tt>".</li>
+   </ul>
+</dd></dl>
+
+<h3 id="b:scan-entries">scan entries</h3>
+
+<dl>
+  <dt><tt>value print_entry : Format.formatter -> Gramext.g_entry 'te -> unit;</tt></dt>
+  <dd>
+    General printer for all kinds of entries (obj entries).
+  </dd>
+</dl>
+
+<pre style="border:0; margin-left: 1cm">
+value iter_entry :
+  (Gramext.g_entry 'te -> unit) -> Gramext.g_entry 'te -> unit;
+</pre>
+
+<dl><dd>
+    "<tt>Grammar.iter_entry f e</tt>" applies "<tt>f</tt>" to the
+    entry "<tt>e</tt>" and transitively all entries called by
+    "<tt>e</tt>". The order in which the entries are passed to
+    "<tt>f</tt>" is the order they appear in each entry. Each entry is
+    passed only once.
+</dd></dl>
+
+<dl>
+  <dt><tt>value fold_entry : (Gramext.g_entry 'te -> 'a -> 'a) -> Gramext.g_entry 'te -> 'a -> 'a;</tt></dt>
+  <dd>
+    "<tt>Grammar.fold_entry f e init</tt>" computes "<tt>(f eN .. (f
+    e2 (f e1 init)))</tt>", where "<tt>e1 .. eN</tt>" are "<tt>e</tt>"
+    and transitively all entries called by "<tt>e</tt>".  The order in
+    which the entries are passed to "<tt>f</tt>" is the order they
+    appear in each entry. Each entry is passed only once.
+  </dd>
+</dl>
+
+<h3 id="b:parsing-algorithm">parsing algorithm</h3>
+
+<pre style="border:0; margin-left: 1cm">
+type parse_algorithm = Gramext.parse_algorithm ==
+  [ Imperative | Backtracking | DefaultAlgorithm ]
+;
+</pre>
+
+<dl><dd>
+    Type of algorithm used in grammar entries.
+    <ul>
+      <li><tt>Imperative</tt>: use imperative streams</li>
+      <li><tt>Backtracking</tt>: use functional streams with full
+        backtracking</li>
+      <li><tt>DefaultAlgorithm</tt>: found in the variable
+        "<tt>backtrack_parse</tt>" below.</li>
+    </ul>
+    The default, when a grammar is created,
+    is <tt>DefaultAlgorithm</tt>.
+</dd></dl>
+
+<dl>
+  <dt><tt>value set_algorithm : g -> parse_algorithm -> unit;</tt></dt>
+  <dd>
+    Set the parsing algorithm for all entries of a given grammar.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value backtrack_parse : ref bool;</tt></dt>
+  <dd>
+    If <tt>True</tt>, the default parsing uses full backtracking. If
+    <tt>False</tt>, it uses parsing with normal streams. If the
+    environment variable CAMLP5PARAM contains "b", the default is
+    <tt>True</tt>; otherwise, the default is <tt>False</tt>.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value backtrack_stalling_limit : ref int;</tt></dt>
+  <dd>
+    Limitation of backtracking to prevent stalling in case of syntax
+    error. In backtracking algorithm, when there is a syntax error,
+    the parsing continues trying to find another solution. It some
+    grammars, it can be very long before checking all possibilities.
+    This number limits the number of tokens tests after a backtrack.
+    (The number of tokens tests is reset to zero when the token stream
+    overtakes the last reached token.) The default is 10000. If set
+    to 0, there is no limit. Can be set by the environment variable
+    CAMLP5PARAM by "l=value".
+  </dd>
+</dl>
+
+<h3 id="b:functorial-interface">functorial interface</h3>
+
+<p>Alternative for grammar use. Grammars are not Ocaml values:
+  there is no type for them. Modules generated preserve the rule "an
+  entry cannot call an entry of another grammar" by normal OCaml
+  typing.</p>
+
+<pre style="border:0; margin-left: 1cm">
+module type GLexerType =
+  sig
+    type te = 'x;
+    value lexer : Plexing.lexer te;
+  end;
+</pre>
+
+<dl><dd>
+    The input signature for the functor "<tt>Grammar.GMake</tt>":
+    "<tt>te</tt>" is the type of the tokens.
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+module type S =
+  sig
+    type te = 'x;
+    type parsable = 'x;
+    value parsable : Stream.t char -> parsable;
+    value tokens : string -> list (string * int);
+    value glexer : Plexing.lexer te;
+    value set_algorithm : parse_algorithm -> unit;
+    module Entry :
+      sig
+        type e 'a = 'y;
+        value create : string -> e 'a;
+        value parse : e 'a -> parsable -> 'a;
+        value parse_token : e 'a -> Stream.t te -> 'a;
+        value name : e 'a -> string;
+        value of_parser : string -> (Stream.t te -> 'a) -> e 'a;
+        value print : e 'a -> unit;
+        external obj : e 'a -> Gramext.g_entry te = "%identity";
+      end;
+    module Unsafe :
+      sig
+        value gram_reinit : Plexing.lexer te -> unit;
+        value clear_entry : Entry.e 'a -> unit;
+      end;
+  end;
+</pre>
+
+<dl><dd>
+    Signature type of the functor "<tt>Grammar.GMake</tt>". The types
+    and functions are almost the same than in generic interface, but:
+    <ul>
+      <li>Grammars are not values. Functions holding a grammar as
+         parameter do not have this parameter yet.</li>
+      <li>The type "<tt>parsable</tt>" is used in function
+         "<tt>parse</tt>" instead of the char stream, avoiding the
+         possible loss of tokens.</li>
+      <li>The type of tokens (expressions and patterns) can be any
+         type (instead of (string * string)); the module parameter
+         must specify a way to show them as (string * string).</li>
+    </ul>
+</dd></dl>
+
+<dl>
+  <dt><tt>module GMake (L : GLexerType) : S with type te = L.te;</tt></dt>
+  <dd></dd>
+</dl>
+
+<h3 id="b:grammar-flags">grammar flags</h3>
+
+<dl>
+  <dt><tt>value error_verbose : ref bool;</tt></dt>
+  <dd>
+    Flag for displaying more information in case of parsing error;
+    default = "<tt>False</tt>".
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value warning_verbose : ref bool;</tt></dt>
+  <dd>
+    Flag for displaying warnings while extension; default =
+    "<tt>True</tt>".
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value strict_parsing : ref bool;</tt></dt>
+  <dd>
+    Flag to apply strict parsing, without trying to recover errors;
+    default = "<tt>False</tt>".
+  </dd>
+</dl>
+
+<h2 id="a:Diff-module">Diff module</h2>
+
+<p>Differences between two arrays. Used in Camlp5 sources, but can
+  be used for other applications, independantly from Camlp5 stuff.</p>
+
+<pre style="border:0; margin-left: 1cm">
+value f : array 'a -> array 'a -> (array bool * array bool);</tt></dt>
+</pre>
+
+<dl><dd>
+    <tt>Diff.f a1 a2</tt> returns a pair of boolean arrays <tt>(d1, d2)</tt>.
+    <ul>
+      <li><tt>d1</tt> has the same size as <tt>a1</tt>.</li>
+      <li><tt>d2</tt> has the same size as <tt>a2</tt>.</li>
+      <li><tt>d1.(i)</tt> is <tt>True</tt> if <tt>a1.(i)</tt> has no
+        corresponding value in <tt>a2</tt>.</li>
+      <li><tt>d2.(i)</tt> is <tt>True</tt> if <tt>a2.(i)</tt> has no
+        corresponding value in <tt>a1</tt>.</li>
+      <li><tt>d1</tt> and <tt>d2</tt> have the same number of values equal to
+        <tt>False</tt>.</li>
+    </ul>
+
+    <p>Can be used, e.g., to write the <tt>diff</tt> program
+      (comparison of two files), the input arrays being the array of
+      lines of each file.</p>
+    <p>Can be used also to compare two strings (they must have been
+      exploded into arrays of chars), or two DNA strings, and so on.</p>
+</dd></dl>
+
+<h2 id="a:Extfold-module">Extfold module</h2>
+
+<p>Module internally used to make the
+  symbols <a href="grammars.html#a:Extensions-FOLD0-and-FOLD1">FOLD0
+  and FOLD1</a> work in the EXTEND statement + extension
+  "<tt>pa_extfold.cmo</tt>".</p>
+
+<h2 id="a:Extfun-module">Extfun module</h2>
+
+<p>Extensible functions.</p>
+
+<p>This module implements pattern matching extensible functions which
+  work with the parsing kit "<tt>pa_extfun.cmo</tt>", the syntax of
+  an extensible function being:</p>
+
+<pre>
+  extfun e with [ pattern_matching ]
+</pre>
+
+<p>See chapter : <a href="extfun.html">Extensible functions</a>.</p>
+
+<dl>
+  <dt><tt>type t 'a 'b = 'x;</tt></dt>
+  <dd>The type of the extensible functions of type <tt>'a ->
+      'b</tt>.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value empty : t 'a 'b;</tt></dt>
+  <dd>Empty extensible function.</dd>
+  <dt><tt>value apply : t 'a 'b -> 'a -> 'b;</tt></dt>
+  <dd>Apply an extensible function.</dd>
+  <dt><tt>exception Failure;</tt></dt>
+  <dd>Match failure while applying an extensible function.</dd>
+  <dt><tt>value print : t 'a 'b -> unit;</tt></dt>
+  <dd>Print patterns in the order they are recorded in the data
+    structure.</dd>
+</dl>
+
+<h2 id="a:Eprinter-module">Eprinter module</h2>
+
+<p>This module allows creation of printers, apply them and clear them. It
+  is also internally used by the "<tt>EXTEND_PRINTER</tt>" statement.</p>
+
+<dl>
+  <dt><tt>type t 'a = 'abstract;</tt></dt>
+  <dd>Printer type, to print values of type "<tt>'a</tt>".</dd>
+</dl>
+
+<dl>
+  <dt><tt>type pr_context = Pprintf.pr_context;</tt></dt>
+  <dd>Printing context.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value make : string -> t 'a;</tt></dt>
+  <dd>Builds a printer. The string parameter is used in error
+    messages. The printer is created empty and can be extended with
+    the "<tt>EXTEND_PRINTER</tt>" statement.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value apply : t 'a -> pr_context -> 'a -> string;</tt></dt>
+  <dd>Applies a printer, returning the printed string of the
+    parameter.</dd>
+  <dt><tt>value apply_level : t 'a -> string -> pr_context -> 'a ->
+      string;</tt></dt>
+  <dd>Applies a printer at some specific level. Raises "<tt>Failure</tt>"
+    if the given level does not exist.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value clear : t 'a -> unit;</tt></dt>
+  <dd>Clears a printer, removing all its levels and rules.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value print : t 'a -> unit;</tt></dt>
+  <dd>Print printer patterns, in the order they are recorded, for
+    debugging purposes.</dd>
+</dl>
+
+<p>Some other types and functions exist, for internal use.</p>
+
+<h2 id="a:Fstream-module">Fstream module</h2>
+
+<p>This module implement functional streams and parsers together with
+  backtracking parsers.</p>
+
+<p>To be used with syntax "<tt>pa_fstream.cmo</tt>". The syntax is:</p>
+
+<ul>
+  <li>stream: "<tt>fstream [: ... :]</tt>"</li>
+  <li>functional parser: "<tt>fparser [ [: ... :] -> ... | ... ]</tt>"</li>
+  <li>backtracking parser: "<tt>bparser [ [: ... :] -> ... | ... ]</tt>"</li>
+</ul>
+
+<p>Functional parsers are of type:</p>
+
+<pre>
+  Fstream.t 'a -> option ('b * Fstream.t 'a)
+</pre>
+
+<p>Backtracking parsers are of type:</p>
+
+<pre>
+  Fstream.t 'a -> option ('b * Fstream.t 'a * Fstream.kont 'a 'b)
+</pre>
+
+<p>Functional parsers use limited backtrack, i.e if a rule fails, the
+  next rule is tested with the initial stream; limited because in the
+  case of a rule with two consecutive symbols "<tt>a</tt>" and
+  "<tt>b</tt>", if "<tt>b</tt>" fails, the rule fails: there is no try
+  with the next rule of "<tt>a</tt>".</p>
+
+<p> Backtracking parsers have full backtrack. If a rule fails, the
+  next case of the previous rule is tested.</p>
+
+<h3 id="b:Functional-streams">Functional streams</h3>
+
+<dl>
+  <dt><tt>type t 'a = 'x;</tt></dt>
+  <dd>The type of 'a functional streams.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value from : (int -> option 'a) -> t 'a;</tt></dt>
+  <dd>"<tt>Fstream.from f</tt>" returns a stream built from the
+    function "<tt>f</tt>".  To create a new stream element, the
+    function "<tt>f</tt>" is called with the current stream
+    count. The user function "<tt>f</tt>" must return either
+    "<tt>Some &lt;value></tt>" for a value or "<tt>None</tt>" to
+    specify the end of the stream.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value of_list : list 'a -> t 'a;</tt></dt>
+  <dd>Return the stream holding the elements of the list in the same
+    order.</dd>
+  <dt><tt>value of_string : string -> t char;</tt></dt>
+  <dd>Return the stream of the characters of the string parameter.</dd>
+  <dt><tt>value of_channel : in_channel -> t char;</tt></dt>
+  <dd>Return the stream of the characters read from the input channel.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value iter : ('a -> unit) -> t 'a -> unit;</tt></dt>
+  <dd>"<tt>Fstream.iter f s</tt>" scans the whole stream s, applying
+    function "<tt>f</tt>" in turn to each stream element
+    encountered.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value next : t 'a -> option ('a * t 'a);</tt></dt>
+  <dd>Return "<tt>Some (a, s)</tt>" where "<tt>a</tt>" is the first
+    element of the stream and <tt>s</tt> the remaining stream, or
+    "<tt>None</tt>" if the stream is empty.</dd>
+  <dt><tt>value empty : t 'a -> option (unit * t 'a);</tt></dt>
+  <dd>Return "<tt>Some ((), s)</tt>" if the stream is empty where
+    <tt>s</tt> is itself, else "<tt>None</tt>".</dd>
+  <dt><tt>value count : t 'a -> int;</tt></dt>
+  <dd>Return the current count of the stream elements, i.e. the number
+    of the stream elements discarded.</dd>
+  <dt><tt>value count_unfrozen : t 'a -> int;</tt></dt>
+  <dd>Return the number of unfrozen elements in the beginning of the
+    stream; useful to determine the position of a parsing error (longest
+    path).</dd>
+</dl>
+
+<h3 id="b:Backtracking-parsers">Backtracking parsers</h3>
+
+<dl>
+  <dt><tt>type kont 'a 'b = [ K of unit -> option ('b * t 'a * kont 'a 'b) ];</tt></dt>
+  <dd>
+    The type of continuation of a backtracking parser.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>type bp 'a 'b = t 'a -> option ('b * t 'a * kont 'a 'b);</tt></dt>
+  <dd>
+    The type of a backtracking parser.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value bcontinue : kont 'a 'b -> option ('b * t 'a * kont 'a 'b);</tt></dt>
+  <dd>
+    "<tt>bcontinue k</tt>" return the next solution of a backtracking
+    parser.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value bparse_all : bp 'a 'b -> t 'a -> list 'b;</tt></dt>
+  <dd>
+    "<tt>bparse_all p strm</tt>" return the list of all solutions of a
+    backtracking parser applied to a functional stream.
+  </dd>
+</dl>
+
+<h2 id="a:Pprintf-module">Pprintf module</h2>
+
+<p>Definitions for pprintf statement.</p>
+
+<p>This module contains types and functions for the "pprintf"
+  statement used by the syntax extension "pa_pprintf.cmo".</p>
+
+<dl>
+  <dt><tt>type pr_context = { ind : int; bef : string; aft : string;
+      dang : string };</tt></dt>
+  <dd>
+    Printing context.
+    <ul>
+      <li>"<tt>ind</tt>" : the current indendation</li>
+      <li>"<tt>bef</tt>" : what should be printed before, in the same line</li>
+      <li>"<tt>aft</tt>" : what should be printed after, in the same line</li>
+      <li>"<tt>dang</tt>" : the dangling token to know whether parentheses
+        are necessary</li>
+    </ul>
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value empty_pc : pr_context;</tt></dt>
+  <dd>Empty printer context, equal to <tt>{ind = 0; bef = ""; aft =
+      ""; dang = ""}</tt></dd>
+</dl>
+
+<pre style="border:0; margin-left: 1cm">
+value sprint_break :
+  int -> int -> pr_context -> (pr_context -> string) ->
+    (pr_context -> string) -> string;
+</pre>
+
+<dl><dd>
+  "<tt>sprint_break nspaces offset pc f g</tt>" concat the two strings
+   returned by "<tt>f</tt>" and "<tt>g</tt>", either in one line, if
+   it holds without overflowing (see module "<tt>Pretty</tt>"), with
+   "<tt>nspaces</tt>" spaces betwen them, or in two lines with
+   "<tt>offset</tt>" spaces added in the indentation for the second
+   line.<br/>This function don't need to be called directly. It is
+   generated by the "<tt>pprintf</tt>" statement according to its
+   parameters when the format contains breaks, like "<tt>@;</tt>"
+   and "<tt>@&nbsp;</tt>".
+</dd></dl>
+
+<pre style="border:0; margin-left: 1cm">
+value sprint_break_all :
+  bool -> pr_context -> (pr_context -> string) ->
+    list (int * int * pr_context -> string) -> string;
+</pre>
+
+<dl><dd>
+   "<tt>sprint_break_all force_newlines pc f fl</tt>" concat all
+   strings returned by the list with separators "<tt>f-fl</tt>", the
+   separators being the number of spaces and the offset like in the
+   function "<tt>sprint_break</tt>". The function works as "all or
+   nothing", i.e. if the resulting string does not hold on the line,
+   all strings are printed in different lines (even if sub-parts could
+   hold in single lines). If the parameter "<tt>force_newline</tt>" is
+   "<tt>True</tt>", all strings are printed in different lines, no
+   horizontal printing is tested.<br/>This function don't need to be
+   called directly. It is generated by the "<tt>pprintf</tt>"
+   statement according to its parameters when the format contains
+   parenthesized parts with "break all" like "<tt>@[&lt;a></tt>" and
+   "<tt>@]</tt>", or "<tt>@[&lt;b></tt>" and "<tt>@]</tt>".
+</dd></dl>
+
+<h2 id="a:Pretty-module">Pretty module</h2>
+
+<p>Pretty printing on strings. Basic functions.</p>
+
+<dl>
+  <dt><tt>value horiz_vertic : (unit -> 'a) -> (unit -> 'a) -> 'a;</tt></dt>
+  <dd>"<tt>horiz_vertic h v</tt>" first calls "<tt>h</tt>" to print
+    the data horizontally, i.e. without newlines. If the displaying
+    contains newlines or if its size exceeds the maximum line length
+    (see variable "<tt>line_length</tt>" below), then the function
+    "<tt>h</tt>" stops and the function "<tt>v</tt>" is called which
+    can print using several lines.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value sprintf : format 'a unit string -> 'a;</tt></dt>
+  <dd>"<tt>sprintf fmt ...</tt>" formats some string like
+    "<tt>Printf.sprintf</tt>" does, except that, if it is called in
+    the context of the *first* function of "<tt>horiz_vertic</tt>"
+    above, it checks whether the resulting string has chances to fit
+    in the line. If not, i.e. if it contains newlines or if its length
+    is greater than "<tt>max_line_length.val</tt>", the function gives
+    up (raising some internal exception). Otherwise the built string
+    is returned.  "<tt>sprintf</tt>" behaves like
+    "<tt>Printf.sprintf</tt>" if it is called in the context of the
+    *second* function of "<tt>horiz_vertic</tt>" or without context at
+    all.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value line_length : ref int;</tt></dt>
+  <dd>"<tt>line_length</tt>" is the maximum length (in characters) of
+    the line. Default = 78. Can be set to any other value before
+    printing.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value horizontally : unit -> bool;</tt></dt>
+  <dd>"<tt>horizontally ()</tt>" returns the fact that the context is
+      an horizontal print.</dd>
+</dl>
+
+<h2 id="a:Deprecated-modules-Stdpp-and-Token">Deprecated modules Stdpp and Token</h2>
+
+<p>The modules "<tt>Stdpp</tt>" and "<tt>Token</tt>" have been
+  deprecated since version 5.00.  The module "<tt>Stdpp</tt>" was
+  renamed "<tt>Ploc</tt>" and most of its variables and types were also
+  renamed. The module "<tt>Token</tt>" was renamed
+  "<tt>Plexing</tt>"</p>
+
+<p>Backward compatibility is assured. See the files
+  "<tt>stdpp.mli</tt>" and "<tt>token.mli</tt>" in the Camlp5
+  distribution to convert from old to new names, if any. After
+  several versions or years, the modules "<tt>Stdpp</tt>" and
+  "<tt>Token</tt>" will disappear from Camlp5.</p>
+
+<a class="toplink" href="library.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

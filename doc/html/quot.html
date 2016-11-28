@@ -1,0 +1,933 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- quot.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>quotations</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Quotations</h1>
+
+<p>Quotations are a syntax extension in Camlp5 to build
+  expressions and patterns in any syntax independant from the one of
+  OCaml. Quotations are <em>expanded</em>, i.e. transformed, at parse
+  time to produce normal syntax trees, like the rest of the program.
+  Quotations <em>expanders</em> are normal OCaml functions writable by
+  any programmer.</p>
+
+<p>The aim of quotations is to use concrete syntax for manipulating
+  abstract values.  That makes programs easier to write, read, modify,
+  and understand. The drawback is that quotations are linguistically isolated from the
+  rest of the program, in opposition to <a href="syntext.html">syntax
+  extensions</a>, which are included in the language.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Introduction">Introduction</a></li>
+    <li><a href="#a:Quotation-expander">Quotation expander</a></li>
+    <li><a href="#a:Defining-a-quotation">Defining a quotation</a>
+      <ul>
+        <li><a href="#b:By-syntax-tree">By syntax tree</a></li>
+        <li><a href="#b:By-string">By string</a></li>
+        <li><a href="#b:Default-quotation">Default quotation</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Antiquotations">Antiquotations</a>
+      <ul>
+        <li><a href="#b:Example-without-antiquotation-node">Example without antiquotation node</a></li>
+        <li><a href="#b:Example-with-antiquotation-node">Example with antiquotation node</a></li>
+        <li><a href="#b:In-conclusion">In conclusion</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Locations-in-quotations-and-antiquotations">Locations in quotations and antiquotations</a>
+      <ul>
+        <li><a href="#b:In-the-quotation">In the quotation</a></li>
+        <li><a href="#b:In-antiquotations">In antiquotations</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Located-errors">Located errors</a></li>
+    <li><a href="#a:The-Quotation-module">The Quotation module</a></li>
+    <li><a href="#a:Predefined-quotations">Predefined quotations</a>
+      <ul>
+        <li><a href="#b:q_MLast-cmo">q_MLast.cmo</a></li>
+        <li><a href="#b:q_ast-cmo">q_ast.cmo</a></li>
+        <li><a href="#b:q_phony-cmo">q_phony.cmo</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:A-full-example:-lambda-terms">A full example: lambda terms</a>
+      <ul>
+        <li><a href="#b:Lexer">Lexer</a></li>
+        <li><a href="#b:Parser">Parser</a></li>
+        <li><a href="#b:Compilation-and-test">Compilation and test</a></li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h2 id="a:Introduction">Introduction</h2>
+
+<p>A quotation is syntactically enclosed by specific quotes formed by
+  less (<tt>&lt;</tt>) and greater (<tt>&gt;</tt>) signs. Namely:</p>
+
+<ul>
+  <li>starting with either "<tt>&lt;&lt;</tt>" or "<tt>&lt;:ident&lt;</tt>"
+    where "<tt>ident</tt>" is the quotation name,</li>
+  <li>ending with "<tt>>></tt>"</li>
+</ul>
+
+<p>Examples:</p>
+
+<pre>
+  &lt;&lt; \x.x x >>
+  &lt;:foo&lt; hello, world >>
+  &lt;:bar&lt; @#$%;* >>
+</pre>
+
+<p>The text between these particular parentheses can be any text. It
+  may contain enclosing quotations and the characters "<tt>&lt;</tt>",
+  "<tt>&gt;</tt>" and "<tt>\</tt>" can be escaped by
+  "<tt>\</tt>". Notice that possible double-quote, parentheses, OCaml
+  comments do not necessarily have to balanced inside them.</p>
+
+<p>As far as the lexer is concerned, a quotation is just a kind of
+  string.</p>
+
+<h2 id="a:Quotation-expander">Quotation expander</h2>
+
+<p>Quotations are treated at parse time. Each quotation name is
+  associated with a <em>quotation expander</em>, a function
+  transforming the content of the quotation into a syntax tree. There
+  are actually two expanding functions, depending on whether the
+  quotation is in the context of an expression or if it is in the
+  context of a pattern.</p>
+
+<p>If a quotation has no associated quotation expander, a parsing
+  error is displayed and the compilation fails.</p>
+
+<p>The quotation expander, or, rather, expanders, are functions taking
+  the quotation string as parameter and returning a syntax tree. There
+  is no constraint about which parsing technology is used. It can be
+  <a href="parsers.html">stream
+  parsers</a>, <a href="grammars.html">extensible grammars</a>, string
+  scanning, ocamllex and yacc, any.</p>
+
+<p>To build syntax trees, Camlp5 provides a way to easily build them
+  see the <a href="ml_ast.html">chapter</a> about them: it is possible
+  to build abstract syntax through concrete syntax using,
+  precisely... quotations.</p>
+
+<h2 id="a:Defining-a-quotation">Defining a quotation</h2>
+
+<h3 id="b:By-syntax-tree">By syntax tree</h3>
+
+<p>To define a quotation, it is necessary to program the quotation
+  expanders and to, finally, end the source code with a call to:</p>
+
+<pre>
+  Quotation.add name (Quotation.ExAst (f_expr, f_patt));
+</pre>
+
+<p>where "<tt>name</tt>" is the name of the quotation, and
+  "<tt>f_expr</tt>" and "<tt>f_patt</tt>" the respective quotations
+  expanders for expressions and patterns.</p>
+
+<p>After compilation of the source file (without linking, i.e.
+  using option "-c" of the OCaml compiler), an object file is created
+  (ending with ".cmo"), which can be used as syntax
+  extension <em>kit</em> of Camlp5.</p>
+
+<h3 id="b:By-string">By string</h3>
+
+<p>There is another way to program the expander: a single
+  function which returns, not a syntax tree, but a string which is
+  parsed, afterwards, by the system. This function takes a boolean as
+  first parameter telling whether the quotation is in position of
+  expression (True) or in position of a pattern (False).</p>
+
+<p>Used that way, the source file must end with:</p>
+
+<pre>
+  Quotation.add name (Quotation.ExStr f);
+</pre>
+
+<p>where "<tt>f</tt>" is that quotation expander. The advantage of
+  this second approach is that it is simple to understand and use.
+  The drawback is that there is no way to specify different source
+  locations for different parts of the quotation (what may be
+  important in semantic error messages).</p>
+
+<h3 id="b:Default-quotation">Default quotation</h3>
+
+<p>It is possible to use some quotation without its name. Use for that
+  the variable "<tt>Quotation.default_quotation</tt>". For example,
+  ending a file by:</p>
+
+<pre>
+  Quotation.add "foo" (Quotation.ExAst (f_expr, f_patt));
+  Quotation.default.val := "foo";
+</pre>
+
+<p>allows to use the quotation "foo" without its name, i.e.:</p>
+
+<pre>
+  &lt;&lt; ... >>
+</pre>
+
+<p>instead of:</p>
+
+<pre>
+  &lt;:foo&lt; ... >>
+</pre>
+
+<p>If several files set the variable "<tt>Quotation.default</tt>", the
+  default quotation applies to the last loaded one.</p>
+
+<h2 id="a:Antiquotations">Antiquotations</h2>
+
+<p>A quotation obeys its own rules of lexing and parsing. Its result is
+  a syntax tree, of type "<tt>Pcaml.expr</tt>" if the quotation is in the
+  context of an expression, or "<tt>Pcaml.patt</tt>" if the quotation is
+  in the context of a pattern.</p>
+
+<p>It can be interesting to insert portions of expressions or
+  patterns of the enclosing context in its own quotations. For that,
+  the syntax of the quotation must define a syntax
+  for <em>antiquotations areas</em>. It can be, for example:</p>
+
+<ul>
+  <li>A character introducing a variable: in this case the antiquotation
+    can just be a variable.</li>
+  <li>A couple of characters enclosing the antiquotations. For
+    example, in the predefined <a href="ml_ast.html">syntax tree
+    quotations</a>, the antiquotations are enclosed with dollar
+    ("<tt>$</tt>") signs.</li>
+</ul>
+
+<p>In quotations, the locations in the resulting syntax tree are all
+  set to the location of the quotation itself (if this resulting tree
+  contains locations, they are overwritten with this
+  location). Consequently, if there are semantic (typing) errors, the
+  OCaml compiler will underline the entire quotation.</p>
+
+<p>But in antiquotations, since they can be inserted in the resulting
+  syntax tree, it is interesting to keep their initial quotations. For
+  that, the nodes:</p>
+
+<pre>
+  &lt;:expr&lt; $anti:...$ >>
+  &lt;:patt&lt; $anti:...$ >>
+</pre>
+
+<p>equivalent to:</p>
+
+<pre>
+  MLast.ExAnt loc ...
+  MLast.PaAnt loc ...
+</pre>
+
+<p>are provided (see <a href="ml_ast.html">syntax tree
+    quotations</a>).</p>
+
+<p>Let us take an example, without this node, and with this specific
+  node.</p>
+
+<p>Let us consider an elementary quotation system whose contents is just
+  an antiquotation. This is just a school example, since the quotations
+  brackets are not necessary, in this case. But we are going to see how
+  the source code is underlined in errors messages.</p>
+
+<h3 id="b:Example-without-antiquotation-node">Example without antiquotation node</h3>
+
+<p>The code for this quotation is (file "qa.ml"):</p>
+
+<pre>
+  #load "q_MLast.cmo";
+  let expr s = Grammar.Entry.parse Pcaml.expr (Stream.of_string s) in
+  Quotation.add "a" (Quotation.ExAst (expr, fun []));
+</pre>
+
+<p>The quotation expander "<tt>expr</tt>" just takes the string
+  parameter (the contents of the quotation), and returns the result
+  of the expression   parser of the OCaml language.</p>
+
+<p>Compilation:</p>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 -c qa.ml
+</pre>
+
+<p>Let us test it in the toplevel with a voluntary typing error:</p>
+
+<pre>
+  $ ocaml -I +camlp5 camlp5r.cma
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # #load "qa.cmo";
+  # let x = "abc" and y = 25 in &lt;:a&lt; x ^ y >>;
+  Characters 28-41:
+    let x = "abc" and y = 25 in &lt;:a&lt; x ^ y >>;
+                                ^^^^^^^^^^^^^
+  This expression has type int but is here used with type string
+</pre>
+
+<p>We observe that the full quotation is underlined, although it concerns
+  only the variable "<tt>y</tt>".</p>
+
+<h3 id="b:Example-with-antiquotation-node">Example with antiquotation node</h3>
+
+<p>Let us consider this second version (file "qb.ml"):</p>
+
+<pre>
+  #load "q_MLast.cmo";
+  let expr s =
+    let ast = Grammar.Entry.parse Pcaml.expr (Stream.of_string s) in
+    let loc = Ploc.make 1 0 (0, String.length s) in
+    &lt;:expr&lt; $anti:ast$ >>
+  in
+  Quotation.add "b" (Quotation.ExAst (expr, fun []));
+</pre>
+
+<p>As above, the quotation expander "<tt>expr</tt>" takes the string
+  parameter (the contents of the quotation) and applies the expression
+  parser of the OCaml language. Its result, instead of being
+  returned as it is, is enclosed with the antiquotation node. (The
+  location built is the location of the whole string.)</p>
+
+<p>Compilation:</p>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 -c qb.ml
+</pre>
+
+<p>Now the same test gives:</p>
+
+<pre>
+  $ ocaml -I +camlp5 camlp5r.cma
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # #load "qb.cmo";
+  # let x = "abc" and y = 25 in &lt;:b&lt; x ^ y >>;
+  Characters 37-38:
+    let x = "abc" and y = 25 in &lt;:b&lt; x ^ y >>;
+                                         ^
+  This expression has type int but is here used with type string
+</pre>
+
+<p>Notice that, now, only the variable "<tt>y</tt>" is underlined.</p>
+
+<h3 id="b:In-conclusion">In conclusion</h3>
+
+<p>In the resulting tree of the quotation expander:</p>
+
+<ul>
+  <li>only portions of this tree, which are sons of the expr and patt
+    antiquotation nodes, have the right location they have in the
+    quotation (provided the quotation expander gives it the right
+    location of the antiquation in the quotation),</li>
+  <li>the other nodes inherit, as location, the location of the full
+    quotation.</li>
+</ul>
+
+<h2 id="a:Locations-in-quotations-and-antiquotations">Locations in quotations and antiquotations</h2>
+
+<p>This section explains in details the problem of locations in
+  quotations and antiquotations. It is designed for programmers of
+  quotation expanders.</p>
+
+<p>Locations are the difficult point in quotations and antiquotations.
+  If they are not set correctly, error messages may highlight wrong parts
+  of the source.</p>
+
+<p>The locations are controlled:</p>
+
+<ul>
+  <li>for syntax errors: by the exception "<tt>Ploc.Exc</tt>", raised
+    by the function "<tt>Ploc.raise</tt>",</li>
+  <li>for typing errors, by the syntax tree nodes
+    "<tt>&lt;:expr&lt;&nbsp;$anti:...$&nbsp;>></tt>" and
+    "<tt>&lt;:meta&lt;&nbsp;$anti:...$&nbsp;>></tt>".</li>
+</ul>
+
+<p>If the quotation expander never uses them, all syntax and typing errors
+  highlight the whole quotation.</p>
+
+<p>Remark that in <a href="grammars.html">extensible grammars</a>,
+  syntax errors are automatically enclosed by the exception
+  "<tt>Ploc.Exc</tt>". Therefore, if the quotation is parsed by an
+  extensible grammar entry, this exception can be raised.</p>
+
+<p>In the syntax tree nodes
+  "<tt>&lt;:expr&lt;&nbsp;$anti:...$&nbsp;>></tt>" and
+  "<tt>&lt;:meta&lt;&nbsp;$anti:...$&nbsp;>></tt>", the location is
+  indicated by the implicit variable named "<tt>loc</tt>". Their usage
+  is therefore something like:</p>
+
+<pre>
+  let loc = ...computation of the location... in
+  &lt;:expr&lt; $anti:...$ >>
+</pre>
+
+<h3 id="b:In-the-quotation">In the quotation</h3>
+
+<p>All locations must be computed <em>relatively to the quotation
+  string</em>. The quotation string is the string between
+  "<tt>&lt;&lt;</tt>" or "<tt>&lt;:name&lt;</tt>" and "<tt>>></tt>"
+  (excluded), the first character of this string being at location
+  zero.</p>
+
+<p>The quotation system automatically shifts all locations with the
+  location of the quotation: the programmer of the quotation expander
+  does not therefore need to care about where the quotation appears
+  in the source.</p>
+
+<h3 id="b:In-antiquotations">In antiquotations</h3>
+
+<p>In antiquotations, it is important to control how the antiquotation
+  string is parsed. For example, if the function parsing the antiquotation
+  string raises "<tt>Ploc.Exc</tt>", the location of this exception must
+  be shifted with the location of the antiquotation in the quotation.</p>
+
+<p>For example, let us suppose that the source contains:</p>
+
+<pre>
+  &lt;&lt; abc^ijk^(xyz) >>
+</pre>
+
+<p>where the antiquotation is specified between the caret ("<tt>^</tt>")
+  characters. The antiquotation string is "<tt>ijk</tt>". It can be built
+  in the quotation expander by:</p>
+
+<pre>
+  &lt;:expr&lt; ijk >>
+</pre>
+
+<p>If used just like this, without the "<tt>&lt;:expr&lt; $anti:x$ >></tt>",
+  in case of typing error (for example if the variable "<tt>ijk</tt>" is
+  unbound), the OCaml error message will be:</p>
+
+<pre>
+  &lt;&lt; abc^ijk^(xyz) >>
+  ^^^^^^^^^^^^^^^^^^^
+  Unbound value ijk
+</pre>
+
+<p>To put a location to "<tt>ijk</tt>", since its location in the quotation
+  is "<tt>(5, 8)</tt>" (the "<tt>i</tt>" being the 5th characater of the
+  quotation string, starting at zero), the quotation expander can build
+  it like this:</p>
+
+<pre>
+  let e = &lt;:expr&lt; ijk >> in
+  let loc = Ploc.make_unlined (5, 8) in
+  &lt;:expr&lt; $anti:e$ >>
+</pre>
+
+<p>In this case, the possible typing error message will be:</p>
+
+<pre>
+  &lt;&lt; abc^ijk^(xyz) >>
+         ^^^
+  Unbound value ijk
+</pre>
+
+<p>This case is simple, since the antiquotation is just an identifier,
+  and there is no parser computing it.</p>
+
+<p>If the antiquotation has to be parsed, for example if it is a
+  complicated expression, there are two points to care about:</p>
+
+<p>First, the syntax error messages. If the parser of the
+  antiquotation raises "<tt>Ploc.Exc</tt>", its location is relative
+  to the antiquotation.  It must therefore be shifted to correspond to
+  a location in the quotation.  If "<tt>f</tt>" is the parsing
+  function and "<tt>sh</tt>" the shift of the <em>antiquotation</em>
+  in the <em>quotation</em> (whose value is "<tt>5</tt>" in the
+  example), the code must be something like:</p>
+
+<pre>
+  try f () with
+  [ Ploc.Exc loc exc -> Ploc.raise (Ploc.shift sh loc) exc ]
+</pre>
+
+<p>Second, the typing error messages. Here, the above code with
+  "<tt>&lt;:expr&lt;&nbsp;$anti:e$&nbsp;>></tt>" can apply to the
+  resulting tree.</p>
+
+<p>The complete code, taking the possible syntax error messages and
+  the possible typing error messages into account, can be (where
+  "<tt>len</tt>" is the antiquotation length):</p>
+
+<pre>
+  let e =
+    try f () with
+    [ Ploc.Exc loc exc -> Ploc.raise (Ploc.shift sh loc) exc ]
+  in
+  let loc = Ploc.make_unlined (sh, sh + len) in
+  &lt;:expr&lt; $anti:e$ >>
+</pre>
+
+<h2 id="a:Located-errors">Located errors</h2>
+
+<p>If the quotation expander raises an exception, by default, the
+  whole quotation is underlined:</p>
+
+<pre>
+  $ cat foo.ml
+  #load "q_MLast.cmo";
+  let expr s = raise (Failure "hello") in
+  Quotation.add "a" (Quotation.ExAst (expr, fun []));
+
+  $ ocaml -I +camlp5 camlp5r.cma
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # #use "foo.ml";
+  - : unit = ()
+  # <:a< good morning >>;
+  Toplevel input:
+  # <:a< good morning >>;
+    ^^^^^^^^^^^^^^^^^^^^
+  While expanding quotation "a":
+  Failure: hello
+</pre>
+
+<p>To specify a location of the exception, use the function
+  "<tt>Ploc.raise</tt>" instead of "<tt>raise</tt>". In this
+  example, let us suppose that we want only the characters
+  5 to 7 are underlined. This can be done like this:</p>
+
+<pre>
+  $ cat foo.ml
+  #load "q_MLast.cmo";
+  let expr s = Ploc.raise (Ploc.make 1 0 (5, 7)) (Failure "hello") in
+  Quotation.add "a" (Quotation.ExAst (expr, fun []));
+
+  $ ledit ocaml -I +camlp5 camlp5r.cma
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # #use "foo.ml";
+  - : unit = ()
+  # <:a< good morning >>;
+  Toplevel input:
+  # <:a< good morning >>;
+             ^^
+  While expanding quotation "a":
+  Failure: hello
+</pre>
+
+<h2 id="a:The-Quotation-module">The Quotation module</h2>
+
+<pre style="border:0; margin-left: 1cm">
+type expander =
+  [ ExStr of bool -> string -> string
+  | ExAst of (string -> MLast.expr * string -> MLast.patt) ]
+;
+</pre>
+
+<dl><dd>
+    Is the type for quotation expander kinds:
+    <ul>
+      <li>"<tt>Quotation.ExStr exp</tt>" corresponds to an expander
+        "<tt>exp</tt>" returning a string which is parsed by the
+        system to create a syntax tree. Its boolean parameter tells
+        whether the quotation is in position of an expression (True)
+        or in position of a pattern (False). Quotations expanders
+        created this way may work for some particular OCaml syntax,
+        and not for another one (e.g. may work when used with revised
+        syntax and not when used with normal syntax, and
+        conversely).</li>
+      <li>"<tt>Quotation.ExAst (expr_exp, patt_exp)</tt>" corresponds
+        to expanders returning syntax trees, therefore not necessitating
+        to be parsed afterwards.  The function "<tt>expr_exp</tt>" is
+        called when the quotation is in position of an expression, and
+        "<tt>patt_exp</tt>" when the quotation is in position of a
+        pattern. Quotation expanders created this way are independent
+        from the enclosing syntax.</li>
+    </ul>
+</dd></dl>
+
+<dl>
+  <dt><tt>value add : string -> expander -> unit;</tt></dt>
+  <dd>"<tt>Quotation.add name exp</tt>" adds the quotation "<tt>name</tt>"
+    associated with the expander "<tt>exp</tt>".</dd>
+</dl>
+
+<dl>
+  <dt><tt>value find : string -> expander;</tt></dt>
+  <dd>"<tt>Quotation.find name</tt>" returns the quotation expander of
+    the given name.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value default : ref string;</tt></dt>
+  <dd>The name of the default quotation : it is possible to use this
+    quotation between "<tt>&lt;&lt;</tt>" and "<tt>&gt;&gt;</tt>"
+    without having to specify its name.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value translate : ref (string -> string);</tt></dt>
+  <dd>Function translating quotation names; default = identity. Used
+    in the predefined quotation "<tt>q_phony.cmo</tt>". See below.</dd>
+</dl>
+
+<p>Some other useful functions for quotations are defined in the
+  module "<tt>Pcaml</tt>". See the chapter "<a href="pcaml.html">The
+  Pcaml module</a>", section "Quotation management".</p>
+
+<h2 id="a:Predefined-quotations">Predefined quotations</h2>
+
+<h3 id="b:q_MLast-cmo">q_MLast.cmo</h3>
+
+<p>This extension kit add quotations of OCaml syntax tree, allowing to
+  use concrete syntax to represent abstract syntax. See the chapter
+  <a href="ml_ast.html">Syntax tree</a>.</p>
+
+<h3 id="b:q_ast-cmo">q_ast.cmo</h3>
+
+<p>As with the previous quotation, this extension kit add quotations of
+  OCaml syntax tree, but in the current user syntax with all
+  extensions, the previous one being restricted to revised syntax
+  without extension. See the chapters
+  <a href="ml_ast.html">Syntax tree</a>
+  and <a href="q_ast.html">Syntax tree quotations in user
+  syntax</a>.</p>
+
+<h3 id="b:q_phony-cmo">q_phony.cmo</h3>
+
+<p>This extension kit is designed for pretty printing and must be loaded
+  after a language pretty printing kit (in normal or in revised syntax).
+  It prevents the expansions of quotations, transforming them
+  into variables. The pretty printing then keeps the initial (source) form.</p>
+
+<p>The <a href="macros.html">macros</a> (extension
+  "<tt>pa_macro.cmo</tt>") are also displayed in their initial form,
+  instead of expanded.</p>
+
+<h2 id="a:A-full-example:-lambda-terms">A full example: lambda terms</h2>
+
+<p>This example allows to represent lambda terms by a concrete syntax
+  and to be able to combine them using antiquotations.</p>
+
+<p>A lambda term is defined like this:</p>
+
+<pre>
+  type term =
+    [ Lam of string and term
+    | App of term and term
+    | Var of string ]
+  ;
+</pre>
+
+<p>Examples:</p>
+
+<pre>
+  value fst = Lam "x" (Lam "y" (Var "x"));
+  value snd = Lam "x" (Lam "y" (Var "y"));
+  value delta = Lam "x" (App (Var "x") (Var "x"));
+  value omega = App delta delta;
+  value comb_s =
+    Lam "x"
+      (Lamb "y"
+         (Lamb "z"
+            (App (App (Var "x") (Var "y")) (App (Var "x") (Var "z")))));
+</pre>
+
+<p>Since combinations of lambda term may be complicated, The idea is to
+  represent them by quotations in concrete syntax. We want to be able to
+  write the examples above like this:</p>
+
+<pre>
+  value fst = &lt;&lt; \x.\y.x >>;
+  value snd = &lt;&lt; \x.\y.y >>;
+  value delta = &lt;&lt; \x.x x >>
+  value omega = &lt;&lt; ^delta ^delta >>;
+  value comb_s = &lt;&lt; \x.\y.\z.(x y)(x z) >>;
+</pre>
+
+<p>which is a classic representation of lambda terms.</p>
+
+<p>Notice, in the definition of "<tt>omega</tt>", the use of the
+  caret ("<tt>^</tt>") sign to specify antiquotations. Notice also the
+  simplicity of the representation of the expression defining
+  "<tt>comb_s</tt>".</p>
+
+<p>Here is the code of the quotation expander, term.ml. The expander
+  uses the <a href="grammars.html">extensible grammars</a>. It has its
+  own lexer (using the <a href="lexers.html">stream lexers</a>)
+  because the lexer of OCaml programs ("<tt>Plexer.gmake ()</tt>"),
+  cannot recognize the backslashes alone.</p>
+
+<h3 id="b:Lexer">Lexer</h3>
+
+<pre>
+  (* lexer *)
+
+  #load "pa_lexer.cmo";
+
+  value rec ident =
+    lexer
+    [ [ 'a'-'z' | 'A'-'Z' | '0'-'9' | '-' | '_' | '\128'-'\255' ]
+      ident!
+    | ]
+  ;
+
+  value empty _ = parser [: _ = Stream.empty :] -> [];
+
+  value rec next_tok =
+    lexer
+    [ "\\" -> ("BSLASH", "")
+    | "^" -> ("CARET", "")
+    | 'a'-'z' ident! -> ("IDENT", $buf)
+    | "(" -> ("", "(")
+    | ")" -> ("", ")")
+    | "." -> ("", ".")
+    | empty -> ("EOS", "")
+    | -> raise (Stream.Error "lexing error: bad character") ]
+  ;
+
+  value rec skip_spaces =
+    lexer
+    [ " "/ skip_spaces!
+    | "\n"/ skip_spaces!
+    | "\r"/ skip_spaces! | ]
+  ;
+
+  value record_loc loct i (bp, ep) = do {
+    if i >= Array.length loct.val then do {
+      let newt =
+        Array.init (2 * Array.length loct.val + 1)
+          (fun i ->
+             if i &lt; Array.length loct.val then loct.val.(i)
+             else Ploc.dummy)
+      in
+      loct.val := newt;
+    }
+    else ();
+    loct.val.(i) := Ploc.make_unlined (bp, ep)
+  };
+
+  value lex_func cs =
+    let loct = ref [| |] in
+    let ts =
+      Stream.from
+        (fun i -> do {
+           ignore (skip_spaces $empty cs : Plexing.Lexbuf.t);
+           let bp = Stream.count cs in
+           let r = next_tok $empty cs in
+           let ep = Stream.count cs in
+           record_loc loct i (bp, ep);
+           Some r
+         })
+    in
+    let locf i =
+      if i < Array.length loct.val then loct.val.(i) else Ploc.dummy
+    in
+    (ts, locf)
+  ;
+
+  value lam_lex =
+    {Plexing.tok_func = lex_func;
+     Plexing.tok_using _ = (); Plexing.tok_removing _ = ();
+     Plexing.tok_match = Plexing.default_match;
+     Plexing.tok_text = Plexing.lexer_text;
+     Plexing.tok_comm = None}
+  ;
+</pre>
+
+<h3 id="b:Parser">Parser</h3>
+
+<pre>
+  (* parser *)
+
+  #load "pa_extend.cmo";
+  #load "q_MLast.cmo";
+
+  value g = Grammar.gcreate lam_lex;
+  value expr_term_eos = Grammar.Entry.create g "term";
+  value patt_term_eos = Grammar.Entry.create g "term";
+
+  EXTEND
+    GLOBAL: expr_term_eos patt_term_eos;
+    expr_term_eos:
+      [ [ x = expr_term; EOS -> x ] ]
+    ;
+    expr_term:
+      [ [ BSLASH; i = IDENT; "."; t = SELF -> &lt;:expr&lt; Lam $str:i$ $t$ >> ]
+      | [ x = SELF; y = SELF -> &lt;:expr&lt; App $x$ $y$ >> ]
+      | [ i = IDENT -> &lt;:expr&lt; Var $str:i$ >>
+        | CARET; r = expr_antiquot -> r
+        | "("; t = SELF; ")" -> t ] ]
+    ;
+    expr_antiquot:
+      [ [ i = IDENT ->
+           let r =
+             let loc = Ploc.make_unlined (0, String.length i) in
+             &lt;:expr&lt; $lid:i$ >>
+           in
+           &lt;:expr&lt; $anti:r$ >> ] ]
+    ;
+    patt_term_eos:
+      [ [ x = patt_term; EOS -> x ] ]
+    ;
+    patt_term:
+      [ [ BSLASH; i = IDENT; "."; t = SELF -> &lt;:patt&lt; Lam $str:i$ $t$ >> ]
+      | [ x = SELF; y = SELF -> &lt;:patt&lt; App $x$ $y$ >> ]
+      | [ i = IDENT -> &lt;:patt&lt; Var $str:i$ >>
+        | CARET; r = patt_antiquot -> r
+        | "("; t = SELF; ")" -> t ] ]
+    ;
+    patt_antiquot:
+      [ [ i = IDENT ->
+           let r =
+             let loc = Ploc.make_unlined (0, String.length i) in
+             &lt;:patt&lt; $lid:i$ >>
+           in
+           &lt;:patt&lt; $anti:r$ >> ] ]
+    ;
+  END;
+
+  value expand_expr s =
+    Grammar.Entry.parse expr_term_eos (Stream.of_string s)
+  ;
+  value expand_patt s =
+    Grammar.Entry.parse patt_term_eos (Stream.of_string s)
+  ;
+
+  Quotation.add "term" (Quotation.ExAst (expand_expr, expand_patt));
+  Quotation.default.val := "term";
+</pre>
+
+<h3 id="b:Compilation-and-test">Compilation and test</h3>
+
+<p>Compilation:</p>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 -c term.ml
+</pre>
+
+<p>Example, in the toplevel, including a semantic error, correctly
+  underlined, thanks to the antiquotation nodes:</p>
+
+<pre>
+  $ ocaml -I +camlp5 camlp5r.cma
+          Objective Caml version ...
+
+          Camlp5 Parsing version ...
+
+  # #load "term.cmo";
+  # type term =
+     [ Lam of string and term
+     | App of term and term
+     |   Var of string ]
+    ;
+  type term =
+    [ Lam of string and term | App of term and term | Var of string ]
+  # value comb_s = &lt;&lt; \x.\y.\z.(x y)(x z) >>;
+  value comb_s : term =
+    Lam "x"
+     (Lam "y"
+       (Lam "z" (App (App (Var "x") (Var "y")) (App (Var "x") (Var "z")))))
+  # value omega = &lt;&lt; ^delta ^delta >>;
+  Characters 18-23:
+    value omega = &lt;&lt; ^delta ^delta >>;
+                      ^^^^^
+  Unbound value delta
+  # value delta = &lt;&lt; \x.x x >>;
+  value delta : term = Lam "x" (App (Var "x") (Var "x"))
+  # value omega = &lt;&lt; ^delta ^delta >>;
+  value omega : term =
+    App (Lam "x" (App (Var "x") (Var "x")))
+      (Lam "x" (App (Var "x") (Var "x")))
+</pre>
+
+<a class="toplink" href="quot.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- commands.html,v -->
+  <!-- Copyright (c) INRIA 2007-2014 -->
+  <title>Commands and Files</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.15-exp</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Commands and Files</h1>
+
+<p>The main command of Camlp5 is "<tt>camlp5</tt>". It is an OCaml
+  program in bytecode (compiled with ocamlc, not ocamlopt), able to
+  dynamically load OCaml object files (ending with ".cmo" and
+  ".cma").</p>
+
+<p>Most other Camlp5 commands derive from that one: they are the
+  command "<tt>camlp5</tt>" with some implicitely applied
+  parameters.</p>
+
+<p>Two other commands are provided: "<tt>mkcamlp5</tt>" and
+  "<tt>mkcamlp5.opt</tt>". They allow to create camlp5 executables
+  with already loaded kits.</p>
+
+<p>All commands have an option "<tt>-help</tt>" which display all
+  possible command parameters and options. Notice that some parameters
+  (the parsing and pretting kits) may add new options. For example,
+  the command:</p>
+
+<pre>
+  camlp5 pr_r.cmo -help
+</pre>
+
+<p>prints more lines than just:</p>
+
+<pre>
+  camlp5 -help
+</pre>
+
+<p>The first parameter ("load options") allows to specify parsing and
+  printing kits (".cmo" and ".cma" files) which are loaded inside the
+  "<tt>camlp5</tt>" core before any action. Other options may
+  follow.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Parsing-and-Printing-Kits">Parsing and Printing Kits</a>
+      <ul>
+        <li><a href="#b:Parsing-kits">Parsing kits</a></li>
+        <li><a href="#b:Printing-kits">Printing kits</a></li>
+        <li><a href="#b:Quotations-expanders">Quotations expanders</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Commands">Commands</a></li>
+    <li><a href="#a:Environment-variable">Environment variable</a></li>
+    <li><a href="#a:OCaml-toplevel-files">OCaml toplevel files</a></li>
+    <li><a href="#a:Library-files">Library files</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Parsing-and-Printing-Kits">Parsing and Printing Kits</h2>
+
+<h3 id="b:Parsing-kits">Parsing kits</h3>
+
+<h4>language parsing kits</h4>
+
+<dl>
+  <dt><tt>pa_r.cmo</tt></dt>
+  <dd>Revised syntax (without parsers).</dd>
+  <dt><tt>pa_rp.cmo</tt></dt>
+  <dd>Add revised syntax parsers.</dd>
+  <dt><tt>pa_o.cmo</tt></dt>
+  <dd>Normal syntax (without parsers). Option added:
+    <dl>
+      <dt><tt>-no_quot</tt></dt>
+      <dd>don't parse quotations, allowing to use,
+        e.g. "<tt>&lt;:&gt;</tt>" as token.</dd>
+    </dl>
+  </dd>
+  <dt><tt>pa_op.cmo</tt></dt>
+  <dd>Add normal syntax parsers.</dd>
+  <dt><tt>pa_oop.cmo</tt></dt>
+  <dd>Add normal syntax parsers without code optimization.</dd>
+  <dt><tt>pa_lexer.cmo</tt></dt>
+  <dd>Add stream lexers.</dd>
+</dl>
+
+<h4>extensible grammars</h4>
+
+<dl>
+  <dt><tt>pa_extend.cmo</tt></dt>
+  <dd>Add the EXTEND statement. Options added:
+    <dl>
+      <dt><tt>-split_ext</tt></dt>
+      <dd>split EXTEND by functions to turn around a PowerPC problem.</dd>
+      <dt><tt>-quotify</tt></dt>
+      <dd>generate code for quotations (internally used to synchronize
+        q_MLast and pa_r)</dd>
+      <dt><tt>-meta_action</tt></dt>
+      <dd>undocumented (internally used for compiled version)</dd>
+    </dl>
+  </dd>
+  <dt><tt>pa_extfold.cmo</tt></dt>
+  <dd>Add the specific symbols FOLD0 and FOLD1 to the EXTEND
+    statement.</dd>
+</dl>
+
+<h4>extensible functions and printers</h4>
+
+<dl>
+  <dt><tt>pa_extfun.cmo</tt></dt>
+  <dd>Add the extensible function ("extfun" statement).</dd>
+</dl>
+
+<dl>
+  <dt><tt>pa_extprint.cmo</tt></dt>
+  <dd>Add the EXTEND_PRINTER statement.</dd>
+</dl>
+
+<h4>functional parsers</h4>
+
+<dl>
+  <dt><tt>pa_fstream.cmo</tt></dt>
+  <dd>Add the functional parsers ("fparser" statement) and the
+    backtracking parsers ("bparser" statement).</dd>
+</dl>
+
+<h4>other languages</h4>
+
+<dl>
+  <dt><tt>pa_lisp.cmo</tt></dt>
+  <dd>Lisp syntax.</dd>
+  <dt><tt>pa_scheme.cmo</tt></dt>
+  <dd>Scheme syntax.</dd>
+  <dt><tt>pa_sml.cmo</tt></dt>
+  <dd>SML syntax.</dd>
+</dl>
+
+<h4>other parsing kits</h4>
+
+<dl>
+  <dt><tt>pa_lefteval.cmo</tt></dt>
+  <dd>Add guarantee of left evaluation in functions calls.</dd>
+  <dt><tt>pa_macro.cmo</tt></dt>
+  <dd>Add macros. Options added:
+    <dl>
+      <dt><tt>-D &lt;string&gt;</tt></dt>
+      <dd>define for IFDEF statement</dd>
+      <dt><tt>-U &lt;string&gt;</tt></dt>
+      <dd>undefine for IFDEF statement</dd>
+      <dt><tt>-defined</tt></dt>
+      <dd>print the defined macros and exit</dd>
+    </dl>
+  </dd>
+  <dt><tt>pa_pragma.cmo</tt></dt>
+  <dd>Add pragma directive: evaluations at parse time</dd>
+</dl>
+
+<h3 id="b:Printing-kits">Printing kits</h3>
+
+<h4>language printing kits</h4>
+
+<dl>
+  <dt><tt>pr_r.cmo</tt></dt>
+  <dd>Display in revised syntax. Added options:
+    <dl>
+      <dt><tt>-flag &lt;str&gt;</tt></dt>
+      <dd>
+        Change pretty printing behaviour according to
+        "<tt>&lt;str&gt;</tt>":<br/>
+        A/a enable/disable all flags<br/>
+        C/c enable/disable comments in phrases<br/>
+        D/d enable/disable allowing expanding 'declare'<br/>
+        E/e enable/disable equilibrate cases<br/>
+        L/l enable/disable allowing printing 'let..in' horizontally<br/>
+        S/s enable/disable printing sequences beginners at end of lines<br/>
+        default setting is "aS".</dd>
+      <dt><tt>-wflag &lt;str&gt;</tt></dt>
+      <dd>Change displaying 'where' statements instead of 'let':<br/>
+        A/a enable/disable all flags<br/>
+        I/i enable/disable 'where' after 'in'<br/>
+        L/l enable/disable 'where' after 'let..='<br/>
+        M/m enable/disable 'where' after 'match' and 'try'<br/>
+        P/p enable/disable 'where' after left parenthesis<br/>
+        R/r enable/disable 'where' after 'record_field..='<br/>
+        S/s enable/disable 'where' in sequences<br/>
+        T/t enable/disable 'where' after 'then' or 'else'<br/>
+        V/v enable/disable 'where' after 'value..='<br/>
+        W/w enable/disable 'where' after '<tt>-&gt;</tt>'<br/>
+        default setting is "Ars".</dd>
+      <dt><tt>-l &lt;length&gt;</tt></dt>
+      <dd>Maximum line length for pretty printing (default 78)</dd>
+      <dt><tt>-sep_src</tt></dt>
+      <dd>Read source file for text between phrases (default).</dd>
+      <dt><tt>-sep &lt;string&gt;</tt></dt>
+      <dd>Use this string between phrases instead of reading source.</dd>
+    </dl>
+  </dd>
+  <dt><tt>pr_ro.cmo</tt></dt>
+  <dd>Add display objects, labels and variants in revised syntax.</dd>
+  <dt><tt>pr_rp.cmo</tt></dt>
+  <dd>Add display parsers with their (revised) syntax.</dd>
+  <dt><tt>pr_o.cmo</tt></dt>
+  <dd>Display in normal syntax. Added options:
+    <dl>
+      <dt><tt>-flag &lt;str&gt;</tt></dt>
+      <dd>Change pretty printing behaviour according to
+        <tt>&lt;str&gt;</tt>:<br/>
+        A/a enable/disable all flags<br/>
+        C/c enable/disable comments in phrases<br/>
+        E/e enable/disable equilibrate cases<br/>
+        L/l enable/disable allowing printing 'let..in' horizontally<br/>
+        M/m enable/disable printing double semicolons<br/>
+        default setting is "Am".</dd>
+      <dt><tt>-l &lt;length&gt;</tt></dt>
+      <dd>Maximum line length for pretty printing (default 78)</dd>
+      <dt><tt>-sep_src</tt></dt>
+      <dd>Read source file for text between phrases (default).</dd>
+      <dt><tt>-sep &lt;string&gt;</tt></dt>
+      <dd>Use this string between phrases instead of reading source.</dd>
+    </dl>
+  </dd>
+  <dt><tt>pr_op.cmo</tt></dt>
+  <dd>Add displaying parsers with their (normal) syntax.</dd>
+</dl>
+
+<h4>extensible parsers</h4>
+
+<dl>
+  <dt><tt>pr_extend.cmo</tt></dt>
+  <dd>Add the displaying of EXTEND statements in their initial
+    syntax.Option added:
+    <dl>
+      <dt><tt>-no_slist</tt></dt>
+      <dd>Don't reconstruct SLIST, SOPT, SFLAG</dd>
+    </dl>
+  </dd>
+</dl>
+
+<h4>extensible functions and printers</h4>
+
+<dl>
+  <dt><tt>pr_extfun.cmo</tt></dt>
+  <dd>Add displaying extensible functions ("extfun" statement) in
+    their initial syntax.</dd>
+</dl>
+
+<dl>
+  <dt><tt>pr_extprint.cmo</tt></dt>
+  <dd>Add displaying extensible printers ("EXTEND_PRINTER" statement)
+    in their initial syntax.</dd>
+</dl>
+
+<h4>other language</h4>
+
+<dl>
+  <dt><tt>pr_scheme.cmo</tt></dt>
+  <dd>Display in Scheme syntax. Option added:
+    <dl>
+      <dt><tt>-l &lt;length&gt;</tt></dt>
+      <dd>Maximum line length for pretty printing (default 78)</dd>
+      <dt><tt>-sep &lt;string&gt;</tt></dt>
+      <dd>Use this string between phrases instead of reading source.</dd>
+    </dl>
+  </dd>
+  <dt><tt>pr_schemep.cmo</tt></dt>
+  <dd>Add display parsers with their (Scheme) syntax.</dd>
+</dl>
+
+<h4>other printing kits</h4>
+
+<dl>
+  <dt><tt>pr_depend.cmo</tt></dt>
+  <dd>Display dependencies. Option added:
+    <dl>
+      <dt><tt>-I dir</tt></dt>
+      <dd>Add "dir" to the list of search directories.</dd>
+    </dl>
+  </dd>
+  <dt><tt>pr_dump.cmo</tt></dt>
+  <dd>Dump the syntax tree in binary (for the OCaml compiler)</dd>
+  <dt><tt>pr_null.cmo</tt></dt>
+  <dd>No output.</dd>
+</dl>
+
+<h3 id="b:Quotations-expanders">Quotations expanders</h3>
+
+<dl>
+  <dt><tt>q_MLast.cmo</tt></dt>
+  <dd>Syntax tree quotations. Define the quotations named: "expr",
+    "patt", "ctyp", "str_item", "sig_item", "module_type", "module_expr",
+    "class_type", "class_expr", "class_sig_item", "class_str_item",
+    "with_constr" and "poly_variant".</dd>
+  <dt><tt>q_phony.cmo</tt></dt>
+  <dd>Transform quotations into phony variables to be able to pretty
+    print the quotations in their initial form (not suitable for
+    compilation)</dd>
+</dl>
+
+<h2 id="a:Commands">Commands</h2>
+
+<dl>
+  <dt><tt>camlp5r</tt></dt>
+  <dd>Shortcut for "<tt>camlp5 pa_r.cmo pa_rp.cmo pr_dump.cmo</tt>"</dd>
+  <dt><tt>camlp5r.opt</tt></dt>
+  <dd>Same as previous, but in native code instead of bytecode,
+    therefore faster. But not extensible: it is not possible to add
+    other parsing or printing kits neither in command arguments nor
+    with the "load" directive inside sources. Suitable for compiling
+    sources not using other syntax extensions.</dd>
+  <dt><tt>camlp5o</tt></dt>
+  <dd>Shortcut for "<tt>camlp5 pa_o.cmo pa_op.cmo pr_dump.cmo</tt>"</dd>
+  <dt><tt>camlp5o.opt</tt></dt>
+  <dd>Same as previous, and like "<tt>camlp5r.opt</tt>", faster and
+    not extensible. Moreover, this has been produced by compilation of
+    Camlp5 grammars, resulting in a still faster executable.</dd>
+  <dt><tt>camlp5sch</tt></dt>
+  <dd>Shortcut for "<tt>camlp5 pa_scheme.cmo pr_dump.cmo</tt>"</dd>
+  <dt><tt>mkcamlp5</tt></dt>
+  <dd>creates camlp5 executables with almost the same options than
+    ocamlmktop. The interfaces to be visible must be explicitly added
+    in the command line as ".cmi" files. For example, how to add the
+    the OCaml module "str": "<tt>mkcamlp5 -custom str.cmi str.cma
+    -cclib -lstr -o camlp5str</tt>"</dd>
+  <dt><tt>mkcamlp5.opt</tt></dt>
+  <dd>creates camlp5 executables like <tt>mkcamlp5</tt>, except that
+    it is in native code, therefore faster, but not extensible; the
+    added kits must be cmx or cmxa files</dd>
+</dl>
+
+<h2 id="a:Environment-variable">Environment variable</h2>
+
+<p>When running a program using extensible grammars (in particular,
+  the camlp5 commands), the environment variable
+  "<tt>CAMLP5PARAM</tt>" is consulted. It sets the grammar parsing
+  algoritm parameters.</p>
+
+<p>This variable must be a sequence of parameter specifications. A
+  parameter specification is a letter optionally followed by an = and
+  a value, with any separator. There are four possible parameters:</p>
+
+<dl>
+  <dt><tt>b</tt></dt>
+  <dd>Set the backtrack algorithm as default.</dd>
+  <dt><tt>t</tt></dt>
+  <dd>Trace symbols (terminals and non-terminals) while parsing with
+    backtracking.</dd>
+  <dt><tt>y</tt></dt>
+  <dd>In backtracking, trace the advance in the input stream (number
+    of unfrozen tokens) and the possible stalling (number of
+    tokens tests).</dd>
+  <dt><tt>l=value</tt></dt>
+  <dd>Set the maximum stalling value.</dd>
+</dl>
+
+<h2 id="a:OCaml-toplevel-files">OCaml toplevel files</h2>
+
+<p>These object files can be loaded in the OCaml toplevel to make
+  Camlp5 parse the input. It is possible to load them either by
+  putting them as parameters of the toplevel, or by using the
+  directive "load". The option "<tt>-I +camlp5</tt>" (or "<tt>-I
+  `camlp5 -where`</tt>") must be added to the "<tt>ocaml</tt>" command
+  (the OCaml toplevel).</p>
+
+<dl>
+  <dt><tt>camlp5r.cma</tt></dt>
+  <dd>Read phrases and display results in revised syntax</dd>
+  <dt><tt>camlp5o.cma</tt></dt>
+  <dd>Read phrases and display results in normal syntax</dd>
+  <dt><tt>camlp5sch.cma</tt></dt>
+  <dd>Read phrases in Scheme syntax</dd>
+</dl>
+
+<h2 id="a:Library-files">Library files</h2>
+
+<p>The <a href="library.html">Camlp5 library</a> is named
+  "<tt>gramlib.cma</tt>" and its native code version is
+  "<tt>gramlib.cmxa</tt>". They contain the modules:</p>
+
+<ul>
+  <li>Ploc : building and
+    combining <a href="locations.html">locations</a></li>
+  <li>Plexing : lexing for Camlp5 grammars</li>
+  <li>Plexer : lexer used in revised and normal syntax</li>
+  <li>Gramext : implementation of extensible grammars</li>
+  <li>Grammar : <a href="grammars.html">extensible grammars</a></li>
+  <li>Extfold : functions for grammar extensions FOLD0 and FOLD1</li>
+  <li>Extfun : functions for <a href="extfun.html">extensible
+      functions</a></li>
+  <li>Eprinter : <a href="printers.html">extensible printers</a></li>
+  <li>Fstream : <a href="fparsers.html">functional streams</a></li>
+  <li>Pretty : <a href="pretty.html">pretty printing</a> on
+    strings</li>
+</ul>
+
+<p>This is a pure library : when linking with it, the Camlp5 program
+  is <em>not</em> included.</p>
+
+<a class="toplink" href="commands.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>
