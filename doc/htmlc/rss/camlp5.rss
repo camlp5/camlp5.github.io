@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Camlp5</title>
+    <description>Camlp5 documentation</description>
+    <lastBuildDate>Mon Sep 17 15:10:47 CEST 2007</lastBuildDate>
+    <link>http://pauillac.inria.fr/~ddr/camlp5/doc/html/</link>
+    <item>
+      <title>Macros</title>
+      <description>
+        Added ability to use IFDEF and IFNDEF for record labels declarations.
+      </description>
+      <pubDate>Wed Dec 31 11:51:33 CET 2008</pubDate>
+      <link>../macros.html</link>
+    </item>
+    <item>
+      <title>Plexer</title>
+      <description>
+        Added flag "Plexer.utf8_lexing" to specify that the lexer
+        built by "Plexer.gmake ()" should take utf8 punctuation
+        characters into account.
+      </description>
+      <pubDate>Mon Dec 24 11:24:34 CET 2007</pubDate>
+      <link>../opretty.html</link>
+    </item>
+    <item>
+      <title>quotation example</title>
+      <description>
+        Fixed example in chapter "Quotations" about lambda terms. Did not
+        work because using an old version of the "lexer" syntax extension.
+      </description>
+      <pubDate>Fri Dec 28 23:05:19 CET 2007</pubDate>
+      <link>../quot.html</link>
+    </item>
+    <item>
+      <title>pprintf</title>
+      <description>
+        Added chapter about the new statement "pprintf".
+      </description>
+      <pubDate>Fri Dec 28 23:05:19 CET 2007</pubDate>
+      <link>../pprintf.html</link>
+    </item>
+    <item>
+      <title>Grammar.Entry.parse_all</title>
+      <description>
+        Added function "Grammar.Entry.parse_all".
+      </description>
+      <pubDate>Thu Dec 27 20:42:30 CET 2007</pubDate>
+      <link>../library.html</link>
+    </item>
+    <item>
+      <title>Pretty print</title>
+      <description>
+        Added function "Pretty.horizontally" returning the fact that
+        the current print is horizontal or not. Added function
+        "Prtools.hvlistl" using "hlistl" or "vlistl" according to
+        the fact that the current print is horizontal or not.
+      </description>
+      <pubDate>Mon Dec 24 11:24:34 CET 2007</pubDate>
+      <link>../opretty.html</link>
+    </item>
+    <item>
+      <title>Located exceptions</title>
+      <description>
+        Explained in a new section "Located errors" how put locations
+        to exceptions raised in quotations expanders.
+      </description>
+      <pubDate>Sun Dec 16 18:18:08 CET 2007</pubDate>
+      <link>../quot.html</link>
+    </item>
+    <item>
+      <title>Backtracking example</title>
+      <description>
+        Added an example of backtracking.
+      </description>
+      <pubDate>Fri Nov 30 12:59:11 CET 2007</pubDate>
+      <link>../bparser.html</link>
+    </item>
+    <item>
+      <title>Fstream and Grammar library modules</title>
+      <description>
+        In Fstream module, added section about backtracking parsers.
+        Grammar module, added section about parsing algorithm. They
+        are new features of Camlp5 5.04.
+      </description>
+      <pubDate>Sun Nov 25 08:23:25 CET 2007</pubDate>
+      <link>../library.html</link>
+    </item>
+    <item>
+      <title>Backtracking parsers</title>
+      <description>
+        Added chapter about backtracking parsers, a new feature of
+        Camlp5 5.04.
+      </description>
+      <pubDate>Sun Nov 25 03:47:32 CET 2007</pubDate>
+      <link>../bparsers.html</link>
+    </item>
+    <item>
+      <title>mkcamlp5</title>
+      <description>
+        Added paragraph about new commands mkcamlp5 and mkcamlp5.opt.
+      </description>
+      <pubDate>Tue Nov 20 04:30:54 CET 2007</pubDate>
+      <link>../commands.html</link>
+    </item>
+    <item>
+      <title>Lexers 2</title>
+      <description>
+        Updated the chapter about lexers, the lexing buffer being now
+        provided in Camlp5 library, instead of having to be written
+        by the programmer.
+      </description>
+      <pubDate>Thu Oct 11 12:56:15 CEST 2007</pubDate>
+      <link>../lexers.html</link>
+    </item>
+    <item>
+      <title>Lexers</title>
+      <description>
+        Changed the chapter about lexers, their syntax being changed.
+      </description>
+      <pubDate>Thu Oct 11 12:56:15 CEST 2007</pubDate>
+      <link>../lexers.html</link>
+    </item>
+    <item>
+      <title>Future work</title>
+      <description>
+        Deleted section about the rewritting of the pretty print in
+        Scheme syntax (this is implemented). Added section about GLR
+        grammars.
+      </description>
+      <pubDate>Thu Oct 11 12:56:15 CEST 2007</pubDate>
+      <link>../conclusion.html</link>
+    </item>
+    <item>
+      <title>Locations in quotations and antiquotations</title>
+      <description>
+        Added detailed explanations about the problem of locations in
+        quotations and antiquotations.
+      </description>
+      <pubDate>Tue Oct  9 19:10:10 CEST 2007</pubDate>
+      <link>../quot.html#a:Locations-in-quotations-and-antiquotations</link>
+    </item>
+    <item>
+      <title>Module Diff and Equilibrated pretty print</title>
+      <description>
+        Added module Diff in Camlp5 library to compare two arrays (using
+        the algorithm of the Unix 'diff' command). Added flag 'E' in
+        pretty print kit in revised syntax (pr_o.cmo) to allow display
+        equilibrate cases (all cases in 'match' statement are cut if one
+        is cut, and same equilibration in 'if' statement).
+      </description>
+      <pubDate>Mon Oct  1 21:47:55 CEST 2007</pubDate>
+      <link>../library.html</link>
+    </item>
+    <item>
+      <title>SLIST0...</title>
+      <description>
+        Deleted section about internal extensions SLIST0, SLIST1, SOPT
+        and SFLAG, which are not yet supported.
+      </description>
+      <pubDate>Mon Oct  1 11:38:46 CEST 2007</pubDate>
+      <link>../grammars.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - strict mode - nodes without quotations</title>
+      <description>
+        Added a section about types of nodes without quotations:
+        type_var, type_decl and class_infos.
+      </description>
+      <pubDate>Wed Sep 26 14:05:15 CEST 2007</pubDate>
+      <link>../ast_strict.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - strict mode - 2</title>
+      <description>
+        Updated doc of 'patt', 'ctyp', 'str_item' and 'sig_item'.
+      </description>
+      <pubDate>Tue Sep 25 05:14:45 CEST 2007</pubDate>
+      <link>../ast_strict.html</link>
+    </item>
+    <item>
+      <title>Version number</title>
+      <description>
+        New version number will be 5.00 instead of 4.09, because the
+        AST quotations in user syntax is a major change.
+      </description>
+      <pubDate>Sat Sep 22 07:14:37 CEST 2007</pubDate>
+      <link>../index.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - strict mode - 1</title>
+      <description>
+        General antiquoting will start with "_" (underscore) instead
+        of "a".
+      </description>
+      <pubDate>Fri Sep 21 21:06:25 CEST 2007</pubDate>
+      <link>../ast_strict.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - strict mode</title>
+      <description>
+        Trying a different display for the "expr" quotation, the
+        displaying with a table being to wide.
+      </description>
+      <pubDate>Tue Sep 18 22:35:13 CEST 2007</pubDate>
+      <link>../ast_strict.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - 3</title>
+      <description>
+        Improved the text of the description of the chapters about
+        syntax tree nodes in strict and in transitional modes. Added
+        a chapter (empty for the moment) where the quotation kit
+        "q_ast.cmo" (AST quotations in user syntax) will be specifically
+        described.
+      </description>
+      <pubDate>Tue Sep 18 16:16:23 CEST 2007</pubDate>
+      <link>../ml_ast.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - 2</title>
+      <description>
+        Separated the "syntax tree in strict mode" and "syntax tree in
+        transitional mode" into two chapters.
+      </description>
+      <pubDate>Tue Sep 18 12:15:14 CEST 2007</pubDate>
+      <link>../ml_ast.html</link>
+    </item>
+    <item>
+      <title>Syntax tree - 1</title>
+      <description>
+        Added section about the syntax tree in "strict" mode, actually
+        almost a copy of the section in "transitional" mode.
+      </description>
+      <pubDate>Tue Sep 18 06:34:42 CEST 2007</pubDate>
+      <link>../ml_ast.html</link>
+    </item>
+    <item>
+      <title>Future work</title>
+      <description>
+        Changed intro sentence. Deleted section "extensible syntax
+        tree quotations" (implemented). Added section "rewritting
+        pretty printer in Scheme syntax".
+      </description>
+      <pubDate>Tue Sep 18 03:51:21 CEST 2007</pubDate>
+      <link>../conclusion.html</link>
+    </item>
+    <item>
+      <title>Syntax tree</title>
+      <description>
+        Changed structure of this chapter. Added introduction to explain
+        the general differences between "transitional" and "strict" modes.
+        Put the rest inside a section "syntax tree in transitional mode".
+        Added a section "syntax tree in strict mode" (to be completed).
+      </description>
+      <pubDate>Mon Sep 17 15:10:47 CEST 2007</pubDate>
+      <link>../ml_ast.html</link>
+    </item>
+    <item>
+      <title>Library - module Ploc</title>
+      <description>
+        Explained that this module also contains pervasive type and function.
+        Commented the pervasive type Ploc.vala and added the pervasive
+        function Ploc.call_with.
+      </description>
+      <pubDate>Mon Sep 17 11:41:44 CEST 2007</pubDate>
+      <link>../library.html</link>
+    </item>
+    <item>
+      <title>Transitional and Strict - 1</title>
+      <description>
+        Added more explanations about the two modes, and a short
+        example of what the syntax tree quotation "q_ast.cmo" allows
+        to do.
+      </description>
+      <pubDate>Mon Sep 17 06:29:44 CEST 2007</pubDate>
+      <link>../strict.html</link>
+    </item>
+    <item>
+      <title>Transitional and Strict</title>
+      <description>
+        Added chapter about "strict" and "transitional", allowing to
+        choose between backward compatibility and a new feature: the
+        syntax tree quotations in user syntax ("q_ast.cmo").
+      </description>
+      <pubDate>Mon Sep 17 05:28:48 CEST 2007</pubDate>
+      <link>../strict.html</link>
+    </item>
+  </channel>
+</rss>

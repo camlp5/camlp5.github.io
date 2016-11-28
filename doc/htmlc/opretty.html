@@ -1,0 +1,634 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: opretty.html,v 6.1 2010-09-15 16:00:20 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>Extensions of printing</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Extensions of printing</h1>
+
+<p>Camlp5 provides extensions kits to pretty print programs in revised
+  syntax and normal syntax. Some other extensions kits also allow to
+  rebuild the parsers, or the EXTEND statements in their initial
+  syntax. The pretty print system is itself extensible, by adding new
+  rules. We present here how it works in the Camlp5 sources.</p>
+
+<p>The pretty print system of Camlp5 uses the library modules
+  <a href="pretty.html">Pretty</a>, an original system to format
+  output) and <a href="extfun.html">Extfun</a>, another original
+  system of extensible functions.</p>
+
+<p>This chapter is designed for programmers that want to understand
+  how the pretty printing of OCaml programs work in Camlp5, want to
+  adapt, modify or debug it, or want to add their own pretty printing
+  extensions.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Introduction">Introduction</a></li>
+    <li><a href="#a:Principles">Principles</a>
+      <ul>
+        <li><a href="#b:Using-module-Pretty">Using module Pretty</a></li>
+        <li><a href="#b:Using-EXTEND_PRINTER-statement">Using EXTEND_PRINTER statement</a></li>
+        <li><a href="#b:Dangling-else--bar--semicolon">Dangling else, bar, semicolon</a></li>
+        <li><a href="#b:By-level">By level</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:The-Prtools-module">The Prtools module</a>
+      <ul>
+        <li><a href="#b:Comments">Comments</a></li>
+        <li><a href="#b:Meta-functions-for-lists">Meta functions for lists</a></li>
+        <li><a href="#b:Miscellaneous">Miscellaneous</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Example-:-repeat--until">Example : repeat..until</a>
+      <ul>
+        <li><a href="#b:The-code">The code</a></li>
+        <li><a href="#b:Compilation">Compilation</a></li>
+        <li><a href="#b:Testing">Testing</a></li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h2 id="a:Introduction">Introduction</h2>
+
+<p>The files doing the pretty printings are located in Camlp5 sources
+in the directory "etc". Peruse them if you are interested in creating
+new ones. The main ones are:</p>
+
+<ul>
+  <li>"etc/pr_r.ml": pretty print in revised syntax.</li>
+  <li>"etc/pr_o.ml": pretty print in normal syntax.</li>
+  <li>"etc/pr_rp.ml": rebuilding parsers in their original revised
+    syntax.</li>
+  <li>"etc/pr_op.ml": rebuilding parsers in their original normal
+    syntax.</li>
+  <li>"etc/pr_extend.ml": rebuilding EXTEND in its original
+    syntax.</li>
+</ul>
+
+<p>We present here how this system works inside these files. First,
+  the general principles. Second, more details of the
+  implementation.</p>
+
+<h2 id="a:Principles">Principles</h2>
+
+<h3 id="b:Using-module-Pretty">Using module Pretty</h3>
+
+<p>All functions in OCaml pretty printing take a parameter named "the
+printing context" (variable <code>pc</code>). It is a record holding :</p>
+
+<ul>
+  <li>The current indendation : <code>pc.ind</code></li>
+  <li>What should be printed before, in the same line
+  : <code>pc.bef</code></li>
+  <li>What should be printed after, in the same line
+    : <code>pc.aft</code></li>
+  <li>The dangling token, useful in normal syntax to know whether
+    parentheses are necessary : <code>pc.dang</code></li>
+</ul>
+
+<p>A typical pretty printing function calls the
+  function <code>horiz_vertic</code> of the library
+  module <a href="pretty.html">Pretty</a>. This function takes two
+  functions as parameter:</p>
+
+<ul>
+  <li>The way to print the data in one only line (<i>horizontal</i>
+    printing)</li>
+  <li>The way to print the data in two or more lines (<i>vertical</i>
+    printing)</li>
+</ul>
+
+<p>Both functions catenate the strings by using the
+  function <code>sprintf</code> of the library
+  module <code>Pretty</code> which controls whether the printed data
+  holds in the line or not. They generally call, recursively, other
+  pretty printing functions with the same behaviour.</p>
+
+<p>Let us see an example (fictitious) of printing an OCaml
+  application. Let us suppose we have an application expression
+  "<code>e1 e2</code>" to pretty print where <code>e1</code>
+  and <code>e2</code> are sub-expressions. If both expressions and
+  their application holds on one only line, we want to see:</p>
+
+<pre>
+  e1 e2
+</pre>
+
+<p>On the other hand, if they do not hold on one only line, we want to
+  see <code>e2</code> in another line with, say, an indendation of 2
+  spaces:</p>
+
+<pre>
+  e1
+    e2
+</pre>
+
+<p>Here is a possible implementation. The function has been
+named <code>expr_app</code> and can call the function <code>expr</code> to
+print the sub-expressions <code>e1</code> and <code>e2</code>:</p>
+
+<pre>
+  value expr_app pc e1 e2 =
+    horiz_vertic
+      (fun () ->
+         let s1 = expr {(pc) with aft = ""} e1 in
+         let s2 = expr {(pc) with bef = ""} e2 in
+         sprintf "%s %s" s1 s2)
+      (fun () ->
+         let s1 = expr {(pc) with aft = ""} e1 in
+         let s2 =
+           expr
+             {(pc) with
+                ind = pc.ind + 2;
+                bef = tab (pc.ind + 2)}
+             e2
+         in
+         sprintf "%s\n%s" s1 s2)
+  ;
+</pre>
+
+<p>The first function is the <i>horizontal</i> printing. It ends with a
+  <code>sprintf</code> separating the printing of <code>e1</code>
+  and <code>e2</code> by a space. The possible "before part"
+  (<code>pc.bef</code>) and "after part" (<code>pc.aft</code>) are
+  transmitted in the calls of the sub-functions.</p>
+
+<p>The second function is the <i>vertical</i> printing. It ends with a
+  <code>sprintf</code> separating the printing of <code>e1</code>
+  and <code>e2</code> by a newline. The second line starts with an
+  indendation, using the "before part" (<code>pc.bef</code>) of the
+  second call to <code>expr</code>.</p>
+
+<p>The pretty printing library
+  function <code>Pretty.horiz_vertic</code> calls the first
+  (<i>horizontal</i>) function, and if it fails (either
+  because <code>s1</code> or <code>s2</code> are too long or hold
+  newlines, or because the final string produced
+  by <code>sprintf</code> is too long), calls the second
+  (<i>vertical</i>) function.</p>
+
+<p>Notice that the parameter <code>pc</code> contains a
+  field <code>pc.bef</code> (what should be printed before in the same
+  line), which in both cases is transmitted to the printing
+  of <code>e1</code> (since the syntax <code>{(pc) with aft =
+  ""}</code> is a record with <code>pc.bef</code> kept). Same for the
+  field <code>pc.aft</code> transmitted to the printing
+  of <code>e2</code>.</p>
+
+<h3 id="b:Using-EXTEND_PRINTER-statement">Using EXTEND_PRINTER statement</h3>
+
+<p>This system is combined to the <a href="printers.html">extensible
+  printers</a> to allow the extensibility of the pretty printing.</p>
+
+<p>The code above actually looks like:</p>
+
+<pre>
+  EXTEND_PRINTER
+    pr_expr:
+      [ [ &lt;:expr&lt; $e1$ $e2$ &gt;&gt; ->
+            horiz_vertic
+              (fun () ->
+                 let s1 = curr {(pc) with aft = ""} e1 in
+                 let s2 = next {(pc) with bef = ""} e2 in
+                 sprintf "%s %s" s1 s2)
+              (fun () ->
+                 let s1 = curr {(pc) with aft = ""} e1 in
+                 let s2 =
+                   next
+                     {(pc) with
+                        ind = pc.ind + 2;
+                        bef = tab (pc.ind + 2)}
+                     e2
+                 in
+                 sprintf "%s\n%s" s1 s2) ] ]
+    ;
+  END;
+</pre>
+
+<p>The variable "<tt>pc</tt>" is implicit in the semantic actions of
+  the syntax "<tt>EXTEND_PRINTER</tt>", as well as two other
+  variables: "<tt>curr</tt>" and "<tt>next</tt>".</p>
+
+<p>These parameters, "<tt>curr</tt>" and "<tt>next</tt>", correspond
+  to the pretty printing of, respectively, the current level and the
+  next level. Since the application in OCaml is left associative, the
+  first sub-expression is printed at the same (current) level and the
+  second one is printed at the next level. We also see a call
+  to <code>next</code> in the last (2nd) case of the function to treat
+  the other cases in the next level.</p>
+
+<h3 id="b:Dangling-else--bar--semicolon">Dangling else, bar, semicolon</h3>
+
+<p>In normal syntax, there are cases where it is necessary to enclose
+  expressions between parentheses (or
+  between <span class="parenthesis">begin</span>
+  and <span class="parenthesis">end</span>, which is equivalent in
+  that syntax). Three tokens may cause problems: the
+  "<code>else</code>", the vertical bar "<code>|</code>" and the
+  semicolon "<code>;</code>". Here are examples where the presence of
+  these tokens constrains the previous expression to be
+  parenthesized. In these three examples, removing
+  the <span class="parenthesis">begin</span>..<span class="parenthesis">end</span>
+  enclosers would change the meaning of the expression because the
+  dangling token would be included in that expression:</p>
+
+<p>Dangling else:</p>
+
+<pre>
+  if a then <span class="parenthesis">begin</span> if b then c <span class="parenthesis">end</span> <span class="dangling">else</span> d
+</pre>
+
+<p>Dangling bar:</p>
+
+<pre>
+  function
+    A ->
+      <span class="parenthesis">begin</span> match a with
+        B -> c
+      | D -> e
+      <span class="parenthesis">end</span>
+  <span class="dangling">|</span> F -> g
+</pre>
+
+<p>Dangling semicolon:</p>
+
+<pre>
+  if a then b
+  else <span class="parenthesis">begin</span>
+    let c = d in
+    e
+  <span class="parenthesis">end</span><span class="dangling">;</span>
+  f
+</pre>
+
+<p>The information is transmitted by the
+  value <code>pc.dang</code>. In the first example above, while
+  displaying the "<code>then</code>" part of the outer
+  "<code>if</code>", the sub-expression is called with the
+  value <code>pc.dang</code> set to
+  <code>"else"</code> to inform the last sub-sub-expression that it is
+  going to be followed by that token. When a "<code>if</code>"
+  expression should be displayed without "<code>else</code>" part, and
+  that its "<code>pc.dang</code>" is "else", it should be enclosed
+  with spaces.</p>
+
+<p>This problem does not exist in revised syntax. While pretty
+  printing in revised syntax, the parameter <code>pc.dang</code> is
+  not necessary and remains the empty string.</p>
+
+<h3 id="b:By-level">By level</h3>
+
+<p>As explained in the chapter about
+  the <a href="printers.html">extensible printers</a> (with the
+  EXTEND_PRINTER statement), printers contain levels. The global
+  printer variable of expressions is named "<tt>pr_expr</tt>" and
+  contain all definitions for pretty printing expressions, organized
+  by levels, just like the parsing of expressions. The definition of
+  "<tt>pr_expr</tt>" actually looks like this:</p>
+
+<pre>
+  EXTEND_PRINTER
+    pr_expr:
+      [ "top"
+        [ (* code for level "top" *) ]
+      | "add"
+        [ (* code for level "add" *) ]
+      | "mul"
+        [ (* code for level "mul" *) ]
+      | "apply"
+        [ (* code for level "apply" *) ]
+      | "simple"
+        [ (* code for level "add" *) ] ]
+    ;
+  END;
+</pre>
+
+<h2 id="a:The-Prtools-module">The Prtools module</h2>
+
+<p>The Prtools module is defined inside Camlp5 for pretty printing
+  kits. It provides variables and functions to process comments, and
+  meta-functions to process lists (horizontally, vertically,
+  paragraphly).</p>
+
+<h3 id="b:Comments">Comments</h3>
+
+<dl>
+  <dt><tt>value comm_bef : int -> MLast.loc -> string;</tt></dt>
+  <dd>"<tt>comm_bef ind loc</tt>" get the comment from the source just
+    before the given location "<tt>loc</tt>". This comment may be
+    reindented using "<tt>ind</tt>". Returns the empty string if no
+    comment found.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value source : ref string;</tt></dt>
+  <dd>The initial source string, which must be set by the pretty
+    printing kit. Used by [comm_bef] above.</dd>
+  <dt><tt>value set_comm_min_pos : int -> unit;</tt></dt>
+  <dd>Set the minimum position of the source where comments can be
+    found, (to prevent possible duplication of comments).</dd>
+</dl>
+
+<h3 id="b:Meta-functions-for-lists">Meta functions for lists</h3>
+
+<dl>
+  <dt><tt>type pr_fun 'a = pr_context -> 'a -> string;</tt></dt>
+  <dd>Type of printer functions.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value hlist : pr_fun 'a -> pr_fun (list 'a);</tt></dt>
+  <dd>[hlist elem pc el] returns the horizontally pretty printed
+    string of a list of elements; elements are separated with
+    spaces.<br/>The list is displayed in one only line. If this
+    function is called in the context of the [horiz] function of the
+    function [horiz_vertic] of the module Printing, and if the line
+    overflows or contains newlines, the function internally fails (the
+    exception is catched by [horiz_vertic] for a vertical pretty
+    print).</dd>
+  <dt><tt>value hlist2 : pr_fun 'a -> pr_fun 'a -> pr_fun (list 'a);</tt></dt>
+  <dd>horizontal list with a different function from 2nd element on.</dd>
+  <dt><tt>value hlistl : pr_fun 'a -> pr_fun 'a -> pr_fun (list 'a);</tt></dt>
+  <dd>horizontal list with a different function for the last element.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value vlist : pr_fun 'a -> pr_fun (list 'a);</tt></dt>
+  <dd>[vlist elem pc el] returns the vertically pretty printed string
+    of a list of elements; elements are separated with newlines and
+    indentations.</dd>
+  <dt><tt>value vlist2 : pr_fun 'a -> pr_fun 'a -> pr_fun (list
+   'a);</tt></dt>
+  <dd>vertical list with different function from 2nd element on.</dd>
+  <dt><tt>value vlist3 : pr_fun ('a * bool) -> pr_fun ('a * bool) -> pr_fun
+      (list 'a);</tt></dt>
+  <dd>vertical list with different function from 2nd element on, the
+    boolean value being True for the last element of the list.</dd>
+  <dt><tt>value vlistl : pr_fun 'a -> pr_fun 'a -> pr_fun (list
+   'a);</tt></dt>
+  <dd>vertical list with different function for the last element.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value plist : pr_fun 'a -> int -> pr_fun (list ('a *
+   string));</tt></dt>
+  <dd>[plist elem sh pc el] returns the pretty printed string of a
+   list of elements with separators. The elements are printed
+   horizontally as far as possible. When an element does not fit on
+   the line, a newline is added and the element is displayed in the
+   next line with an indentation of [sh]. [elem] is the function to
+   print elements, [el] a list of pairs (element * separator) (the
+   last separator being ignored).</dd>
+  <dt><tt>value plistb : pr_fun 'a -> int -> pr_fun (list ('a *
+      string));</tt></dt>
+  <dd>[plist elem sh pc el] returns the pretty printed string of the
+   list of elements, like with [plist] but the value of [pc.bef]
+   corresponds to an element already printed, as it were on the
+   list. Therefore, if the first element of [el] does not fit in the
+   line, a newline and a tabulation is added after [pc.bef].</dd>
+  <dt><tt>value plistl : pr_fun 'a -> pr_fun 'a -> int -> pr_fun (list
+      ('a * string));</tt></dt>
+  <dd>paragraph list with a different function for the last element.</dd>
+</dl>
+
+<dl>
+  <dt><tt>value hvlistl : pr_fun 'a -> pr_fun 'a -> pr_fun (list
+   'a);</tt></dt>
+  <dd>applies "<tt>hlistl</tt>" if the context is horizontal; else
+    applies "<tt>vlistl</tt>".</dd>
+</dl>
+
+<h3 id="b:Miscellaneous">Miscellaneous</h3>
+
+<dl>
+  <dt><tt>value tab : int -> string;</tt></dt>
+  <dd>[tab ind] is equivalent to [String.make ind ' ']</dd>
+</dl>
+
+<dl>
+  <dt><tt>value flatten_sequence : MLast.expr -> option (list
+   MLast.expr);</tt></dt>
+  <dd>[flatten_sequence e]. If [e] is an expression representing a
+   sequence, return the list of expressions of the sequence. If some
+   of these expressions are already sequences, they are flattened in
+   the list. If that list contains expressions of the form let..in
+   sequence, this sub-sequence is also flattened with the let..in
+   applying only to the first expression of the sequence. If [e] is a
+   let..in sequence, it works the same way. If [e] is not a sequence
+   nor a let..in sequence, return None.</dd>
+</dl>
+
+<h2 id="a:Example-:-repeat--until">Example : repeat..until</h2>
+
+<p>This pretty prints the example
+  <a href="syntext.html#a:An-example-:-repeat..until">repeat..until</a>
+  statement programmed in the chapter <a href="syntext.html">Syntax
+  extensions</a> (first version generating a "<tt>while</tt>"
+  statement).</p>
+
+<h3 id="b:The-code">The code</h3>
+
+<p>The pattern generated by the "repeat" statement is recognized
+  (sequence ending with a "<tt>while</tt>" whose contents is the same
+  than the beginning of the sequence) by the function "is_repeat" and
+  the repeat statement is pretty printed in its initial form using the
+  function "horiz_vertic" of the Pretty module. File
+  "<tt>pr_repeat.ml</tt>":</p>
+
+<pre>
+  #load "pa_extprint.cmo";
+  #load "q_MLast.cmo";
+
+  open Pcaml;
+  open Pretty;
+  open Prtools;
+
+  value eq_expr_list el1 el2 =
+    if List.length el1 <> List.length el2 then False
+    else List.for_all2 eq_expr el1 el2
+  ;
+
+  value is_repeat el =
+    match List.rev el with
+    [ [<:expr< while not $e$ do { $list:el2$ } >> :: rel1] ->
+        eq_expr_list (List.rev rel1) el2
+    | _ -> False ]
+  ;
+
+  value semi_after pr pc = pr {(pc) with aft = sprintf "%s;" pc.aft};
+
+  EXTEND_PRINTER
+    pr_expr:
+      [ [ <:expr< do { $list:el$ } >> when is_repeat el ->
+            match List.rev el with
+            [ [<:expr< while not $e$ do { $list:el$ } >> :: _] ->
+                horiz_vertic
+                  (fun () ->
+                     sprintf "%srepeat %s until %s%s" pc.bef
+                       (hlistl (semi_after curr) curr
+                          {(pc) with bef = ""; aft = ""} el)
+                       (curr {(pc) with bef = ""; aft = ""} e)
+                       pc.aft)
+                  (fun () ->
+                     let s1 = sprintf "%srepeat" (tab pc.ind) in
+                     let s2 =
+                       vlistl (semi_after curr) curr
+                         {(pc) with
+                          ind = pc.ind + 2;
+                          bef = tab (pc.ind + 2);
+                          aft = ""}
+                         el
+                     in
+                     let s3 =
+                       sprintf "%suntil %s" (tab pc.ind)
+                         (curr {(pc) with bef = ""} e)
+                     in
+                     sprintf "%s\n%s\n%s" s1 s2 s3)
+            | _ -> assert False ] ] ]
+    ;
+  END;
+</pre>
+
+<h3 id="b:Compilation">Compilation</h3>
+
+<pre>
+  ocamlc -pp camlp5r -I +camlp5 -c pr_repeat.ml
+</pre>
+
+<h3 id="b:Testing">Testing</h3>
+
+<p>Getting the same files "foo.ml" and "bar.ml" of the repeat syntax
+  example:</p>
+
+<pre>
+  $ cat bar.ml
+  #load "./foo.cmo";
+  value x = ref 42;
+  repeat
+    print_int x.val;
+    print_endline "";
+    x.val := x.val + 3
+  until x.val > 70;
+
+  $ camlp
+</pre>
+
+<p>Without the pretty printing kit:</p>
+
+<pre>
+  $ camlp5r pr_r.cmo bar.ml
+  #load "./foo.cmo";
+  value x = ref 42;
+  do {
+    print_int x.val;
+    print_endline "";
+    x.val := x.val + 3;
+    while not (x.val > 70) do {
+      print_int x.val;
+      print_endline "";
+      x.val := x.val + 3
+    }
+  };
+</pre>
+
+<p>With the pretty printing kit:</p>
+
+<pre>
+  $ camlp5r pr_r.cmo ./pr_repeat.cmo bar.ml -l 75
+  #load "./foo.cmo";
+  value x = ref 42;
+  repeat
+    print_int x.val;
+    print_endline "";
+    x.val := x.val + 3
+  until x.val > 70;
+</pre>
+
+<a class="toplink" href="opretty.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

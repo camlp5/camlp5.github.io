@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: directives.html,v 6.1 2010-09-15 16:00:19 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>Directives</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Directives</h1>
+
+<p>Directives in normal or revised syntax are statements at top level,
+  or, more generally, as signature items or structure items, which
+  stops the preprocessor for evaluate things - which can change the
+  behaviour of the preprocessor, for example to add syntax, load
+  syntax extensions and so on. After the directive is evaluated,
+  the parsing resumes.</p>
+
+<p>Directives begin with '#', followed by an identifier, and,
+  optionnally by an expression. They are usable in source files the
+  and generally in the ocaml toplevel too.</p>
+
+<p>Four predefined directives exist: #load, #directory, #option and
+  #use. It is also possible to add other directives. An example of
+  that is the parsing kit <a href="pragma.html">pa_pragma.cmo</a>
+  which adds a new directive #pragma.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Predefined-directives">Predefined directives</a>
+      <ul>
+        <li><a href="#b:-load--name-">#load "name"</a></li>
+        <li><a href="#b:-directory--name-">#directory "name"</a></li>
+        <li><a href="#b:-use--name-">#use "name"</a></li>
+        <li><a href="#b:-option--option-">#option "option"</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:User-directives">User directives</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Predefined-directives">Predefined directives</h2>
+
+<p>The predefined directives are:</p>
+
+<h3 id="b:-load--name-">#load "name"</h3>
+
+<p>Loads an object file (ocaml cmo or cma file) in the core,
+  evaluating it.  This is typically to be used in the ocaml toplevel
+  to add an syntax extension kit.</p>
+
+<p>For example, in the toplevel, loading
+  the <a href="quot.html">quotation</a> expander
+  of <a href="ast_strict.html">ocaml syntax trees</a>:</p>
+
+<pre>
+  # #load "q_MLast.cmo";
+
+  # value loc = Ploc.dummy;
+  value loc : Ploc.t = &lt;abstr&gt;
+
+  # &lt;:expr&lt; fun x -&gt; x &gt;&gt;;
+  - : MLast.expr =
+  MLast.ExFun &lt;abstr&gt;
+    (Ploc.VaVal
+       [(MLast.PaLid &lt;abstr&gt; (Ploc.VaVal "x"), Ploc.VaVal None,
+         MLast.ExLid &lt;abstr&gt; (Ploc.VaVal "x"))])
+</pre>
+
+<p>In a source file, the '#load' directive is equivalent to put the
+  object file as camlp5 parameter among the 'load options':</p>
+
+<pre>
+   $ cat myfile.ml
+
+   #load "pa_extend.cmo";
+   value g = Grammar.gcreate (Plexer.gmake ());
+   value e = Grammar.Entry.create g "e";
+
+   EXTEND e: [[ i = INT -> i ]]; END;
+
+   $ ocamlc -pp camlp5r -I +camlp5 -c myfile.ml
+</pre>
+
+<p>which is equivalent to, without using '#load':</p>
+
+<pre>
+   $ cat myfile2.ml
+
+   value g = Grammar.gcreate (Plexer.gmake ());
+   value e = Grammar.Entry.create g "e";
+
+   EXTEND e: [[ i = INT -> i ]]; END;
+</pre>
+
+<p>and compiling it like this:</p>
+
+<pre>
+   $ ocamlc -pp 'camlp5r pa_extend.cmo' -I +camlp5 -c myfile2.ml
+</pre>
+
+<h3 id="b:-directory--name-">#directory "name"</h3>
+
+<p>Adds a new directory in the camlp5 path searching for loaded files
+  (using the directive #load above). This is equivalent to the option
+  '-I' of the camlp5 command. See the camlp5 man page.</p>
+
+<h3 id="b:-use--name-">#use "name"</h3>
+
+<p>Loads a source file name. Useful in the ocaml toplevel to test a
+  source file.</p>
+
+<h3 id="b:-option--option-">#option "option"</h3>
+
+<p>Adds an option as if it were added in camlp5 command line (to be
+  used in a source file, not in the ocaml toplevel). Implemented
+  only on options without an extra parameter.</p>
+
+<p>For example, the syntax
+  kit <a href="grammars.html">pa_extend.cmo</a> adds an option named
+  '-split_ext'. This can be viewed through the command:</p>
+
+<pre>
+  camlp5r pa_extend.cmo -help
+</pre>
+
+<p>Thanks to the directive '#option', the following command in the
+  shell:</p>
+
+<pre>
+  $ camlp5r pa_extend.cmo -split_ext file.ml
+</pre>
+
+<p>can be used only as:</p>
+
+<pre>
+  $ camlp5r file.ml
+</pre>
+
+<p>providing the file starts with:</p>
+
+<pre>
+  #load "pa_extend.cmo";
+  #option "-split_ext";
+</pre>
+
+<h2 id="a:User-directives">User directives</h2>
+
+<p>It is possible to add any extra directive. The syntax
+  kit <a href="pragma.html">pragma.cmo</a>, for example, adds a
+  directive named '#pragma'.</p>
+
+<p>A user syntax kit can add its directives using the function
+  "add_directive" of the module <a href="pcaml.html">Pcaml</a>.</p>
+
+<a class="toplink" href="directives.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

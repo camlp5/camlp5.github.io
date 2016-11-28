@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: strict.html,v 6.1 2010-09-15 16:00:20 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>Camlp5</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Transitional and Strict modes</h1>
+
+<p>Since version 5.00, Camlp5 has been able to be installed in two
+  modes: the <em>transitional</em> mode and the <em>strict</em>
+  mode. When Camlp5 is installed, it works with one only of these
+  modes (the two modes contain indeed different definitions of some
+  interfaces and are incompatible with one another). The user must
+  choose in which mode he wants to use Camlp5.</p>
+
+<p>This notion has been introduced to ensure backward compatibility of
+  the Camlp5 syntax tree, together with the usage of a new quotation
+  kit "<tt>q_ast.cmo</tt>", which allows to use Camlp5 syntax tree
+  quotations in user syntax (with all its possible extensions).</p>
+
+<dl style="font-size:80%; font-style:oblique">
+  <dt>A short example of these syntax tree quotations:</dt>
+  <dd>
+    <p>If the syntax of the <a href="grammars.html">extensible
+        grammars</a> has been added, it is possible to write things
+      like:</p>
+<pre>
+  &lt;:expr&lt; EXTEND a: [ [ c = d -> $e$ ] ]; END >>;
+</pre>
+    <p>representing the syntax tree of this statement: this is not
+      possible with the classical quotation kit "<tt>q_MLast.cmo</tt>"
+      because all quotations must be there only
+      in <a href="revsynt.html">revised syntax</a> and without syntax
+      extensions.</p>
+  </dd>
+</dl>
+
+<p>Here are the differences between the two modes:</p>
+
+<dl>
+  <dt>Transitional</dt>
+  <dd>
+    <dl>
+      <dt>Compatibility</dt>
+      <dd>The syntax tree is fully compatible with the previous
+        versions of Camlp5, no changes has to be done in the users'
+        programs.</dd>
+      <dt>Quotation kit "<tt>q_ast.cmo</tt>"</dt>
+      <dd>The antiquotations are not available: when used, a syntax
+        error message is displayed.</dd>
+    </dl>
+  </dd>
+  <dt>Strict</dt>
+  <dd>
+    <dl>
+      <dt>Compatibility</dt>
+      <dd>The syntax tree is different, users' programs may have to be
+        modified, but not necessarily.</dd>
+      <dt>Quotation kit "<tt>q_ast.cmo</tt>"</dt>
+      <dd>All antiquotations are available.</dd>
+    </dl>
+  </dd>
+</dl>
+
+<p>In strict mode, the programs have more chances to be compatible
+  with the previous versions if they use syntax tree quotations rather
+  than syntax tree nodes. A solution is therefore to change the
+  expressions and patterns using nodes into expressions and patterns
+  using quotations (which is backward compatible).</p>
+
+<h2 id="a:Which-mode-is-installed--">Which mode is installed ?</h2>
+
+<p>To determine the mode of an installed version of Camlp5, type:</p>
+
+<pre>
+  camlp5 -pmode
+</pre>
+
+<h2 id="a:Selecting-mode-when-compiling-Camlp5">Selecting mode when compiling Camlp5</h2>
+
+<p>When compiling Camlp5 from source, the mode must first be selected
+  at configuration time. The <em>configure</em> script must be run
+  with one of these options:</p>
+
+<pre>
+  ./configure -strict
+  ./configure -transitional
+</pre>
+
+<p>The default is "transitional", i.e. without option, the sources are
+  compiled in transitional mode.</p>
+
+<a class="toplink" href="strict.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

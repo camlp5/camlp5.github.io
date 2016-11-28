@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: fparsers.html,v 6.1 2010-09-15 16:00:19 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>functional parsers</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Functional parsers</h1>
+
+<p>Purely functional parsers are an alternative
+  of <a href="parsers.html">stream parsers</a> where the used stream
+  type is a lazy non-destructive type. These streams are lazy values,
+  as in classical stream parsers, but the values are not removed as
+  long as the parsing advances.</p>
+
+<p>To make them work, the parsers of purely functional streams return,
+  not the simple values, but a value of type option :
+  "<code>None</code>" meaning "no match" (the equivalent of the
+  exception "<code>Parse.Failure</code>" of normal streams) and
+  "<code>Some (r, s)</code>" meaning "the result is r and the
+  remaining stream is s".</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Syntax">Syntax</a></li>
+    <li><a href="#a:Streams">Streams</a>
+      <ul>
+        <li><a href="#b:Fstream-from">Fstream.from</a></li>
+        <li><a href="#b:Fstream-of_list">Fstream.of_list</a></li>
+        <li><a href="#b:Fstream-of_string">Fstream.of_string</a></li>
+        <li><a href="#b:Fstream-of_channel">Fstream.of_channel</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Semantics-of-parsers">Semantics of parsers</a>
+      <ul>
+        <li><a href="#b:Fparser">Fparser</a></li>
+        <li><a href="#b:Error-position">Error position</a></li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h2 id="a:Syntax">Syntax</h2>
+
+<p>The syntax of purely functional parsers, when loading
+  "pa_fstream.cmo", is the following:</p>
+
+<pre>
+          expression ::= fparser
+                       | match-with-fparser
+             fparser ::= "fparser" pos-opt "[" parser-cases "]"
+                       | "fparser" pos-opt parser-case
+  match-with-fparser ::= "match" expression "with" fparser
+        parser-cases ::= parser-cases parser-case
+                       | &lt;nothing&gt;
+         parser-case ::= "[:" stream-pattern ":]" pos-opt "->" expression
+                       | "[:" ":]" pos-opt "->" expression
+      stream-pattern ::= stream-patt-comp
+                       | stream-patt-comp ";" stream-pattern
+    stream-patt-comp ::= "`" pattern
+                       | "`" pattern "when" expression
+                       | pattern "=" expression
+                       | pattern
+                       | "when" expression
+             pos-opt ::= pattern
+                       | &lt;nothing&gt;
+</pre>
+
+<p>Notice that, unlike classical parsers, there is no difference, in a
+  stream pattern, between the first stream pattern component and the
+  other ones. In particular, there is no "question mark" syntax and
+  expression optionnally ending those components. Moreover, the
+  "lookahead" case is not necessary, we see further why. The syntaxes
+  "pattern when" and "let..in" inside stream patterns we see in
+  classical parsers are not implemented. </p>
+
+<h2 id="a:Streams">Streams</h2>
+
+<p>The functional parsers are functions taking as parameters
+  functional streams, which are values of type "<code>Fstream.t
+  a</code>" for some type "<code>a</code>". It is possible to build
+  functional streams using the functions defined in the module
+  "<code>Fstream</code>":</p>
+
+<h3 id="b:Fstream-from">Fstream.from</h3>
+
+<p>"<code>Fstream.from f</code>" returns a stream built from the
+function "<code>f</code>". To create a new stream element, the
+function "<code>f</code>" is called with the current stream count,
+starting with zero. The user function "<code>f</code>" must return
+either "<code>Some &lt;value&gt;</code>" for a value or
+"<code>None</code>" to specify the end of the stream.</p>
+
+<h3 id="b:Fstream-of_list">Fstream.of_list</h3>
+
+<p>Return a stream built from the list in the same order.</p>
+
+<h3 id="b:Fstream-of_string">Fstream.of_string</h3>
+
+<p>Return a stream of the characters of the string parameter.</p>
+
+<h3 id="b:Fstream-of_channel">Fstream.of_channel</h3>
+
+<p>Return a stream of the characters read from the input channel
+parameter.</p>
+
+<h2 id="a:Semantics-of-parsers">Semantics of parsers</h2>
+
+<h3 id="b:Fparser">Fparser</h3>
+
+<p>The purely functional parsers act like classical parsers, with a
+recursive descent algorithm, except that:</p>
+
+<ul>
+  <li>If the first stream pattern component matches the beginning of
+    the stream, there is no error if the following stream patterns
+    components do not match: the control simply passes to the next
+    parser case with the initial stream.</li>
+  <li>If the semantic actions are of type "<code>t</code>", the result
+    of the parser is of type "<code>option (t * Fstream.t)</code>",
+    not just "<code>t</code>" like in classical parsers. If a stream
+    pattern matches, the semantic action is evaluated, giving some
+    result "<code>e</code>" and the result of the parser is
+    "<code>Some (e, strm)</code>" where "<code>strm</code>" is the
+    remaining stream.</li>
+  <li>If no parser case matches, the result of the parser is
+    "<code>None</code>".</li>
+</ul>
+
+<h3 id="b:Error-position">Error position</h3>
+
+<p>A difficulty, with purely functional parsers, is how to find the
+  position of the syntax error, when the input is wrong. Since the
+  system tries all parsers cases before returning "<code>None</code>",
+  and that the initial stream is not affected, it is not possible to
+  directly find where the error happened. This is a problem for
+  parsing using backtracking (here, it is limited backtracking, but
+  the problem is the same).</p>
+
+<p>The solution is to use the function
+  "<tt>Fstream.count_unfrozen</tt>" applied to the initial
+  stream. Like its name says, it returns the number of unfrozen
+  elements of the stream, which is exactly the longest match found. If
+  the input is a stream of characters, the return of this function is
+  exactly the position in number of characters from the beginning of
+  the stream.</p>
+
+<p>However, it is not possible to know directly which rule failed and
+  therefore it is not possible, as in classical parsers, to specify
+  and get clear error messages. Future versions of purely functional
+  parsers may propose solutions to resolve this problem.</p>
+
+<p>Notice that, if using the "<tt>count_unfrozen</tt>" method, it is
+  not possible to reuse that same stream to call another parser, and
+  hope to get the right position of the error, if another error
+  happens, since it may test less terminals than the first parser. Use
+  a fresh stream in this case, if possible.</p>
+
+<a class="toplink" href="fparsers.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

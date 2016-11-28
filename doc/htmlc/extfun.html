@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: extfun.html,v 6.1 2010-09-15 16:00:19 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>Extensible functions</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Extensible functions</h1>
+
+<p>Extensible functions allows the definition of pattern matching functions
+which are extensible by adding new cases that are inserted
+automatically at the proper place by comparing the patterns. The pattern
+cases are ordered according to syntax trees representing them, "when"
+statements being inserted before the cases without "when".</p>
+
+<p>Notice that extensible functions are functional: when extending a
+function, a new function is returned.</p>
+
+<p>The extensible functions are used in
+the <a href="pretty.html">pretty printing</a> system of Camlp5.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Syntax">Syntax</a></li>
+    <li><a href="#a:Semantics">Semantics</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Syntax">Syntax</h2>
+
+<p>The syntax of the extensible functions, when loading
+"pa_extfun.cmo", is the following:</p>
+
+<pre>
+           expression ::= extensible-function
+  extensible-function ::= "extfun" expression "with" "[" match-cases "]"
+          match-cases ::= match-case "|" match-cases
+           match-case ::= pattern "->" expression
+                        | pattern "when" expression "->" expression
+</pre>
+
+<p>It is an extension of the same syntax as the "match" and "try"
+constructions.</p>
+
+<h2 id="a:Semantics">Semantics</h2>
+
+<p>The statement "extend" defined by the syntax takes an extensible
+function and return another extensible function with the new match
+cases inserted at the proper place within the initial extensible
+function.</p>
+
+<p>Extensible functions are of type "<code>Extfun.t a b</code>", which
+is an abstract type, where "<code>a</code>" and "<code>b</code>" are
+respectively the type of the patterns and the type of the
+expressions. It corresponds to a function of type "<code>a ->
+b</code>".</p>
+
+<p>The function "<code>Extfun.apply</code>" takes an extensible
+function as parameter and returns a function which can be applied
+like a normal function.</p>
+
+<p>The value "<code>Extfun.empty</code>" is an empty extensible
+function, of type "<code>Extfun.t 'a 'b</code>". When applied with
+"<code>Extfun.apply</code>" and a parameter, it raises the exception
+"<code>Extfun.Failure</code>" whatever the parameter.</p>
+
+<p>For debugging, it is possible to use the function
+"<code>Extfun.print</code>" which displays the match cases of the
+extensible functions. (Only the patterns are displayed in
+clear text, the associated expressions are not.)</p>
+
+<p>The match cases are inserted according to the following rules:</p>
+
+<ul>
+  <li>The match cases are inserted in the order they are defined in
+    the syntax "<code>extend</code>"</li>
+  <li>A match case pattern with "when" is inserted before a match case
+    pattern without "when".</li>
+  <li>Two match cases patterns both with "when" or both without "when"
+    are inserted according to the alphabetic order of some internal
+    syntax tree of the patterns where bound variables names are
+    <span class="u">not</span> taken into account.</li>
+  <li>If two match cases patterns without "when" have the same
+    patterns internal syntax tree, the initial one is silently
+    removed.</li>
+  <li>If two match cases patterns with "when" have the same patterns
+    internal syntax tree, the new one is inserted before the old
+    one.</li>
+</ul>
+
+<a class="toplink" href="extfun.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: pretty.html,v 6.3 2010-10-08 19:55:15 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>Pretty print</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Pretty print</h1>
+
+<p>A pretty print system is provided in the library module Pretty. It
+  allows one to pretty print data or programs. The Pretty module
+  contains:</p>
+
+<ul>
+  <li>The function "horiz_vertic" to specify how data must be printed.</li>
+  <li>The function "sprintf" to format strings.</li>
+  <li>The variable "line_length" which is a reference specifying the
+    maximum lines lengths.</li>
+</ul>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Module-description">Module description</a>
+      <ul>
+        <li><a href="#b:horiz_vertic">horiz_vertic</a></li>
+        <li><a href="#b:sprintf">sprintf</a></li>
+        <li><a href="#b:line_length">line_length</a></li>
+        <li><a href="#b:horizontally">horizontally</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Example">Example</a></li>
+    <li><a href="#a:Programming-with-Pretty">Programming with Pretty</a>
+      <ul>
+        <li><a href="#b:Hints">Hints</a></li>
+        <li><a href="#b:How-to-cancel-a-horizontal-print">How to cancel a horizontal print</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Remarks">Remarks</a>
+      <ul>
+        <li><a href="#b:Kernel">Kernel</a></li>
+        <li><a href="#b:Strings-vs-Channels">Strings vs Channels</a></li>
+        <li><a href="#b:Strings-or-other-types">Strings or other types</a></li>
+        <li><a href="#b:Why-raising-exceptions--">Why raising exceptions ?</a></li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h2 id="a:Module-description">Module description</h2>
+
+<h3 id="b:horiz_vertic">horiz_vertic</h3>
+
+<p>The function "horiz_vertic" takes two functions as parameters. When
+  invoked, it calls its first function. If that function fails with
+  some specific internal error (that the function "<code>sprintf</code>"
+  below may raise), the second function is called.</p>
+
+<p>The type of "horiz_vertic" is:</p>
+
+<pre>
+  (unit -> 'a) -> (unit -> 'a) -> 'a
+</pre>
+
+<h4>the horizontal function</h4>
+
+<p>The first function is said to be the "horizontal" function. It
+  tries to pretty print the data on a single line. In the context of
+  this function, if the strings built by the function "sprintf" (see
+  below) contain newlines or have lengths greater than "line_length",
+  the function fails (with a internal exception local to the
+  module).</p>
+
+<h4>the vertical function</h4>
+
+<p>In case of failure of the "horizontal function", the second
+  function of "horiz_vertic", the "vertical" function, is called. In
+  the context of that function, the "sprintf" function behaves like
+  the normal "sprintf" function of the OCaml library module
+  "Printf".</p>
+
+<h3 id="b:sprintf">sprintf</h3>
+
+<p>The function "sprintf" works like its equivalent in the module
+  "Printf" of the OCaml library, and takes the same parameters. Its
+  difference is that if it is called in the context of the first
+  function (the "horizontal" function) of the function "horiz_vertic"
+  (above), all strings built by "sprintf" are checked for newlines or
+  length greater than the maximum line length. If either occurs, the
+  "sprintf" function fails and the horizontal function fails.</p>
+
+<p>If "sprintf" is not in the context of the horizontal function, it
+  behaves like the usual "sprintf" function.</p>
+
+<h3 id="b:line_length">line_length</h3>
+
+<p>The variable "line_length" is a reference holding the maximum line
+  length of lines printed horizontally. Its default is 78. This can be
+  changed by the user before using "horiz_vertic".</p>
+
+<h3 id="b:horizontally">horizontally</h3>
+
+<p>The call "<tt>horizontally ()</tt>" returns a boolean telling whether
+  the context is horizontal.</p>
+
+<h2 id="a:Example">Example</h2>
+
+<p>Suppose you want to pretty print the XML code
+  <tt>"&lt;li&gt;something&lt;/li&gt;"</tt>. If the "something" is
+  short, you want to see:</p>
+
+<pre>
+  &lt;li&gt;something&lt;/li&gt;
+</pre>
+
+<p>If the "something" has several lines, you want to see that:</p>
+
+<pre>
+  &lt;li&gt;
+    something
+  &lt;/li&gt;
+</pre>
+
+<p>A possible implementation is:</p>
+
+<pre>
+  open Pretty;
+  horiz_vertic
+    (fun () -> sprintf "&lt;li&gt;something&lt;/li&gt;")
+    (fun () -> sprintf "&lt;li&gt;\n  something\n&lt;/li&gt;");
+</pre>
+
+<p>Notice that the "<code>sprintf</code>" above is the one of the
+  library Pretty.</p>
+
+<p>Notice also that, in a program displaying XML code, this
+  "something" may contain other XML tags, and is therefore generally
+  the result of other pretty printing functions, and the program
+  should rather look like:</p>
+
+<pre>
+  horiz_vertic
+    (fun () -> sprintf "&lt;li&gt;%s&lt;/li&gt;" (print something))
+    (fun () -> sprintf "&lt;li&gt;\n  %s\n&lt;/li&gt;" (print something))
+</pre>
+
+<p>Parts of this "something" can be printed horizontally and other
+  vertically using other calls to "horiz_vertic" in the user function
+  "print" above. But it is important to remark that if they are called
+  in the context of the first function parameter of "horiz_vertic"
+  above, only horizontal functions are accepted: the first failing
+  "horizontal" function triggers the failure of the horizontal pretty
+  printing.</p>
+
+<h2 id="a:Programming-with-Pretty">Programming with Pretty</h2>
+
+<h3 id="b:Hints">Hints</h3>
+
+<p>Just start with a call to "horiz_vertic".</p>
+
+<p>As its first function, use "sprintf" just to concat the strings
+  without putting any newlines or indentations, e.g. just using spaces
+  to separate pieces of data.</p>
+
+<p>As its second function, consider how you want your data to be cut.
+  At the cutting point or points, add newlines. Notice that you
+  probably need to give the current indentation string as parameter of
+  the called functions because they need to be taken into account in
+  the called "horizontal" functions.</p>
+
+<p>In the example below, don't put the indentation in the sprintf
+  function but give it as parameter of your "print" function:</p>
+
+<pre>
+  horiz_vertic
+    (fun () -> sprintf "&lt;li&gt;%s&lt;/li&gt;" (print "" something))
+    (fun () -> sprintf "&lt;li&gt;\n%s\n&lt;/li&gt;" (print "  " something))
+</pre>
+
+<p>Now, the "print" function could look like, supposing you print
+  other things with "other" of the current indentation and "things"
+  with a new shifted one:</p>
+
+<pre>
+  value print ind something =
+    horiz_vertic
+      (fun () -> sprintf "%sother things..." ind)
+      (fun () -> sprintf "%sother\n%s  things..." ind ind);
+</pre>
+
+<p>Supposing than "other" and "things" are the result of two other
+  functions "print_other" and "print_things", your program could look
+  like:</p>
+
+<pre>
+  value print ind (x, y) =
+    horiz_vertic
+      (fun () -> sprintf "%s%s %s" ind (print_other 0 x) (print_things 0 y))
+      (fun () -> sprintf "%s\n%s" (print_other ind x) (print_things (ind ^ "  ") y));
+</pre>
+
+<h3 id="b:How-to-cancel-a-horizontal-print">How to cancel a horizontal print</h3>
+
+<p>If you want to prevent a pretty printing function from being called
+  in a horizontal context, constraining the pretty print to be on
+  several lines in the calling function, just do:</p>
+
+<pre>
+  horiz_vertic
+    (fun () -> sprintf "\n")
+    (fun () -> ... (* your normal pretty print *))
+</pre>
+
+<p>In this case, the horizontal print always fails, due to the newline
+  character in the sprintf format.</p>
+
+<h2 id="a:Remarks">Remarks</h2>
+
+<h3 id="b:Kernel">Kernel</h3>
+
+<p>The module "Pretty" is intended to be basic, a "kernel" module to
+  pretty print data. It presumes that the user takes care of the
+  indentation. Programs using "Pretty" are not as short as the ones
+  using "Format" of the OCaml library, but are more flexible. To
+  pretty print with a shorter syntax like in the OCaml module "Format"
+  (with the "@" convention), see statement
+  "<a href="pprintf.html">pprintf</a>" (which internally uses the
+  module "Pretty").</p>
+
+<h3 id="b:Strings-vs-Channels">Strings vs Channels</h3>
+
+<p>In "Pretty", the pretty printing is done only on strings, not on
+  files. To pretty print files, just build the strings and print them
+  afterwards with the usual output functions. Notice that OCaml
+  allocates and frees strings quickly, and if pretty printed values
+  are not huge, which is generally the case, it is not a real problem,
+  memory sizes these days being more than enough for this job.</p>
+
+<h3 id="b:Strings-or-other-types">Strings or other types</h3>
+
+<p>The "horiz_vertic" function can return values of types other than
+  "string". For example, if you are interested only in the result of
+  horizontal context and not on the vertical one, it is perfectly
+  correct to write:</p>
+
+<pre>
+  horiz_vertic
+    (fun () -> Some (sprintf "I hold on a single line")
+    (fun () -> None)
+</pre>
+
+<h3 id="b:Why-raising-exceptions--">Why raising exceptions ?</h3>
+
+<p>One could ask why this pretty print system raises internal
+  exceptions. Why not simply write the pretty printing program like
+  this:</p>
+
+<ol>
+  <li>first build the data horizontally (without newlines)</li>
+  <li>if the string length is lower than the maximum line length,
+    return it</li>
+  <li>if not, build the string by adding newlines in the specific
+    places</li>
+</ol>
+
+<p>This method works but is generally very slow (exponential in time)
+  because while printing horizontally, many useless strings are
+  built. If, for example, the final printed data holds on 50 lines,
+  tens of lines may be built uselessly again and again before the
+  overflowing is corrected.</p>
+
+<a class="toplink" href="pretty.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

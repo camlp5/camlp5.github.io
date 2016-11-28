@@ -1,0 +1,1013 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: revsynt.html,v 6.1 2010-09-15 16:00:20 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>revised syntax</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">The revised syntax</h1>
+
+<p>The revised syntax is an alternative syntax of OCaml. It is close
+  to the normal syntax. We present here only the differences between
+  the two syntaxes.</p>
+
+<p>Notice that there is a simple way to know how the normal syntax is
+  written in revised syntax: write the code in a file "foo.ml" in
+  normal syntax and type, in a shell:</p>
+
+<pre>
+  camlp5o pr_r.cmo pr_rp.cmo foo.ml
+</pre>
+
+<p>And, conversely, how a file "bar.ml" written in revised syntax is
+  displayed in normal syntax:</p>
+
+<pre>
+  camlp5r pr_o.cmo pr_op.cmo bar.ml
+</pre>
+
+<p>Even simpler, without creating a file:</p>
+
+<pre>
+  camlp5o pr_r.cmo pr_op.cmo -impl -
+  ... type in normal syntax ...
+  ... type control-D ...
+  camlp5r pr_o.cmo pr_rp.cmo -impl -
+  ... type in revised syntax ...
+  ... type control-D ...
+</pre>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Lexing">Lexing</a></li>
+    <li><a href="#a:Modules--Structure-and-Signature-items">Modules, Structure and Signature items</a></li>
+    <li><a href="#a:Expressions-and-Patterns">Expressions and Patterns</a>
+      <ul>
+        <li><a href="#b:Imperative-constructions">Imperative constructions</a></li>
+        <li><a href="#b:Tuples-and-Lists">Tuples and Lists</a></li>
+        <li><a href="#b:Records">Records</a></li>
+        <li><a href="#b:Irrefutable-patterns">Irrefutable patterns</a></li>
+        <li><a href="#b:Constructions-with-matching">Constructions with matching</a></li>
+        <li><a href="#b:Mutables-and-Assignment">Mutables and Assignment</a></li>
+        <li><a href="#b:Miscellaneous">Miscellaneous</a></li>
+      </ul>
+    </li>
+    <li><a href="#a:Types-and-Constructors">Types and Constructors</a></li>
+    <li><a href="#a:Streams-and-Parsers">Streams and Parsers</a></li>
+    <li><a href="#a:Classes-and-Objects">Classes and Objects</a></li>
+    <li><a href="#a:Labels-and-Variants">Labels and Variants</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Lexing">Lexing</h2>
+
+<ul>
+  <li>The character quote (<tt>'</tt>) can be written without backslash:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>'\''</tt></td>
+        <td><tt>'''</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h2 id="a:Modules--Structure-and-Signature-items">Modules, Structure and Signature items</h2>
+
+<ul>
+  <li>Structure and signature items always end with a single semicolon
+    which is required.</li>
+
+  <li>In structures, the declaration of a value is introduced by the
+    keyword "value", instead of "let":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>let x = 42;;</tt></td>
+        <td><tt>value x = 42;</tt></td>
+      </tr>
+      <tr>
+        <td><tt>let x = 42 in x + 7;;</tt></td>
+        <td><tt>let x = 42 in x + 7;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>In signatures, the declaration of a value is also introduced by
+    the keyword "value", instead of "val":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>val x : int;;</tt></td>
+        <td><tt>value x : int;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>In signatures, abstract module types are represented by a quote
+    and an (any) identifier:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>module type MT;;</tt></td>
+        <td><tt>module type MT = 'a;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Functor application uses currying. Parentheses are not
+    required for the parameters:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = Set.Make(M).t;;</tt></td>
+        <td><tt>type t = (Set.Make M).t;</tt></td>
+      </tr>
+      <tr>
+        <td><tt>module M = Mod.Make (M1) (M2);;</tt></td>
+        <td><tt>module M = Mod.Make M1 M2;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>It is possible to group several declarations together either in
+    an interface or in an implementation by enclosing them between
+    "declare" and "end" (this is useful when using syntax extensions
+    to generate several declarations from one). Example in an
+    interface:
+<pre>
+  declare
+    type foo = [ Foo of int | Bar ];
+    value f : foo -> int;
+  end;
+</pre>
+  </li>
+</ul>
+
+<h2 id="a:Expressions-and-Patterns">Expressions and Patterns</h2>
+
+<h3 id="b:Imperative-constructions">Imperative constructions</h3>
+
+<ul>
+  <li>The sequence is introduced by the keyword "do" followed by "{"
+    and terminated by "}"; it is possible to put a semicolon after the
+    last expression:
+
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>e1; e2; e3; e4</tt></td>
+        <td><tt>do { e1; e2; e3; e4 }</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The "do" after the "while" loop and the "for" loop are followed
+    by a "{" and the loop end with "}"; it is possible to put a
+    semicolon after the last expression:
+
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>while e1 do</tt></td>
+        <td><tt>while e1 do {</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;e1; e2; e3</tt></td>
+        <td><tt>&nbsp;&nbsp;e1; e2; e3</tt></td>
+      </tr>
+      <tr>
+        <td><tt>done</tt></td>
+        <td><tt>}</tt></td>
+      </tr>
+      <tr>
+        <td><tt></tt></td>
+        <td><tt></tt></td>
+      </tr>
+      <tr>
+        <td><tt>for i = e1 to e2 do&nbsp;&nbsp;</tt></td>
+        <td><tt>for i = e1 to e2 do {</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;e1; e2; e3</tt></td>
+        <td><tt>&nbsp;&nbsp;e1; e2; e3</tt></td>
+      </tr>
+      <tr>
+        <td><tt>done</tt></td>
+        <td><tt>}</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h3 id="b:Tuples-and-Lists">Tuples and Lists</h3>
+
+<ul>
+  <li>Parentheses are required in tuples:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>1, "hello", World</tt></td>
+        <td><tt>(1, "hello", World)</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Lists are always enclosed with brackets. A list is a left
+    bracket, followed by a list of elements separated with semicolons,
+    optionally followed by colon-colon and an element, and ended by a
+    right bracket. Warning: the colon-colon is not an infix but is
+    just part of the syntactic construction.
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>x :: y</tt></td>
+        <td><tt>[x :: y]</tt></td>
+      </tr>
+      <tr>
+        <td><tt>[x; y; z]</tt></td>
+        <td><tt>[x; y; z]</tt></td>
+      </tr>
+      <tr>
+        <td><tt>x :: y :: z :: t</tt></td>
+        <td><tt>[x; y; z :: t]</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h3 id="b:Records">Records</h3>
+
+<ul>
+  <li>In record update, parentheses are required around the initial
+    expression:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>{e with field = a}</tt></td>
+        <td><tt>{(e) with field = a}</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>It is allowable to use function binding syntax in record field
+    definitions:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>{field = fun a -> e}</tt></td>
+        <td><tt>{field a = e}</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h3 id="b:Irrefutable-patterns">Irrefutable patterns</h3>
+
+<p>An <em>irrefutable pattern</em> is a pattern which is
+  syntactically visible and never fails. They are used in some
+  syntactic constructions. It is either:</p>
+
+<ul>
+  <li>A variable,</li>
+  <li>The wildcard "_",</li>
+  <li>The constructor "()",</li>
+  <li>A tuple with irrefutable patterns,</li>
+  <li>A record with irrefutable patterns,</li>
+  <li>A type constraint with an irrefutable pattern.</li>
+</ul>
+
+<p>Notice that this definition is only syntactic: a constructor
+  belonging to a type having only one constructor is not considered as
+  an irrefutable pattern (except "()").</p>
+
+<h3 id="b:Constructions-with-matching">Constructions with matching</h3>
+
+<ul>
+  <li>The keyword "function" no longer exists. Only "fun" is used.</li>
+  <li>The pattern matching, in constructions with "fun", "match" and
+    "try" is closed with brackets: an open bracket "[" before the
+    first case, and a close bracket "]" after the last case:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>match e with</tt></td>
+        <td><tt>match e with</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;p1 -> e1</tt></td>
+        <td><tt>[ p1 -> e1</tt></td>
+      </tr>
+      <tr>
+        <td><tt>| p2 -> e2</tt></td>
+        <td><tt>| p2 -> e2 ]</tt></td>
+      </tr>
+    </table>
+    If there is only one case and if the pattern is irrefutable,
+      the brackets are not required. These examples work identically
+      in OCaml and in revised syntax:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>fun x -> x</tt></td>
+        <td><tt>fun x -> x</tt></td>
+      </tr>
+      <tr>
+        <td><tt>fun {foo=(y, _)} -> y</tt></td>
+        <td><tt>fun {foo=(y, _)} -> y</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>It is possible to write the empty function which always raises the
+    exception "Match_failure" when a parameter is applied.  It is also possible to write and
+    empty "match", raising "Match_failure" after having evaluated its
+    expression and the empty "try", equivalent to its expression
+    without try:
+<pre>
+  fun []
+  match e with []
+  try e with []
+</pre>
+  </li>
+  <li>The patterns after "let" and "value" must be irrefutable. The
+    following OCaml expression:
+<pre>
+  let f (x::y) = ...
+</pre>
+    must be written:
+<pre>
+  let f = fun [ [x::y] -> ...
+</pre>
+  </li>
+
+  <li>It is possible to use a construction "where", equivalent to "let",
+    but usable only when where is only one binding. The expression:
+<pre>
+  e1 where p = e
+</pre>
+    is equivalent to:
+<pre>
+  let p = e in e1
+</pre>
+  </li>
+</ul>
+
+<h3 id="b:Mutables-and-Assignment">Mutables and Assignment</h3>
+
+<ul>
+  <li>The statement "<tt>&lt;-</tt>" is written "<tt>:=</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>x.f &lt;- y</tt></td>
+        <td><tt>x.f := y</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The "ref" type is declared as a record type with one field named
+    "val", instead of "contents". The operator "!" does not exist any
+    more, and references are assigned like the other mutables:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>x := !x + y</tt></td>
+        <td><tt>x.val := x.val + y</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h3 id="b:Miscellaneous">Miscellaneous</h3>
+
+<ul>
+  <li>The "<tt>else</tt>" is required in the "<tt>if</tt>"
+    statement:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>if a then b</tt></td>
+        <td><tt>if a then b else ()</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The boolean operations "<tt>or</tt>" and "<tt>and</tt>" can only
+    be written with "<tt>||</tt>" and "<tt>&amp;&amp;</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>a or b &amp; c</tt></td>
+        <td><tt>a || b &amp;&amp; c</tt></td>
+      </tr>
+      <tr>
+        <td><tt>a || b &amp;&amp; c</tt></td>
+        <td><tt>a || b &amp;&amp; c</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>No more "<tt>begin end</tt>" construction. One must use
+    parentheses.</li>
+
+  <li>The operators as values are written with an backslash:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>(+)</tt></td>
+        <td><tt>\+</tt></td>
+      </tr>
+      <tr>
+        <td><tt>(mod)</tt></td>
+        <td><tt>\mod</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Nested "as" patterns require parenthesis:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>function Some a as b, c -></tt></td>
+        <td><tt>fun [ ((Some a as b), c) -></tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+      </tr>
+    </table>
+    But they are not required before the right arrow:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>function Some a as b -></tt></td>
+        <td><tt>fun [ Some a as b -></tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The operators with special characters are not automatically
+    infix. To define infixes, use syntax extensions.
+  </li>
+</ul>
+
+<h2 id="a:Types-and-Constructors">Types and Constructors</h2>
+
+<ul>
+  <li>The type constructors are before their type parameters, which
+    are curryfied:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>int list</tt></td>
+        <td><tt>list int</tt></td>
+      </tr>
+      <tr>
+        <td><tt>('a, bool) Hashtbl.t</tt></td>
+        <td><tt>Hashtbl.t 'a bool</tt></td>
+      </tr>
+      <tr>
+        <td><tt>type 'a foo = 'a list list</tt></td>
+        <td><tt>type foo 'a = list (list 'a)</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The abstract types are represented by an unbound type variable:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type 'a foo;;</tt></td>
+        <td><tt>type foo 'a = 'b;</tt></td>
+      </tr>
+      <tr>
+        <td><tt>type bar;;</tt></td>
+        <td><tt>type bar = 'a;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Parentheses are required in tuples of types:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>int * bool</tt></td>
+        <td><tt>(int * bool)</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>In declarations of a concrete type, brackets must enclose the
+    constructor declarations:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = A of i | B;;</tt></td>
+        <td><tt>type t = [ A of i | B ];</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>It is possible to make the empty type, without constructor:
+<pre>
+  type foo = [];
+</pre>
+  </li>
+
+  <li>There is a syntax difference between data constructors with
+    several parameters and data constructors with one parameter of type
+    tuple:<br/><br/>
+
+    The declaration of a data constructor with several parameters
+    is done by separating the types with "and". In expressions and
+    patterns, these constructor parameters must be curryfied:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = C of t1 * t2;;</tt></td>
+        <td><tt>type t = [ C of t1 and t2 ];</tt></td>
+      </tr>
+      <tr>
+        <td><tt>C (x, y);;</tt></td>
+        <td><tt>C x y;</tt></td>
+      </tr>
+    </table>
+
+    The declaration of a data constructor with one parameter of type
+    tuple is done by using a tuple type. In expressions and patterns,
+    the parameter must not to be curryfied, since it is alone. In that
+    case the syntax of constructor parameters is the same between the
+    two syntaxes:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = D of (t1 * t2);;</tt></td>
+        <td><tt>type t = [ D of (t1 * t2) ];</tt></td>
+      </tr>
+      <tr>
+        <td><tt>D (x, y);;</tt></td>
+        <td><tt>D (x, y);</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The bool constructors start with an uppercase letter. The identifiers
+    "true" and "false" are not keywords:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>true &amp;&amp; false</tt></td>
+        <td><tt>True &amp;&amp; False</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>In record types, the keyword "mutable" must appear after the
+    colon:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = {mutable x : t1};;</tt></td>
+        <td><tt>type t = {x : mutable t1};</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Manifest types are with "==":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type 'a t = 'a option =</tt></td>
+        <td><tt>type t 'a = option 'a ==</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;&nbsp;&nbsp;None</tt></td>
+        <td><tt>&nbsp;&nbsp;[ None</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;| Some of 'a</tt></td>
+        <td><tt>&nbsp;&nbsp;| Some of 'a ]</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Polymorphic types start with "<tt>!</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t =</tt></td>
+        <td><tt>type t =</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;{ f : 'a . 'a list }</tt></td>
+        <td><tt>&nbsp;&nbsp;{ f : ! 'a . list 'a }</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h2 id="a:Streams-and-Parsers">Streams and Parsers</h2>
+
+<ul>
+  <li>The streams and the stream patterns are bracketed with "<tt>[:</tt>"
+    and "<tt>:]</tt>" instead of "<tt>[&lt;</tt>" and "<tt>&gt;]</tt>".
+  </li>
+  <li>The stream component "terminal" is written with a back-quote
+    instead of a quote:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>[&lt; '1; '2; s; '3 &gt;]</tt></td>
+        <td><tt>[: `1; `2; s; `3 :]</tt></td>
+      </tr>
+    </table>
+   </li>
+   <li>The cases of parsers are bracketed with "<tt>[</tt>" and
+     "<tt>]</tt>", as with "fun", "match" and "try". If there is one
+     case, the brackets are not required:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>parser</tt></td>
+        <td><tt>parser</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;[&lt; 'Foo &gt;] -> e</tt></td>
+        <td><tt>[ [: `Foo :] -> e</tt></td>
+      </tr>
+      <tr>
+        <td><tt>| [&lt; p = f &gt;] -> f;;</tt></td>
+        <td><tt>| [: p = f :] -> f ];</tt></td>
+      </tr>
+      <tr>
+        <td><tt>parser [&lt; 'x &gt;] -> x;;</tt></td>
+        <td><tt>parser [: `x :] -> x;</tt></td>
+      </tr>
+    </table>
+  </li>
+   <li>It is possible to write the empty parser raising the exception
+     "Stream.Failure" whatever parameter is applied, and the empty
+     stream matching always raising "Stream.Failure":
+<pre>
+  parser []
+  match e with parser []
+</pre>
+   </li>
+   <li>In normal syntax, the error indicator starts with a double question
+     mark, in revised syntax with a simple question mark:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>parser</tt></td>
+        <td><tt>parser</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;[&lt; '1; '2 ?? "error" &gt;] -></tt></td>
+        <td><tt>&nbsp;&nbsp;[: `1; `2 ? "error" :] -></tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;&nbsp;&nbsp;...</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>In normal syntax, the component optimization starts with
+     "<tt>?!</tt>", in revised syntax with "<tt>!</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>parser</tt></td>
+        <td><tt>parser</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;[&lt; '1; '2 ?! &gt;] -></tt></td>
+        <td><tt>&nbsp;&nbsp;[: `1; `2 ! :] -></tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;&nbsp;&nbsp;...</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h2 id="a:Classes-and-Objects">Classes and Objects</h2>
+
+<ul>
+  <li>Object items end with a single semicolon which is required.</li>
+  <li>Class type parameters follow the class identifier:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>class ['a, 'b] point = ...</tt></td>
+        <td><tt>class point ['a, 'b] = ...</tt></td>
+      </tr>
+      <tr>
+        <td><tt>class c = [int] color;;</tt></td>
+        <td><tt>class c = color [int];</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>In the type of class with parameters, the type of the parameters
+    are between brackets. Example in signature:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>class c : int -> point;;</tt></td>
+        <td><tt>class c : [int] -> point;</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>The keywords "virtual" and "private" must be in this order:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>method virtual private m :</tt></td>
+        <td><tt>method virtual private m :</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+      </tr>
+      <tr>
+        <td><tt>method private virtual m :</tt></td>
+        <td><tt>method virtual private m :</tt></td>
+      </tr>
+      <tr>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+        <td><tt>&nbsp;&nbsp;...</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>Object variables are introduced with "value" instead of "val":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>object val x = 3 end</tt></td>
+        <td><tt>object value x = 3; end</tt></td>
+      </tr>
+    </table>
+  </li>
+  <li>Type constraints in objects are introduced with "type" instead of
+    "constraint":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>object constraint 'a = int end</tt></td>
+        <td><tt>object type 'a = int; end</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<h2 id="a:Labels-and-Variants">Labels and Variants</h2>
+
+<ul>
+  <li>Labels in types must start with "<tt>~</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>val x : num:int -> bool;;</tt></td>
+        <td><tt>value x : ~num:int -> bool;</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>Types whose number of variants are fixed start with "<tt>[ =</tt>":
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = [`On | `Off];;</tt></td>
+        <td><tt>type t = [ = `On | `Off];</tt></td>
+      </tr>
+    </table>
+  </li>
+
+  <li>The "<tt>[</tt>" and the "<tt>&lt;</tt>" in variant types must
+    not be sticked:
+    <table width="75%" class="centered" cellspacing="0" cellpadding="0">
+      <tr>
+        <th align="left" class="half">OCaml</th>
+        <th align="left" class="half">Revised</th>
+      </tr>
+      <tr>
+        <td><tt>type t = [&lt; `Foo | `Bar ];;</tt></td>
+        <td><tt>type t = [ &lt; `Foo | `Bar ];</tt></td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+<a class="toplink" href="revsynt.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+/* base.css,v */
+
+body { margin: 0 0 1px 0; background-color: rgb(189,225,255) }
+body { border: 0 }
+
+#menu { width: 21%; position: relative; float: left }
+#menu { border-top: 1px solid; border-left: 1px solid }
+#menu { font-size: 90% }
+#menu ul { padding: 0 }
+#menu li { margin-left: 1cm }
+#menu h1 { font-weight: normal; margin-bottom: 0 }
+#menu .subtitle { text-align: center; margin-top: 0; font-size: 80% }
+#menu .subtitle { text-transform: lowercase }
+
+#content { margin-left: 21.1%; padding: 0 5mm; background-color: white }
+#content { border: 1px solid }
+#content ul { margin-left: 1cm }
+#content ul ul { margin-left: 2mm }
+#content dl ul { margin-left: 2mm }
+#content dl p { margin-left: 0 }
+#content ol { margin-left: 1cm }
+#content p { text-align: justify }
+#content li { text-align: justify }
+#content dd { text-align: justify }
+
+#tableofcontents { display: table; margin: auto }
+#tableofcontents > ol { border: 1px solid; display: table-cell }
+#tableofcontents > ol { padding: 2mm 5mm 2mm 1cm }
+#tableofcontents ol { margin-left: 2mm }
+#tableofcontents li ul { margin-left: 0 }
+#tableofcontents li { text-align: left }
+
+#menu:target { position: relative; float: left }
+#menu:target { background-color: rgb(189,225,255) }
+
+#menumove { float: right; margin: 1mm; font-size: 80% }
+#menumove a { text-decoration: none }
+#menumove a:hover { text-decoration: underline overline }
+
+body { counter-reset: h2cnt }
+
+h1 { text-align: center }
+
+h2:before { content: counter(h2cnt) " - "; counter-increment: h2cnt }
+h2 { border: 1px solid; text-align: center; background: rgb(189,225,255) }
+h2 { counter-reset: h3cnt }
+h3:target { background-color: #cde }
+div:target { background-color: #cde }
+
+a.toplink { position: fixed; top: 0; right: 1mm; text-decoration: none }
+
+h3:before {
+  content: counter(h2cnt) "." counter(h3cnt) " - ";
+  counter-increment: h3cnt
+}
+h3 { counter-reset: h4cnt }
+
+h4:before {
+  content: counter(h2cnt) "." counter(h3cnt) "." counter(h4cnt) " - ";
+  counter-increment: h4cnt
+}
+
+p { margin: 1em 1cm }
+
+pre {
+  border-left: silver solid 3px; margin-bottom: 1em; margin-left: 1.5cm;
+  padding-left: 0; padding-right: 0.5em; line-height: 1.2
+}
+
+dl { margin-left: 1cm }
+
+.half { width: 50% }
+.centered { margin: auto }
+
+.top { margin-top: 0; padding-top: 5mm }
+.bottom { margin-bottom: 0 }
+.trailer { margin-top: 3cm }
+
+.value { }
+.dangling { color: red; background: rgb(220,220,220) }
+.parenthesis { color: blue }
+.u { text-decoration: underline }
+
+@media print {
+  body { background-color: white; border: 0 }
+  #menu { display: none }
+  #menumove { display: none }
+  #content { margin: 0; border: 0 }
+  #tableofcontents { display: none }
+  .toplink { display: none }
+  .trailer img { display: none }
+}

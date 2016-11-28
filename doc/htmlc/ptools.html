@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+ "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- $Id: ptools.html,v 6.1 2010-09-15 16:00:20 deraugla Exp $ -->
+  <!-- Copyright (c) INRIA 2007-2010 -->
+  <title>parsing and printing tools</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <link rel="stylesheet" type="text/css" href="styles/base.css"
+        title="Normal" />
+  <link rel="alternate" type="application/rss+xml" href="rss/camlp5.rss" 
+        title="Camlp5"/>
+</head>
+<body>
+
+<div id="menu">
+  <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
+  <p class="subtitle">Version 6.00</p>
+  <ul>
+    <li><a href="index.html">Introduction</a></li>
+    <li><a href="strict.html">Transitional and Strict</a></li>
+    <li><a href="ptools.html">Parsing and printing tools</a></li>
+  </ul>
+  <ul>
+    <li>Parsing tools
+      <ul>
+        <li><a href="parsers.html">Stream parsers</a></li>
+        <li><a href="lexers.html">Stream lexers</a></li>
+        <li><a href="fparsers.html">Functional parsers</a></li>
+        <li><a href="bparsers.html">Backtracking parsers</a></li>
+        <li><a href="grammars.html">Extensible grammars</a></li>
+      </ul>
+    </li>
+    <li>Printing tools
+      <ul>
+        <li><a href="printers.html">Extensible printers</a></li>
+        <li><a href="pprintf.html">Pprintf</a></li>
+        <li><a href="pretty.html">Pretty print</a></li>
+      </ul>
+    </li>
+    <li>Language extensions
+      <ul>
+        <li><a href="locations.html">Locations</a></li>
+        <li><a href="ml_ast.html">Syntax tree</a></li>
+        <li><a href="ast_transi.html">Syntax tree - transi</a></li>
+        <li><a href="ast_strict.html">Syntax tree - strict</a></li>
+        <li><a href="q_ast.html">Quotation kit q_ast.cmo</a></li>
+        <li><a href="pcaml.html">The Pcaml module</a></li>
+        <li><a href="directives.html">Directives</a></li>
+        <li><a href="syntext.html">Extensions of syntax</a></li>
+        <li><a href="opretty.html">Extensions of printing</a></li>
+        <li><a href="redef.html">Redefining OCaml syntax</a></li>
+        <li><a href="quot.html">Quotations</a></li>
+        <li><a href="revsynt.html">Revised syntax</a></li>
+        <li><a href="scheme.html">Scheme syntax</a></li>
+        <li><a href="macros.html">Macros</a></li>
+        <li><a href="pragma.html">Pragma directive</a></li>
+        <li><a href="extfun.html">Extensible functions</a></li>
+      </ul>
+    </li>
+    <li>Appendix
+      <ul>
+        <li><a href="commands.html">Commands and Files</a></li>
+        <li><a href="library.html">Library</a></li>
+        <li><a href="sources.html">Camlp5 sources</a></li>
+        <li><a href="about.html">About Camlp5</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<div id="content">
+
+<h1 class="top">Parsing and Printing tools</h1>
+
+<p>Camlp5 provides two parsing tools:</p>
+
+<ul>
+  <li>stream parsers</li>
+  <li>extensible grammars</li>
+</ul>
+
+<p>The first parsing tool, the stream parsers, is the elementary
+  system. It is pure syntactic sugar, i.e. the code is directly
+  converted into basic OCaml statements: essentially functions,
+  pattern matchings, try. A stream parser is just a function. But the
+  system does not manage associativity, nor parsing level. Left
+  recursion results on infinite loops, just like functions whose first
+  action would be a call to itself.</p>
+
+<p>The second parsing tool, the extensible grammars, are more
+  sophisticated. A grammar written with them is more readable, and
+  look like grammars written with tools like "yacc". They take care of
+  associativity, left recursion, and level of parsing. They are
+  dynamically extensible, what allows the syntax extensions what
+  Camlp5 provides for OCaml syntax.</p>
+
+<p>In both cases, the input data are streams.</p>
+
+<p>Camlp5 also provides:</p>
+
+<ul>
+  <li>a pretty printing module</li>
+  <li>extensible printers</li>
+</ul>
+
+<p>The next sections give an overview of the parsing and printing
+  tools.</p>
+
+<div id="tableofcontents">
+  <ol>
+    <li><a href="#a:Stream-parsers">Stream parsers</a></li>
+    <li><a href="#a:Extensible-grammars">Extensible grammars</a></li>
+    <li><a href="#a:Pretty-module">Pretty module</a></li>
+    <li><a href="#a:Extensible-printers">Extensible printers</a></li>
+  </ol>
+</div>
+
+<h2 id="a:Stream-parsers">Stream parsers</h2>
+
+<p>The stream parsers is a system of recursive descendant
+  parsing. Streams are actually lazy lists. At each step, the head of
+  the list is compared against a <em>stream pattern</em>. There are
+  three kinds of streams parsers:</p>
+
+<ul>
+  <li>The imperative <a href="parsers.html">streams parsers</a>, where
+    the elements are removed from the stream as long as they are
+    parsed.  Parsers return either:
+    <ul>
+      <li>A value, in case of success,</li>
+      <li>The exception "<tt>Stream.Failure</tt>" when the parser does
+        not apply and no elements have been removed from the stream,
+        indicating that, possibly, other parsers may apply,</li>
+      <li>The exception "<tt>Stream.Error</tt>" when the parser does
+        not apply, but one or several elements have been removed from
+        the stream, indicating that nothing can to be done to make up
+        the error.</li>
+    </ul>
+  </li>
+  <li>The <a href="fparsers.html">functional stream parsers</a>
+    where the elements are not removed from the stream during the
+    parsing. These parsers return a value of type "option", i.e
+    either:
+    <ul>
+      <li>"Some" a value and the remaining stream, in case of
+        success,</li>
+      <li>"None", in case of failure.</li>
+    </ul>
+  </li>
+  <li>The <a href="bparsers.html">backtracking stream parsers</a>
+    which are like the functional stream parsers but with a backtracking
+    algorithm, testing all possibilities. These parsers also return a
+    value of type "option" different from the functional stream parsers,
+    i.e either:
+    <ul>
+      <li>"Some" a value, the remaining stream and a continuation, in
+        case of success,</li>
+      <li>"None", in case of failure.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The differences are about:</p>
+
+<ul>
+  <li><span class="u">Syntax errors</span>: in the imperative version,
+    the location of the error is clear, it is at the current position
+    of the stream, and the system provides a specific error message
+    (typically, that some "element" was "expected"). On the other
+    hand, in the functional and backtracking version, the position is
+    not clear since it returns nothing and the initial stream is
+    unaffected. The only solution to know where the error happened is
+    to analyze that stream to see how many elements have be
+    unfrozen. No clear error message is available, just "syntax error"
+    (but this could be improved in a future version).</li>
+  <li><span class="u">Power</span>: in the imperative version, when a
+    rule raises the exception "<tt>Stream.Error</tt>", the parsing
+    cannot continue.  In the functional version, the parsing can
+    continue by analyzing the next rule with the initial unaffected
+    stream: this is <em>limited backtrack</em>. In the backtracking
+    version, more powerful, the parsing continues by analyzing the
+    next case of the previous symbol of the rule; moreover it is
+    possible to get the list of all possible solutions.</li>
+  <li><span class="u">Neatness</span>: functional streams are neater,
+    just like functional programming is neater than imperative
+    programming.</li>
+</ul>
+
+<p>The imperative parsers implement what is called "predictive
+  parsing", i.e. recursive descendant parsing without backtrack.</p>
+
+<p>In the imperative version, there also exist
+  <a href="lexers.html">lexers</a>, a shorter syntax when the stream
+  elements are of the specific type '<tt>char</tt>'.</p>
+
+<h2 id="a:Extensible-grammars">Extensible grammars</h2>
+
+<p>Extensible grammars manipulate <em>grammar entries</em>. Grammar
+  entries are abstract values internally containing mutable stream
+  parsers. When a grammar entry is created, its internal parser is
+  empty, i.e. it always fails when used. A specific syntactic
+  construction, with the keyword "<tt>EXTEND</tt>" allows one to
+  extend grammar entries with new grammar rules.</p>
+
+<p>In opposition to stream parsers, grammar entries manage
+  associativity, left factorization, and levels. Moreover, these
+  grammars allow optional calls, lists and lists with separators. They
+  are not however functions and hence cannot have parameters.</p>
+
+<p>Since the internal system is stream parsers, extensible grammars
+  use recursive descendant parsing.</p>
+
+<p>The parsers of the OCaml language in Camlp5 are written with
+  extensible grammars.</p>
+
+<h2 id="a:Pretty-module">Pretty module</h2>
+
+<p>The "<tt>Pretty</tt>" module is an original tool allowing control
+  over the displaying of lines. The user must specify two functions
+  where:</p>
+
+<ul>
+  <li>the data is printed on a single line</li>
+  <li>the data is printed on several lines</li>
+</ul>
+
+<p>The system first tries to print on a single line. At any time, if
+  the line overflows, i.e. if its size is greater than some "line
+  length" specified in the module interface, or if it contains
+  newlines, the function is aborted and control is given to the second
+  function, to print on several lines.</p>
+
+<p>This is a basic, but powerful, system. It supposes that the programmer
+  takes care of the current indentation, and the beginning and the end of
+  its lines.</p>
+
+<p>The module will be extended in the future to hide the management of
+  indendations and line continuations, and by the supply of functions
+  combinating the two cases above, in which the programmer can specify
+  the possible places where newlines can be inserted.</p>
+
+<h2 id="a:Extensible-printers">Extensible printers</h2>
+
+<p>The extensible printers are symmetric to the extensible grammars.
+  The extensible grammars take syntax rules and return syntax trees.
+  The extensible printers are actually extensible functions taking
+  syntax trees as parameters and returning the pretty printed
+  statements in strings.</p>
+
+<p>The extensible printers can have printing levels, just like
+  grammars have parsing levels, and it is possible to take the
+  associativity into account by provided functions to call either the
+  current level or the next level.</p>
+
+<p>The printers of the OCaml language are written with extensible
+  printers.</p>
+
+<a class="toplink" href="ptools.html">↑</a>
+<div class="trailer">
+
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+      Daniel de Rauglaudre (INRIA)</em></div>
+
+  <p class="bottom">
+    <a href="http://validator.w3.org/check?uri=referer"><img
+       src="images/valid-xhtml11.png" style="border:0"
+       alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  </p>
+
+</div>
+
+</div>
+
+</body>
+</html>
