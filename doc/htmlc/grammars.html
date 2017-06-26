@@ -2,8 +2,8 @@
  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <!-- $Id: grammars.html,v 6.2 2010-09-19 10:48:02 deraugla Exp $ -->
-  <!-- Copyright (c) INRIA 2007-2010 -->
+  <!-- grammars.html,v -->
+  <!-- Copyright (c) INRIA 2007-2017 -->
   <title>extensible grammars</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -16,7 +16,7 @@
 
 <div id="menu">
   <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
-  <p class="subtitle">Version 6.00</p>
+  <p class="subtitle">Version 7.00</p>
   <ul>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="strict.html">Transitional and Strict</a></li>
@@ -829,12 +829,16 @@ instead of "<tt>loc</tt>".</p>
   <dd>internally using <a href="parsers.html">normal parsers</a>, with
     a predictive (recursive descent without backtracking)
     algorithm.</dd>
+  <dt><tt>Grammar.Functional</tt></dt>
+  <dd>internally using <a href="fparsers.html">functional
+    parsers</a>, with a limited backtracking algorithm,</dd>
   <dt><tt>Grammar.Backtracking</tt></dt>
   <dd>internally using <a href="bparsers.html">backtracking
     parsers</a>, with a full backtracking algorithm,</dd>
   <dt><tt>Grammar.DefaultAlgorithm</tt></dt>
   <dd>the parsing algorithm is determined by the environment variable
     "CAMLP5PARAM". If this environment variable exists and contains
+    "f", the parsing algorithm is "functional"; if it it
     "b", the parsing algorithm is "backtracking". Otherwise it is
     "predictive".</dd>
 </dl>
@@ -863,12 +867,13 @@ instead of "<tt>loc</tt>".</p>
   accepted, all the symbols of the same rule must be accepted,
   otherwise the exception "Stream.Error" is raised.</p>
 
-<p>If the parsing algorithm is "<tt>Grammar.Backtracking</tt>", the
-  system internally uses <a href="bparsers.html">backtracking
-  parsers</a>. If no solution is found, the exception
-  "<tt>Stream.Error</tt>" is raised and the location of the error is
-  the location of the last unfrozen token, i.e. where the stream
-  advanced the farthest.</p>
+<p>If the parsing algorithm is "<tt>Grammar.Functional</tt>" (resp.
+  "<tt>Grammar.Backtracking</tt>"), the system internally
+  uses <a href="fparsers.html">functional parsers</a>
+  (resp <a href="bparsers.html">backtracking parsers</a>. If no
+  solution is found, the exception "<tt>Stream.Error</tt>" is raised
+  and the location of the error is the location of the last unfrozen
+  token, i.e. where the stream advanced the farthest.</p>
 
 <p>In extensible grammars, unlike stream parsers, before the
   "Stream.Error" exception, the system attempts to recover the error
@@ -1298,12 +1303,11 @@ instead of "<tt>loc</tt>".</p>
 <a class="toplink" href="grammars.html">↑</a>
 <div class="trailer">
 
-  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2010
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2017
       Daniel de Rauglaudre (INRIA)</em></div>
 
   <p class="bottom">
     <a href="http://validator.w3.org/check?uri=referer"><img
-       src="images/valid-xhtml11.png" style="border:0"
        alt="Valid XHTML 1.1" height="31" width="88" /></a>
   </p>
 
