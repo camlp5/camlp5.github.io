@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <!-- library.html,v -->
-  <!-- Copyright (c) INRIA 2007-2014 -->
+  <!-- Copyright (c) INRIA 2007-2017 -->
   <title>Library</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -16,7 +16,7 @@
 
 <div id="menu">
   <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
-  <p class="subtitle">Version 6.15-exp</p>
+  <p class="subtitle">Version 7.00</p>
   <ul>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="strict.html">Transitional and Strict</a></li>
@@ -882,7 +882,7 @@ module Entry =
     value create : g -> string -> e 'a;
     value parse : e 'a -> Stream.t char -> 'a;
     value parse_all : e 'a -> Stream.t char -> list 'a;
-    value parse_token : e 'a -> Stream.t token -> 'a;
+    value parse_token_stream : e 'a -> Stream.t token -> 'a;
     value parse_parsable : e 'a -> parsable -> 'a;
     value name : e 'a -> string;
     value of_parser : g -> string -> (Stream.t token -> 'a) -> e 'a;
@@ -905,8 +905,8 @@ module Entry =
         parser returning all possible values while parsing with the
         entry "<tt>e</tt>": may return more than one value when the
         parsing algorithm is "<tt>Grammar.Backtracking</tt>".</li>
-      <li><tt>Grammar.Entry.parse_token e</tt> : returns the token
-        parser of the entry "<tt>e</tt>".</li>
+      <li><tt>Grammar.Entry.parse_token_stream e</tt> : returns the token
+        stream parser of the entry "<tt>e</tt>".</li>
       <li><tt>Grammar.Entry.parse_parsable e</tt> : returns the
         parsable parser of the entry "<tt>e</tt>".</li>
       <li><tt>Grammar.Entry.name e</tt> : returns the name of the
@@ -1017,10 +1017,13 @@ type parse_algorithm = Gramext.parse_algorithm ==
     Type of algorithm used in grammar entries.
     <ul>
       <li><tt>Imperative</tt>: use imperative streams</li>
+      <li><tt>Functional</tt>: use functional streams with limited
+        backtracking</li>
       <li><tt>Backtracking</tt>: use functional streams with full
         backtracking</li>
-      <li><tt>DefaultAlgorithm</tt>: found in the variable
-        "<tt>backtrack_parse</tt>" below.</li>
+      <li><tt>DefaultAlgorithm</tt>: use the general default algorithm
+	set by the function "<tt>set_default_algorithm</tt>" below, or
+	through the environment variable <tt>CAMLP5PARAM</tt>.</li>
     </ul>
     The default, when a grammar is created,
     is <tt>DefaultAlgorithm</tt>.
@@ -1034,12 +1037,20 @@ type parse_algorithm = Gramext.parse_algorithm ==
 </dl>
 
 <dl>
-  <dt><tt>value backtrack_parse : ref bool;</tt></dt>
+  <dt><tt>value set_default_algorithm : parse_algorithm -> unit;</tt></dt>
   <dd>
-    If <tt>True</tt>, the default parsing uses full backtracking. If
-    <tt>False</tt>, it uses parsing with normal streams. If the
+    Set the default parsing algorithm for all grammars.  If the
     environment variable CAMLP5PARAM contains "b", the default is
-    <tt>True</tt>; otherwise, the default is <tt>False</tt>.
+    <tt>Backtracking</tt>; if it contains 'f', the default is
+    <tt>Functional</tt>; if it contains 'p', the default is
+    <tt>Predictive</tt>.
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value default_algorithm : unit -> parse_algorithm;</tt></dt>
+  <dd>
+    Return the current default algorithm.
   </dd>
 </dl>
 
@@ -1055,6 +1066,14 @@ type parse_algorithm = Gramext.parse_algorithm ==
     overtakes the last reached token.) The default is 10000. If set
     to 0, there is no limit. Can be set by the environment variable
     CAMLP5PARAM by "l=value".
+  </dd>
+</dl>
+
+<dl>
+  <dt><tt>value backtrack_parse : ref bool;</tt></dt>
+  <dd>
+    Deprecated since 2017-06-06; rather use "set_default_algorithm
+    Backtracking".
   </dd>
 </dl>
 
@@ -1092,7 +1111,7 @@ module type S =
         type e 'a = 'y;
         value create : string -> e 'a;
         value parse : e 'a -> parsable -> 'a;
-        value parse_token : e 'a -> Stream.t te -> 'a;
+        value parse_token_stream : e 'a -> Stream.t te -> 'a;
         value name : e 'a -> string;
         value of_parser : string -> (Stream.t te -> 'a) -> e 'a;
         value print : e 'a -> unit;
@@ -1127,6 +1146,18 @@ module type S =
 </dl>
 
 <h3 id="b:grammar-flags">grammar flags</h3>
+
+<dl>
+  <dt><tt>value skip_item : 'a -> 'a;</tt></dt>
+  <dd>
+    <tt>Grammar.skip_item x</tt> can be called in a semantic action of
+    a grammar rule to ask the grammar to skip that item if it is
+    called in a list (LIST0 or LIST1). The function returns the item
+    itself (for typing reasons) but its value is ignored.  This
+    function is used to allow IFDEF and IFNDEF for cases of
+    constructor declarations and pattern matchings.
+  </dd>
+</dl>
 
 <dl>
   <dt><tt>value error_verbose : ref bool;</tt></dt>
@@ -1509,7 +1540,7 @@ value sprint_break_all :
 <a class="toplink" href="library.html">↑</a>
 <div class="trailer">
 
-  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2014
+  <hr style="margin:0" /><div style="font-size: 80%"><em>Copyright 2007-2017
       Daniel de Rauglaudre (INRIA)</em></div>
 
   <p class="bottom">
