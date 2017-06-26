@@ -1,8 +1,53 @@
+Camlp5 Version 7.00:
+--------------------
+
+* [26 Jun 17] Release number is 7.00 instead of 6.18 because of big
+  improvements on extensible grammars which can use now limited and
+  full backtracking algorithms on demand.
+* [16 Jun 17] Entry.parse_token has been renamed Entry.parse_token_stream.
+* [04 Jun 17] Added limited backtracking (functional streams) to extensible
+  grammars. Can be set with "Grammar.parse_algorithm Functional" or by
+  setting the environment variable CAMLP5PARAM=f.
+* [01 Jun 17] Backtrack parsing seems to work well now. Camlp5 and Coq can
+  be compiled using it by setting CAMLP5PARAM=b.
+* [31 May 17] Fixed bug: Entry.parse_token did not accept backtrack parsing.
+* [31 May 17] Fixed ocaml parsing for case of record {foo () with ...}.
+* [31 May 17] Fixed bug backtrack parsing for function Entry.of_parser.
+* [28 Apr 17] Updated for ocaml 4.04.2 which was missing.
+* [07 Apr 17] Updated for ocaml trunk 4.06.0
+* [19 Feb 17] Fixed bug: locations of all identifiers were missing
+  resulting of error messages giving "<none>" as source file name
+  and no line and column number in the source.
+* [04 Jan 17] Updated for ocaml trunk 4.05.0
+* [09 Dec 16] Fixed bug: was not compatible with ocaml compiled with
+  option -safe-string.
+* [09 Dec 16] Fixed bug: make uninstall did not take DESTDIR into account.
+* [07 Dec 16] Fixed bug virtual methods in signatures generated syntax
+  tree of virtual val. Bug notified by Kakadu.
+  Ex: "class foo : object method virtual bar : bool end"
+* [07 Dec 16] Fixed bug not separated idents were not allowed in
+  'let open' constructs. Bug notified by Kakadu.
+  Ex: "let open Mod1.Mod2.Mod3 in ..."
+* [06 Dec 16] Fixed bug dumping module definitions with constraints.
+  Bug notified by Kakadu.
+  Ex:
+    module type Item = sig type t end
+    module type Sig = sig type t module Node : Item end
+    module Make (S : Sig) : Sig with module Node = S.Node and type t = S.t
+* [06 Dec 16] Fixed bug extra option word during pr_dump for optional args.
+  Bug notified by Kakadu.
+  Ex: "class t : ?name:string -> object end"
+* [05 Dec 16] Fixed bug dumping of open object types. Bug notified by Kakadu.
+  Ex: "type t = <f:int; .. >"
+* [05 Dec 16] Fixed bug dump parsetree without throughing away module type
+  annotation. Bug notified by Kakadu.
+  Ex: "module rec A : sig end = struct end"
+
 Camlp5 Version 6.17:
 --------------------
 
-* [24 Jul 16] Added compatibility with ocaml 4.04.0 and 4.04.1.
 * [09 Sep 16] Added pretty print of type [< ... ] when ended with "> `ident".
+* [24 Jul 16] Added compatibility with ocaml 4.04.0 and 4.04.1.
 * [24 Jul 16] Added compatibility with ocaml 4.03.1.
 
 Camlp5 Version 6.16:
