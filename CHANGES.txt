@@ -1,3 +1,19 @@
+Camlp5 Version 7.02:
+--------------------
+
+* [07 Oct 17] Updated for ocaml version 4.06.0.
+* [22 Jul 17] Now "a.[i] := b" generates a call to Bytes.set instead
+  of String.set, as from ocaml version 4.02.0.
+* [18 Jul 17] Updated for ocaml future version 4.05.1.
+* [13 Jul 17] Compilation from OCaml version 4.00.0 now using parsetree
+  distributed with OCaml (-I +compiler-libs), no more the one copied from
+  OCaml sources (on ocaml_stuff directory). Set at "configure" time. (Not
+  fully implemented: the magic numbers are still read in ocaml_stuff
+  directory.) Is going to simplify Camlp5 update when new version of
+  OCaml is released.
+* [11 Jul 17] Fixed problem of associativity in backtracking grammars,
+  preventing Coq to compile with CAMLP5PARAM=f or b.
+
 Camlp5 Version 7.01:
 --------------------
 
