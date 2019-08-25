@@ -22,7 +22,7 @@ list and short description of each option.
 
 2) It creates a Makefile, which can be invoked by:
 ```shell
-   make world.opt
+   make
 ```
 
 Alternatively, you can decompose the operations into:
