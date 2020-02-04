@@ -2,10 +2,14 @@
 
 Camlp5 is a preprocessor-pretty-printer of ocaml.
 
-It is compatible with all versions of ocaml from 1.07 to 4.10.0 (when
-they compile), and jocaml 3.12.0 to 3.12.1.
+It is (theoretically) compatible with all versions of ocaml from 1.07
+to 4.10.0 (when they compile), and jocaml 3.12.0 to 3.12.1, but
+maintainers only test against versions of ocaml >= 4.00.0.
 
-This Camlp5 version is 7.10.
+This Camlp5 version is 7.11.  Sources may be found at:
+
+1. Github release: https://github.com/camlp5/camlp5/releases/tag/rel711
+2. Github repository: https://github.com/camlp5/camlp5
 
 ## Requirements
 
