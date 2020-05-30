@@ -16,7 +16,7 @@
 
 <div id="menu">
   <h1>- <a href="http://pauillac.inria.fr/~ddr/camlp5">Camlp5</a> -</h1>
-  <p class="subtitle">Version 7.00</p>
+  <p class="subtitle">Version 7.12</p>
   <ul>
     <li><a href="index.html">Introduction</a></li>
     <li><a href="strict.html">Transitional and Strict</a></li>
@@ -784,8 +784,9 @@ instead of "<tt>loc</tt>".</p>
   this symbol is a call to an entry).</p>
 
 <p>When a SELF or the current entry name is encountered in the middle
-  of the rule (i.e. if it is not the last symbol), there is a call to
-  the "start" function of the first level of the current entry.</p>
+  of the rule (i.e. if it is neither the first nor the last symbol),
+  there is a call to the "start" function of the first level of the
+  current entry.</p>
 
 <p>Example. Let us consider the following grammar:</p>
 
