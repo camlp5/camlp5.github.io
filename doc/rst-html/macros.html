@@ -1,0 +1,462 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Macros &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pragma directive" href="pragma.html" />
+    <link rel="prev" title="Scheme" href="scheme.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Macros</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstmacros.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="macros">
+<h1>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Macros</p>
+<p>Camlp5 provides a system of macros, added by the parsing kit
+“<code class="docutils literal"><span class="pre">pa_macro.cmo</span></code>”. Macros are values evaluated at parsing time.</p>
+<p>When loaded, the parsing kit extends the syntax of the language and
+adds command options.</p>
+<p class="rubric" id="added-syntax">Added syntax</p>
+<p>The parsing kit “<code class="docutils literal"><span class="pre">pa_macro.cmo</span></code>” extends the structure items (=
+toplevel phrases), the expressions and the patterns by the following
+grammar rules:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>          <span class="nb">str</span><span class="o">-</span><span class="n">item</span> <span class="p">:</span><span class="o">:=</span> <span class="nb">str</span><span class="o">-</span><span class="n">macro</span><span class="o">-</span><span class="k">def</span>
+          <span class="nf">sig</span><span class="o">-</span><span class="n">item</span> <span class="p">:</span><span class="o">:=</span> <span class="n">sig</span><span class="o">-</span><span class="n">macro</span><span class="o">-</span><span class="k">def</span>
+              <span class="nf">expr</span> <span class="p">:</span><span class="o">:=</span> <span class="n">macro</span><span class="o">-</span><span class="n">expr</span>
+              <span class="n">patt</span> <span class="p">:</span><span class="o">:=</span> <span class="n">macro</span><span class="o">-</span><span class="n">patt</span>
+         <span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="p">:</span><span class="o">:=</span> <span class="n">macro</span><span class="o">-</span><span class="n">cons</span><span class="o">-</span><span class="n">decl</span>
+      <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="p">:</span><span class="o">:=</span> <span class="n">macro</span><span class="o">-</span><span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span>
+       <span class="n">match</span><span class="o">-</span><span class="n">assoc</span> <span class="p">:</span><span class="o">:=</span> <span class="n">macro</span><span class="o">-</span><span class="n">match</span><span class="o">-</span><span class="n">assoc</span>
+     <span class="n">str_macro</span><span class="o">-</span><span class="k">def</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="n">uident</span>
+                     <span class="o">|</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="n">uident</span> <span class="s2">&quot;=&quot;</span> <span class="n">expr</span>
+                     <span class="o">|</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="n">uident</span> <span class="n">params</span> <span class="s2">&quot;=&quot;</span> <span class="n">expr</span>
+                     <span class="o">|</span> <span class="s2">&quot;UNDEF&quot;</span> <span class="n">uident</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="nb">str</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="nb">str</span> <span class="s2">&quot;END&quot;</span>
+          <span class="k">else</span><span class="o">-</span><span class="nb">str</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;ELSIFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="nb">str</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSIFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="nb">str</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSE&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="nb">str</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+     <span class="n">sig_macro</span><span class="o">-</span><span class="k">def</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="n">uident</span>
+                     <span class="o">|</span> <span class="s2">&quot;DEFINE&quot;</span> <span class="n">uident</span> <span class="n">params</span> <span class="s2">&quot;=&quot;</span> <span class="nb">type</span>
+                     <span class="o">|</span> <span class="s2">&quot;UNDEF&quot;</span> <span class="n">uident</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">sg</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="n">sig</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">sg</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="n">sig</span> <span class="s2">&quot;END&quot;</span>
+          <span class="k">else</span><span class="o">-</span><span class="n">sig</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;ELSIFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">sg</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="n">sig</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSIFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">sg</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="n">sig</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSE&quot;</span> <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="k">else</span><span class="o">-</span><span class="n">sig</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+        <span class="n">macro</span><span class="o">-</span><span class="n">expr</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">expr</span> <span class="k">else</span><span class="o">-</span><span class="n">expr</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">expr</span> <span class="k">else</span><span class="o">-</span><span class="n">expr</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;__FILE__&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;__LOCATION__&quot;</span>
+         <span class="k">else</span><span class="o">-</span><span class="n">expr</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;ELSIFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">expr</span> <span class="k">else</span><span class="o">-</span><span class="n">expr</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSIFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">expr</span> <span class="k">else</span><span class="o">-</span><span class="n">expr</span>
+                     <span class="o">|</span> <span class="s2">&quot;ELSE&quot;</span> <span class="n">expr</span> <span class="k">else</span><span class="o">-</span><span class="n">expr</span>
+        <span class="n">macro</span><span class="o">-</span><span class="n">patt</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">patt</span> <span class="s2">&quot;ELSE&quot;</span> <span class="n">patt</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">patt</span> <span class="s2">&quot;ELSE&quot;</span> <span class="n">patt</span> <span class="s2">&quot;END&quot;</span>
+   <span class="n">macro</span><span class="o">-</span><span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">cons</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+<span class="n">macro</span><span class="o">-</span><span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">rec</span><span class="o">-</span><span class="n">lab</span><span class="o">-</span><span class="n">decl</span> <span class="s2">&quot;END&quot;</span>
+ <span class="n">macro</span><span class="o">-</span><span class="n">match</span><span class="o">-</span><span class="n">assoc</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">match_assoc</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">assoc</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">assoc</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">assoc</span> <span class="s2">&quot;END&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;IFNDEF&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;THEN&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">assoc</span>
+                       <span class="s2">&quot;ELSE&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">assoc</span> <span class="s2">&quot;END&quot;</span>
+         <span class="n">st</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="p">:</span><span class="o">:=</span> <span class="n">str_macro</span><span class="o">-</span><span class="k">def</span>
+                     <span class="o">|</span> <span class="n">structure</span>
+         <span class="n">sg</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">mac</span> <span class="p">:</span><span class="o">:=</span> <span class="n">sig</span><span class="o">-</span><span class="n">macro</span><span class="o">-</span><span class="k">def</span>
+                     <span class="o">|</span> <span class="n">signature</span>
+            <span class="n">params</span> <span class="p">:</span><span class="o">:=</span> <span class="n">ident</span> <span class="n">params</span>
+                     <span class="o">|</span> <span class="n">ident</span>
+             <span class="n">dexpr</span> <span class="p">:</span><span class="o">:=</span> <span class="n">dexpr</span> <span class="s2">&quot;OR&quot;</span> <span class="n">dexpr</span>
+                     <span class="o">|</span> <span class="n">dexpr</span> <span class="s2">&quot;AND&quot;</span> <span class="n">dexpr</span>
+                     <span class="o">|</span> <span class="s2">&quot;NOT&quot;</span> <span class="n">dexpr</span>
+                     <span class="o">|</span> <span class="n">uident</span>
+                     <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="n">dexpr</span> <span class="s2">&quot;)&quot;</span>
+            <span class="n">uident</span> <span class="p">:</span><span class="o">:=</span> <span class="s1">&#39;A&#39;</span><span class="o">-</span><span class="s1">&#39;Z&#39;</span> <span class="n">ident</span>
+             <span class="n">ident</span> <span class="p">:</span><span class="o">:=</span> <span class="n">ident</span><span class="o">-</span><span class="n">char</span><span class="o">*</span>
+        <span class="n">ident</span><span class="o">-</span><span class="n">char</span> <span class="p">:</span><span class="o">:=</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="o">-</span><span class="s1">&#39;a&#39;</span> <span class="o">|</span> <span class="s1">&#39;A&#39;</span><span class="o">-</span><span class="s1">&#39;Z&#39;</span> <span class="o">|</span> <span class="s1">&#39;0&#39;</span><span class="o">-</span><span class="s1">&#39;9&#39;</span> <span class="o">|</span> <span class="s1">&#39;_&#39;</span> <span class="o">|</span> <span class="s1">&#39;&#39;&#39; |</span>
+<span class="s1">                        misc-byte)</span>
+<span class="s1">         misc-byte ::= &#39;</span><span class="se">\12</span><span class="s1">8&#39;-&#39;</span><span class="se">\255</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p>When a macro has been defined, as name e.g. “NAME”, the expressions
+and patterns are extended this way:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>      <span class="n">expr</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;NAME&quot;</span>
+             <span class="o">|</span> <span class="s2">&quot;NAME&quot;</span> <span class="s2">&quot;(&quot;</span> <span class="n">expr</span><span class="o">-</span><span class="n">params</span> <span class="s2">&quot;)&quot;</span>
+      <span class="n">patt</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;NAME&quot;</span>
+             <span class="o">|</span> <span class="s2">&quot;NAME&quot;</span> <span class="s2">&quot;(&quot;</span> <span class="n">patt</span><span class="o">-</span><span class="n">params</span> <span class="s2">&quot;)&quot;</span>
+<span class="n">expr</span><span class="o">-</span><span class="n">params</span> <span class="o">:=</span> <span class="n">expr</span> <span class="s2">&quot;,&quot;</span> <span class="n">expr</span><span class="o">-</span><span class="n">params</span>
+             <span class="o">|</span> <span class="n">expr</span>
+<span class="n">patt</span><span class="o">-</span><span class="n">params</span> <span class="o">:=</span> <span class="n">patt</span> <span class="s2">&quot;,&quot;</span> <span class="n">patt</span><span class="o">-</span><span class="n">params</span>
+             <span class="o">|</span> <span class="n">patt</span>
+</pre></div>
+</div>
+<p>Notice that the identifiers “<code class="docutils literal"><span class="pre">DEFINE</span></code>”, “<code class="docutils literal"><span class="pre">UNDEF</span></code>”, “<code class="docutils literal"><span class="pre">IFDEF</span></code>”,
+“<code class="docutils literal"><span class="pre">IFNDEF</span></code>”, “<code class="docutils literal"><span class="pre">ELSE</span></code>”, “<code class="docutils literal"><span class="pre">END</span></code>”, “<code class="docutils literal"><span class="pre">OR</span></code>”, “<code class="docutils literal"><span class="pre">AND</span></code>” and
+“<code class="docutils literal"><span class="pre">NOT</span></code>” are new keywords (they cannot be used as identifiers of
+constructors or modules.</p>
+<p>However, the identifiers “<code class="docutils literal"><span class="pre">__FILE__</span></code>” and “<code class="docutils literal"><span class="pre">__LOCATION__</span></code>” and
+the new defined macro names are not new identifiers.</p>
+<p class="rubric" id="added-command-options">Added command options</p>
+<p>The parsing kit “<code class="docutils literal"><span class="pre">pa_macro.cmo</span></code>” also add two options usable in all
+Camlp5 commands:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">-D</span> <span class="pre">uident</span></code></dt>
+<dd>Define the uident in question like would have been a DEFINE
+(without parameter) in the code.</dd>
+<dt><code class="docutils literal"><span class="pre">-U</span> <span class="pre">uident</span></code></dt>
+<dd>Undefine the uident in question like would have been a UNDEF in
+the code.</dd>
+<dt><code class="docutils literal"><span class="pre">-defined</span></code></dt>
+<dd>Print the defined macros and exit.</dd>
+</dl>
+<p class="rubric" id="semantics">Semantics</p>
+<p>The statement “<code class="docutils literal"><span class="pre">DEFINE</span></code>” defines a new macro with optional
+parameters and an optional value. The macro name must start with an
+uppercase letter.</p>
+<p>The test of a macro can be done either:</p>
+<ul class="simple">
+<li>in structure items</li>
+<li>in signature items</li>
+<li>in expressions</li>
+<li>in patterns</li>
+<li>in a constructor declaration</li>
+<li>in a match case</li>
+</ul>
+<p>using the statement “<code class="docutils literal"><span class="pre">IFDEF</span></code>”. Its non-existence can be tested by
+“<code class="docutils literal"><span class="pre">IFNDEF</span></code>”. In expressions and patterns, the “<code class="docutils literal"><span class="pre">ELSE</span></code>” part is
+required, not in structure items.</p>
+<p>The expression behind the “<code class="docutils literal"><span class="pre">IFDEF</span></code>” or the “<code class="docutils literal"><span class="pre">IFNDEF</span></code>” statement
+may use the operators “<code class="docutils literal"><span class="pre">OR</span></code>”, “<code class="docutils literal"><span class="pre">AND</span></code>” and “<code class="docutils literal"><span class="pre">NOT</span></code>” and contain
+parentheses.</p>
+<p>Notice that in an “<code class="docutils literal"><span class="pre">IFDEF</span></code>” where the value is True (resp. False),
+the “<code class="docutils literal"><span class="pre">ELSE</span></code>” (resp “<code class="docutils literal"><span class="pre">THEN</span></code>”) part does not need to be
+semantically correct (well typed), since it does not appear in the
+resulting syntax tree. Same for “<code class="docutils literal"><span class="pre">IFNDEF</span></code>” and for possible macros
+parameters which are not used in the associated expression.</p>
+<p>If a macro is defined twice, its first version is lost.</p>
+<p>The statement “<code class="docutils literal"><span class="pre">UNDEF</span></code>” removes a macro definition.</p>
+<p>When associated with a value, the “<code class="docutils literal"><span class="pre">DEFINE</span></code>” macro acts like a
+variable (or like a function call if it has parameters), except that
+the parameters are evaluated at parse time and can also be used also
+in pattern positions. Notice that this is a way to define constants
+by name in patterns. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">DEFINE</span> <span class="n">WW1</span> <span class="o">=</span> <span class="mi">1914</span><span class="p">;</span>
+<span class="n">DEFINE</span> <span class="n">WW2</span> <span class="o">=</span> <span class="mi">1939</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">war_or_year</span> <span class="o">=</span>
+  <span class="n">fun</span>
+  <span class="p">[</span> <span class="n">WW1</span> <span class="o">-&gt;</span> <span class="s2">&quot;world war I&quot;</span>
+  <span class="o">|</span> <span class="n">WW2</span> <span class="o">-&gt;</span> <span class="s2">&quot;world war II&quot;</span>
+  <span class="o">|</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="s2">&quot;not a war&quot;</span> <span class="p">]</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>In the definition of a macro, if the expression contains an
+evaluation, the evaluation is not done by Camlp5 but just transmitted
+as code. In this case, it does not work in pattern position. Example
+in the toplevel:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># DEFINE PLUS(x, y) = x + y;</span>
+<span class="c1"># PLUS(3, 4);</span>
+<span class="o">-</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="c1">#   fun [ PLUS(3, 4) -&gt; () ];</span>
+<span class="n">Toplevel</span> <span class="nb">input</span><span class="p">:</span>
+<span class="c1">#   fun [ PLUS(3, 4) -&gt; () ];</span>
+          <span class="o">^^^^^^^^^^</span>
+<span class="n">Failure</span><span class="p">:</span> <span class="n">this</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">a</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">it</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">applied</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">pattern</span>
+</pre></div>
+</div>
+<p>On the other hand, if the expression does not contain evaluation,
+this is possible:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># DEFINE FOO(x, y) = (x, Some y);</span>
+<span class="c1"># FOO(True, &quot;bar&quot;);</span>
+<span class="o">-</span> <span class="p">:</span> <span class="p">(</span><span class="nb">bool</span> <span class="o">*</span> <span class="n">option</span> <span class="n">string</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">Some</span> <span class="s2">&quot;bar&quot;</span><span class="p">)</span>
+<span class="c1"># fun [ FOO(_, &quot;hello&quot;) -&gt; 0 | _ -&gt; 1 ];</span>
+<span class="o">-</span> <span class="p">:</span> <span class="p">(</span><span class="s1">&#39;a * option string) -&gt; int = &lt;fun&gt;</span>
+</pre></div>
+</div>
+<p>The macro “<code class="docutils literal"><span class="pre">__FILE__</span></code>” is replaced by the current compiled source
+file name. In the OCaml toplevel, its value is the empty string.</p>
+<p>The macro “<code class="docutils literal"><span class="pre">__LOCATION__</span></code>” is replaced by the the current location
+(two integers in number of characters from the beginning of the file,
+starting at zero) of the macro itself.</p>
+<p>In signatures, the macro definitions can return types which can be
+used in type definitions.</p>
+<p>In constructor declarations and in match cases, it is possible to
+conditionally define some cases by “<code class="docutils literal"><span class="pre">IFDEF</span></code>” or “<code class="docutils literal"><span class="pre">IFNDEF</span></code>”. For
+example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">t</span> <span class="o">=</span>
+  <span class="p">[</span> <span class="n">A</span> <span class="n">of</span> <span class="nb">int</span>
+  <span class="o">|</span> <span class="n">IFNDEF</span> <span class="n">FOO</span> <span class="n">THEN</span>
+      <span class="n">B</span> <span class="n">of</span> <span class="n">string</span>
+    <span class="n">END</span>
+  <span class="o">|</span> <span class="n">C</span> <span class="n">of</span> <span class="nb">bool</span> <span class="p">]</span>
+<span class="p">;</span>
+
+<span class="n">match</span> <span class="n">x</span> <span class="k">with</span>
+<span class="p">[</span> <span class="n">A</span> <span class="n">i</span> <span class="o">-&gt;</span> <span class="n">j</span>
+<span class="o">|</span> <span class="n">IFNDEF</span> <span class="n">FOO</span> <span class="n">THEN</span>
+    <span class="n">B</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">toto</span>
+  <span class="n">END</span>
+<span class="o">|</span> <span class="n">C</span> <span class="n">b</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="p">];</span>
+</pre></div>
+</div>
+<p class="rubric" id="predefined-macros">Predefined macros</p>
+<p>The macro “<code class="docutils literal"><span class="pre">CAMLP5</span></code>” is always predefined.</p>
+<p>The macro “<code class="docutils literal"><span class="pre">OCAML_oversion</span></code>” is predefined, where “<code class="docutils literal"><span class="pre">oversion</span></code>” is
+the OCaml version the Camlp5 program has been compiled with, where
+all characters but numbers are replaced by underscores. For example,
+if using OCaml 3.09.3, the macro “<code class="docutils literal"><span class="pre">OCAML_3_09_3</span></code>” is defined.</p>
+<p>Moreover, for <em>some</em> Camlp5 versions (and all the versions which
+follows them), the macro “<code class="docutils literal"><span class="pre">CAMLP5_version</span></code>” is defined where
+“<code class="docutils literal"><span class="pre">version</span></code>” is the Camlp5 version where all characters but numbers
+are replaced by underscores. For example, in version 4.02, the macro
+“<code class="docutils literal"><span class="pre">CAMLP5_4_02</span></code>” had been defined and this macro have appeared in
+all versions of Camlp5 since 4.02.</p>
+<p>To see which macros are predefined, type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5r</span> <span class="n">pa_macro</span><span class="o">.</span><span class="n">cmo</span> <span class="o">-</span><span class="n">defined</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pragma.html" class="btn btn-neutral float-right" title="Pragma directive" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="scheme.html" class="btn btn-neutral float-left" title="Scheme" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

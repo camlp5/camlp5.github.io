@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Scheme &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Macros" href="macros.html" />
+    <link rel="prev" title="The revised syntax" href="revsynt.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Scheme</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstscheme.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scheme">
+<h1>Scheme<a class="headerlink" href="#scheme" title="Permalink to this headline">¶</a></h1>
+<p class="top rubric" id="scheme-and-lisp-syntaxes">Scheme and Lisp syntaxes</p>
+<p>It is possible to write OCaml programs with Scheme or Lisp syntax.
+They are close to one another, both using parentheses to identify and
+separate statements.</p>
+<p class="rubric" id="common">Common</p>
+<p>The syntax extension kits are named “<code class="docutils literal"><span class="pre">pa_scheme.cmo</span></code>” and
+“<code class="docutils literal"><span class="pre">pa_lisp.cmo</span></code>”. The sources (same names ending with “.ml” in the
+Camlp5 sources), are written in their own syntax. They are
+boostrapped thanks to the versions being written in revised syntax
+and to the Camlp5 pretty printing system.</p>
+<p>In the OCaml toplevel, it is possible to use them by loading
+“<code class="docutils literal"><span class="pre">camlp5r.cma</span></code>” first, then “<code class="docutils literal"><span class="pre">pa_lisp.cmo</span></code>” or
+“<code class="docutils literal"><span class="pre">pa_scheme.cmo</span></code>” after:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocaml</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">camlp5r</span><span class="o">.</span><span class="n">cma</span> <span class="n">pa_scheme</span><span class="o">.</span><span class="n">cmo</span>
+        <span class="n">Objective</span> <span class="n">Caml</span> <span class="n">version</span> <span class="o">...</span>
+
+        <span class="n">Camlp5</span> <span class="n">Parsing</span> <span class="n">version</span> <span class="o">...</span>
+
+<span class="c1"># (let ((x 3)) (* 3 x))</span>
+<span class="o">-</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="c1"># (values 3 4 5)</span>
+<span class="o">-</span> <span class="p">:</span> <span class="p">(</span><span class="nb">int</span> <span class="o">*</span> <span class="nb">int</span> <span class="o">*</span> <span class="nb">int</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">ocaml</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">camlp5r</span><span class="o">.</span><span class="n">cma</span> <span class="n">pa_lisp</span><span class="o">.</span><span class="n">cmo</span>
+        <span class="n">Objective</span> <span class="n">Caml</span> <span class="n">version</span> <span class="o">...</span>
+
+        <span class="n">Camlp5</span> <span class="n">Parsing</span> <span class="n">version</span> <span class="o">...</span>
+
+<span class="c1"># (let ((x 3)) (* 3 x))</span>
+<span class="o">-</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="c1"># (, 3 4 5)</span>
+<span class="o">-</span> <span class="p">:</span> <span class="p">(</span><span class="nb">int</span> <span class="o">*</span> <span class="nb">int</span> <span class="o">*</span> <span class="nb">int</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The grammar of Scheme and Lisp are relatively simple, just reading
+s-expressions. The syntax tree nodes are created in the semantic
+actions. Because of this, these grammars are hardly extensible.</p>
+<p>However, the syntax extension EXTEND (“<code class="docutils literal"><span class="pre">pa_extend.cmo</span></code>” in
+<a class="reference external" href="grammars.html">extensible grammars</a>) works for them: only the
+semantic actions need be written with the Scheme or Lisp syntax.
+Stream parsers are also implemented.</p>
+<p>Warning: these syntaxes are incomplete, but can be completed, if
+Camlp5 users are insterested.</p>
+<p class="rubric" id="scheme-syntax">Scheme syntax</p>
+<p>Some examples are given to show the principles:</p>
+</div>
+<div class="section" id="ocaml-scheme">
+<h1>OCaml                                     Scheme<a class="headerlink" href="#ocaml-scheme" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">let</span> <span class="pre">rec</span> <span class="pre">f</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">0;;</span></code>                   <code class="docutils literal"><span class="pre">(definerec</span> <span class="pre">(f</span> <span class="pre">x</span> <span class="pre">y)</span> <span class="pre">0)</span></code>
+<code class="docutils literal"><span class="pre">let</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">42</span> <span class="pre">and</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">27</span> <span class="pre">in</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y;;&nbsp;&nbsp;``</span>&#160;&#160;&#160; <span class="pre">``(let</span> <span class="pre">((x</span> <span class="pre">42)</span> <span class="pre">(y</span> <span class="pre">27))</span> <span class="pre">(+</span> <span class="pre">x</span> <span class="pre">y))</span></code>
+<code class="docutils literal"><span class="pre">let</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">42</span> <span class="pre">in</span> <span class="pre">let</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">27</span> <span class="pre">in</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y;;&nbsp;&nbsp;``</span> <span class="pre">``(let*</span> <span class="pre">((x</span> <span class="pre">42)</span> <span class="pre">(y</span> <span class="pre">27))</span> <span class="pre">(+</span> <span class="pre">x</span> <span class="pre">y))</span></code>
+<code class="docutils literal"><span class="pre">module</span> <span class="pre">M</span> <span class="pre">=</span> <span class="pre">struct</span> <span class="pre">...</span> <span class="pre">end;;</span></code>           <code class="docutils literal"><span class="pre">(module</span> <span class="pre">M</span> <span class="pre">(struct</span> <span class="pre">...))</span></code>
+<code class="docutils literal"><span class="pre">type</span> <span class="pre">'a</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">A</span> <span class="pre">of</span> <span class="pre">'a</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">B</span></code>         <code class="docutils literal"><span class="pre">(type</span> <span class="pre">(t</span> <span class="pre">'a)</span> <span class="pre">(sum</span> <span class="pre">(A</span> <span class="pre">'a</span> <span class="pre">int)</span> <span class="pre">(B)))</span></code>
+<code class="docutils literal"><span class="pre">fun</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">-&gt;</span> <span class="pre">x</span></code>                          <code class="docutils literal"><span class="pre">(lambda</span> <span class="pre">(x</span> <span class="pre">y)</span> <span class="pre">x)</span></code>
+<code class="docutils literal"><span class="pre">x;</span> <span class="pre">y;</span> <span class="pre">z</span></code>                               <code class="docutils literal"><span class="pre">(begin</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">z)</span></code>
+<code class="docutils literal"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">y</span></code>                                 <code class="docutils literal"><span class="pre">(f</span> <span class="pre">x</span> <span class="pre">y)</span></code>
+<code class="docutils literal"><span class="pre">[1;</span> <span class="pre">2;</span> <span class="pre">3]</span></code>                             <code class="docutils literal"><span class="pre">[1</span> <span class="pre">2</span> <span class="pre">3]</span></code>
+<code class="docutils literal"><span class="pre">x</span> <span class="pre">::</span> <span class="pre">y</span> <span class="pre">::</span> <span class="pre">z</span> <span class="pre">::</span> <span class="pre">t</span></code>                      <code class="docutils literal"><span class="pre">[x</span> <span class="pre">y</span> <span class="pre">z</span> <span class="pre">::</span> <span class="pre">t]</span></code>
+<code class="docutils literal"><span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c</span></code>                               <code class="docutils literal"><span class="pre">(values</span> <span class="pre">a</span> <span class="pre">b</span> <span class="pre">c)</span></code>
+<code class="docutils literal"><span class="pre">match</span> <span class="pre">x</span> <span class="pre">with</span> <span class="pre">'A'..'Z'</span> <span class="pre">-&gt;</span> <span class="pre">&quot;x&quot;</span></code>          <code class="docutils literal"><span class="pre">(match</span> <span class="pre">x</span> <span class="pre">((range</span> <span class="pre">'A'</span> <span class="pre">'Z')</span> <span class="pre">&quot;x&quot;)))</span></code>
+<code class="docutils literal"><span class="pre">{x</span> <span class="pre">=</span> <span class="pre">y;</span> <span class="pre">z</span> <span class="pre">=</span> <span class="pre">t}</span></code>                        <code class="docutils literal"><span class="pre">{(x</span> <span class="pre">y)</span> <span class="pre">(z</span> <span class="pre">t)}</span></code>
+=========================================
+======================================</p>
+<p class="rubric" id="lisp-syntax">Lisp syntax</p>
+<p>The same examples:</p>
+</div>
+<div class="section" id="ocaml-lisp">
+<h1>OCaml                                     Lisp<a class="headerlink" href="#ocaml-lisp" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">let</span> <span class="pre">rec</span> <span class="pre">f</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">0;;</span></code>                   <code class="docutils literal"><span class="pre">(value</span> <span class="pre">rec</span> <span class="pre">f</span> <span class="pre">(lambda</span> <span class="pre">(x</span> <span class="pre">y)</span> <span class="pre">0))</span></code>
+<code class="docutils literal"><span class="pre">let</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">42</span> <span class="pre">and</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">27</span> <span class="pre">in</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y;;&nbsp;&nbsp;``</span>&#160;&#160;&#160; <span class="pre">``(let</span> <span class="pre">((x</span> <span class="pre">42)</span> <span class="pre">(y</span> <span class="pre">27))</span> <span class="pre">(+</span> <span class="pre">x</span> <span class="pre">y))</span></code>
+<code class="docutils literal"><span class="pre">let</span> <span class="pre">x</span> <span class="pre">=</span> <span class="pre">42</span> <span class="pre">in</span> <span class="pre">let</span> <span class="pre">y</span> <span class="pre">=</span> <span class="pre">27</span> <span class="pre">in</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">y;;&nbsp;&nbsp;``</span> <span class="pre">``(let*</span> <span class="pre">((x</span> <span class="pre">42)</span> <span class="pre">(y</span> <span class="pre">27))</span> <span class="pre">(+</span> <span class="pre">x</span> <span class="pre">y))</span></code>
+<code class="docutils literal"><span class="pre">module</span> <span class="pre">M</span> <span class="pre">=</span> <span class="pre">struct</span> <span class="pre">...</span> <span class="pre">end;;</span></code>           <code class="docutils literal"><span class="pre">(module</span> <span class="pre">M</span> <span class="pre">(struct</span> <span class="pre">...))</span></code>
+<code class="docutils literal"><span class="pre">type</span> <span class="pre">'a</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">A</span> <span class="pre">of</span> <span class="pre">'a</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">B</span></code>         <code class="docutils literal"><span class="pre">(type</span> <span class="pre">(t</span> <span class="pre">'a)</span> <span class="pre">(sum</span> <span class="pre">(A</span> <span class="pre">'a</span> <span class="pre">int)</span> <span class="pre">(B)))</span></code>
+<code class="docutils literal"><span class="pre">fun</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">-&gt;</span> <span class="pre">x</span></code>                          <code class="docutils literal"><span class="pre">(lambda</span> <span class="pre">(x</span> <span class="pre">y)</span> <span class="pre">x)</span></code>
+<code class="docutils literal"><span class="pre">x;</span> <span class="pre">y;</span> <span class="pre">z</span></code>                               <code class="docutils literal"><span class="pre">(progn</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">z)</span></code>
+<code class="docutils literal"><span class="pre">f</span> <span class="pre">x</span> <span class="pre">y</span></code>                                 <code class="docutils literal"><span class="pre">(f</span> <span class="pre">x</span> <span class="pre">y)</span></code>
+<code class="docutils literal"><span class="pre">[1;</span> <span class="pre">2;</span> <span class="pre">3]</span></code>                             <code class="docutils literal"><span class="pre">(list</span> <span class="pre">1</span> <span class="pre">2</span> <span class="pre">3)</span></code>
+<code class="docutils literal"><span class="pre">x</span> <span class="pre">::</span> <span class="pre">y</span> <span class="pre">::</span> <span class="pre">z</span> <span class="pre">::</span> <span class="pre">t</span></code>                      <code class="docutils literal"><span class="pre">(list</span> <span class="pre">x</span> <span class="pre">y</span> <span class="pre">z</span> <span class="pre">::</span> <span class="pre">t)</span></code>
+<code class="docutils literal"><span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">c</span></code>                               <code class="docutils literal"><span class="pre">(,</span> <span class="pre">a</span> <span class="pre">b</span> <span class="pre">c)</span></code>
+<code class="docutils literal"><span class="pre">match</span> <span class="pre">x</span> <span class="pre">with</span> <span class="pre">'A'..'Z'</span> <span class="pre">-&gt;</span> <span class="pre">&quot;x&quot;</span></code>          <code class="docutils literal"><span class="pre">(match</span> <span class="pre">x</span> <span class="pre">((range</span> <span class="pre">'A'</span> <span class="pre">'Z')</span> <span class="pre">&quot;x&quot;)))</span></code>
+<code class="docutils literal"><span class="pre">{x</span> <span class="pre">=</span> <span class="pre">y;</span> <span class="pre">z</span> <span class="pre">=</span> <span class="pre">t}</span></code>                        <code class="docutils literal"><span class="pre">({}</span> <span class="pre">(x</span> <span class="pre">y)</span> <span class="pre">(z</span> <span class="pre">t))</span></code>
+=========================================
+======================================</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="macros.html" class="btn btn-neutral float-right" title="Macros" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="revsynt.html" class="btn btn-neutral float-left" title="The revised syntax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

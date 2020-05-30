@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Stream lexers &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Functional parsers" href="fparsers.html" />
+    <link rel="prev" title="Stream parsers" href="parsers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parsing-tools.html">Printing tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parsers.html">Stream parsers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Stream lexers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fparsers.html">Functional parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bparsers.html">Backtracking parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grammars.html">Extensible grammars</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="parsing-tools.html">Printing tools</a> &raquo;</li>
+        
+      <li>Stream lexers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstlexers.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="stream-lexers">
+<h1>Stream lexers<a class="headerlink" href="#stream-lexers" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Stream lexers</p>
+<p>The file “<code class="docutils literal"><span class="pre">pa_lexer.cmo</span></code>” is a Camlp5 syntax extension kit for
+parsers of streams of the type ‘char’. This syntax is shorter and
+more readable than its equivalent version written with <a class="reference external" href="parsers.html">classical
+stream parsers</a>. Like classical parsers, they use
+recursive descendant parsing. They are also pure syntax sugar, and
+each lexer written with this syntax can be written using normal
+parsers syntax.</p>
+<p>(An old version, named “<code class="docutils literal"><span class="pre">pa_lex.cmo</span></code>” was provided before with a
+different syntax. It is no longer distributed, its proposed syntax
+being confusing.)</p>
+<p class="rubric" id="introduction">Introduction</p>
+<p>Classical parsers in OCaml apply to streams of any type of values.
+For the specific type “char”, it has been possible to shorten the
+encoding in several ways, in particular by using strings to group
+several characters together, and by hidding the management of a
+“lexing buffer”, a data structure recording the matched characters.</p>
+<p>Let us take an example. The following function parses a left bracket
+followed by a less, a colon or nothing, and record the result in a
+buffer. In classical parsers syntax, this could be written like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>fun buf -&gt;
+  parser
+  [ [: `&#39;[&#39;; `&#39;&lt;&#39; :] -&gt;
+      Plexing.Lexbuf.add &#39;&lt;&#39; (Plexing.Lexbuf.add &#39;[&#39; buf)
+  | [: `&#39;[&#39;; `&#39;:&#39; :] -&gt;
+      Plexing.Lexbuf.add &#39;:&#39; (Plexing.Lexbuf.add &#39;[&#39; buf)
+  | [: `&#39;[&#39; :] -&gt;
+      Plexing.Lexbuf &#39;[&#39; buf ]
+</pre></div>
+</div>
+<p>With the new syntax, it is possible to write it as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">lexer</span> <span class="p">[</span> <span class="s2">&quot;[&lt;&quot;</span> <span class="o">|</span> <span class="s2">&quot;[:&quot;</span> <span class="o">|</span> <span class="s2">&quot;[&quot;</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>The two codes are strictly equivalent, but the lexer version is
+easier to write and understand, and is much shorter.</p>
+<p class="rubric" id="syntax">Syntax</p>
+<p>When loading the syntax extension <code class="docutils literal"><span class="pre">pa_lexer.cmo</span></code>, the OCaml syntax
+is extended as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>        <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">lexer</span>
+             <span class="n">lexer</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;lexer&quot;</span> <span class="s2">&quot;[&quot;</span> <span class="n">rules</span> <span class="s2">&quot;]&quot;</span>
+             <span class="n">rules</span> <span class="p">:</span><span class="o">:=</span> <span class="n">ne</span><span class="o">-</span><span class="n">rules</span> <span class="n">rule</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+          <span class="n">ne</span><span class="o">-</span><span class="n">rules</span> <span class="p">:</span><span class="o">:=</span> <span class="n">ne</span><span class="o">-</span><span class="n">rules</span> <span class="s2">&quot;|&quot;</span> <span class="n">rule</span>
+                     <span class="o">|</span> <span class="n">rule</span>
+              <span class="n">rule</span> <span class="p">:</span><span class="o">:=</span> <span class="n">symbols</span> <span class="p">[</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">action</span> <span class="p">]</span>
+           <span class="n">symbols</span> <span class="p">:</span><span class="o">:=</span> <span class="n">symbols</span> <span class="n">symbol</span> <span class="n">err</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+            <span class="n">symbol</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;_&quot;</span> <span class="n">no</span><span class="o">-</span><span class="n">record</span><span class="o">-</span><span class="n">opt</span>
+                     <span class="o">|</span> <span class="n">CHAR</span> <span class="n">no</span><span class="o">-</span><span class="n">record</span><span class="o">-</span><span class="n">opt</span>
+                     <span class="o">|</span> <span class="n">CHAR</span> <span class="s2">&quot;-&quot;</span> <span class="n">CHAR</span> <span class="n">no</span><span class="o">-</span><span class="n">record</span><span class="o">-</span><span class="n">opt</span>
+                     <span class="o">|</span> <span class="n">STRING</span> <span class="n">no</span><span class="o">-</span><span class="n">record</span><span class="o">-</span><span class="n">opt</span>
+                     <span class="o">|</span> <span class="n">simple</span><span class="o">-</span><span class="n">expression</span>
+                     <span class="o">|</span> <span class="s2">&quot;?=&quot;</span> <span class="s2">&quot;[&quot;</span> <span class="n">lookaheads</span> <span class="s2">&quot;]&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;[&quot;</span> <span class="n">rules</span> <span class="s2">&quot;]&quot;</span>
+     <span class="n">no</span><span class="o">-</span><span class="n">record</span><span class="o">-</span><span class="n">opt</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;/&quot;</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+ <span class="n">simple</span><span class="o">-</span><span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">LIDENT</span>
+                     <span class="o">|</span> <span class="s2">&quot;(&quot;</span> <span class="o">&lt;</span><span class="n">expression</span><span class="o">&gt;</span> <span class="s2">&quot;)&quot;</span>
+        <span class="n">lookaheads</span> <span class="p">:</span><span class="o">:=</span> <span class="n">lookaheads</span> <span class="s2">&quot;|&quot;</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">sequence</span>
+                     <span class="o">|</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">sequence</span>
+<span class="n">lookahead</span><span class="o">-</span><span class="n">sequence</span> <span class="p">:</span><span class="o">:=</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">symbols</span>
+                     <span class="o">|</span> <span class="n">STRING</span>
+ <span class="n">lookahead</span><span class="o">-</span><span class="n">symbols</span> <span class="p">:</span><span class="o">:=</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">symbols</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">symbol</span>
+                     <span class="o">|</span> <span class="n">lookahead</span><span class="o">-</span><span class="n">symbol</span>
+  <span class="n">lookahead</span><span class="o">-</span><span class="n">symbol</span> <span class="p">:</span><span class="o">:=</span> <span class="n">CHAR</span>
+                     <span class="o">|</span> <span class="n">CHAR</span> <span class="s2">&quot;-&quot;</span> <span class="n">CHAR</span>
+                     <span class="o">|</span> <span class="s2">&quot;_&quot;</span>
+               <span class="n">err</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;?&quot;</span> <span class="n">simple</span><span class="o">-</span><span class="n">expression</span>
+                     <span class="o">|</span> <span class="s2">&quot;!&quot;</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+            <span class="n">action</span> <span class="p">:</span><span class="o">:=</span> <span class="n">expression</span>
+</pre></div>
+</div>
+<p>The identifiers “<code class="docutils literal"><span class="pre">STRING</span></code>”, “<code class="docutils literal"><span class="pre">CHAR</span></code>” and “<code class="docutils literal"><span class="pre">LIDENT</span></code>” above
+represent the OCaml tokens corresponding to string, character and
+lowercase identifier (identifier starting with a lowercase
+character).</p>
+<p>Moreover, together with that syntax extension, another extension is
+added the entry <code class="docutils literal"><span class="pre">expression</span></code>, typically for the semantics actions
+of the “<code class="docutils literal"><span class="pre">lexer</span></code>” statement above, but not only. It is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;$&quot;</span> <span class="s2">&quot;add&quot;</span> <span class="n">STRING</span>
+             <span class="o">|</span> <span class="s2">&quot;$&quot;</span> <span class="s2">&quot;buf&quot;</span>
+             <span class="o">|</span> <span class="s2">&quot;$&quot;</span> <span class="s2">&quot;empty&quot;</span>
+             <span class="o">|</span> <span class="s2">&quot;$&quot;</span> <span class="s2">&quot;pos&quot;</span>
+</pre></div>
+</div>
+<p>Remark: the identifiers “add”, “buf”, “empty” and “pos” are not
+keywords (they are not reserved words) but just identifiers. On the
+contrary, the identifier “<code class="docutils literal"><span class="pre">lexer</span></code>”, which introduces the syntax, is
+a new keyword and cannot be used as variable identifier any more.</p>
+<p class="rubric" id="semantics">Semantics</p>
+<p>A lexer defined in the syntax above is a shortcut version of a parser
+applied to the specific case of streams of characters. It could be
+written with a normal parser. The proposed syntax is much shorter,
+easier to use and to understand, and silently takes care of the
+lexing buffer for the programmer. The lexing buffers are data
+structures, which are passed as parameters to called lexers and
+returned by them.</p>
+<p>Our lexers are of the type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Plexing</span><span class="o">.</span><span class="n">Lexbuf</span><span class="o">.</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">char</span> <span class="o">-&gt;</span> <span class="n">u</span>
+</pre></div>
+</div>
+<p>where “<code class="docutils literal"><span class="pre">u</span></code>” is a type which depends on what the lexer returns. If
+there is no semantic action (since it it optional), this type is
+automatically “<code class="docutils literal"><span class="pre">Plexing.Lexbuf.t</span></code>” also.</p>
+<p>A lexer is, actually, a function with two implicit parameters: the
+first one is the lexing buffer itself, and the second one the stream.
+When called, it tries to match the stream against its first rule. If
+it fails, it tries its second rule, and so on, up to its last rule.
+If the last rule fails, the lexer fails by raising the exception
+“<code class="docutils literal"><span class="pre">Stream.Failure</span></code>”. All of this is the <a class="reference external" href="parsers.html">usual behaviour of stream
+parsers</a>.</p>
+<p>In a rule, when a character is matched, it is inserted into the
+lexing buffer, except if the “no record” feature is used (see
+further).</p>
+<p>Rules which have no semantic action return the lexing buffer itself.</p>
+<p class="rubric" id="symbols">Symbols</p>
+<p>The different kinds or symbols in a rule are:</p>
+<ul class="simple">
+<li>The token “underscore”, which represents any character. Fails only
+if the stream is empty.</li>
+<li>A character which represents a matching of this character.</li>
+<li>A character followed by the minus sign and by another character
+which represent all characters in the range between the two
+characters in question.</li>
+<li>A string with represents a matching of all its characters, one
+after the other.</li>
+<li>An expression corresponding to a call to another lexer, which
+takes the buffer as first parameter and returns another lexing
+buffer with all characters found in the stream added to the
+initial lexing buffer.</li>
+<li>The sequence “<code class="docutils literal"><span class="pre">?=</span></code>” introducing lookahead characters.</li>
+<li>A rule, recursively, between brackets, inlining a lexer.</li>
+</ul>
+<p>In the cases matching characters (namely underscore, character,
+characters range and string), the symbol can be optionally followed
+by the “no record” character “slash” specifying that the found
+character(s) are not added into the lexing buffer. By default, they
+are. This feature is useful, for example, writing a lexer which
+parses strings, when the initial double quote and final double quote
+should not be part of the string itself.</p>
+<p>Moreover, a symbol can be followed by an optional error indicator,
+which can be:</p>
+<ul class="simple">
+<li>The character <code class="docutils literal"><span class="pre">?</span></code> (question mark) followed by a string
+expression, telling that, if there is a syntax error at this point
+(i.e. the symbol is not matched although the beginning of the rule
+was), the exception <code class="docutils literal"><span class="pre">Stream.Error</span></code> is raised with that string as
+parameter. Without this indicator, it is raised with the empty
+string. This is the same behaviour than with classical <a class="reference external" href="parsers.html">stream
+parsers</a>.</li>
+<li>The character <code class="docutils literal"><span class="pre">!</span></code> (exclamation mark), which is just an indicator
+to let the syntax expander optimize the code. If the programmer is
+sure that the symbol never fails (i.e. never raises
+<code class="docutils literal"><span class="pre">Stream.Failure</span></code>), in particular if this symbol recognizes the
+empty rule, he can add this exclamation mark. If it is used
+correctly (the compiler cannot check it), the behaviour is
+identical as without the <code class="docutils literal"><span class="pre">!</span></code>, except that the code is shorter
+and faster, and can sometimes be tail recursive. If the indication
+is not correct, the behaviour of the lexer is undefined.</li>
+</ul>
+<p class="rubric" id="specific-expressions">Specific expressions</p>
+<p>When loading this syntax extension, the entry <code class="docutils literal"><span class="pre">&lt;expression&gt;</span></code>, at
+level labelled “simple” of the OCaml language is extended with the
+following rules:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$add</span></code> followed by a string, specifing that the programmer wants
+to add all characters of the string in the lexing buffer. It
+returns the new lexing buffer. It corresponds to an iteration of
+calls to <code class="docutils literal"><span class="pre">Plexing.Lexbuf.add</span></code> with all characters of the string
+with the current lexing buffer as initial parameter.</li>
+<li><code class="docutils literal"><span class="pre">$buf</span></code> which returns the lexing buffer converted into string.</li>
+<li><code class="docutils literal"><span class="pre">$empty</span></code> which returns an empty lexing buffer.</li>
+<li><code class="docutils literal"><span class="pre">$pos</span></code> which returns the current position of the stream in
+number of characters (starting at zero).</li>
+</ul>
+<p class="rubric" id="lookahead">Lookahead</p>
+<p>Lookahead is useful in some cases, when factorization of rules is
+impossible. To understand how it is useful, a first remark must be
+done, about the usual behaviour of Camlp5 stream parsers.</p>
+<p>Stream parsers (including these lexers) use a limited parsing
+algorithm, in a way that when the first symbol of a rule is matched,
+all the following symbols of the same rule must apply, otherwise it
+is a syntax error. There is no backtrack. In most of the cases, left
+factorization of rules resolve conflicting problems. For example, in
+parsers of tokens (which is not our case here, since we parse only
+characters), when one writes a parser to recognize both typical
+grammar rules “if..then..else” and the shorter “if..then..”, the
+system transforms them into a single rule starting with “if..then..”
+followed by a call to a parser recognizing “else..” or nothing.</p>
+<p>Sometimes, however, this left factorization is not possible. A
+lookahead of the stream to check the presence of some elements (these
+elements being characters, if we are using this “lexer” syntax) might
+be necessary to decide if is a good idea to start the rule. This
+lookahead feature may unfreeze several characters from the input
+stream but without removing them.</p>
+<p>Syntactically, a lookahead starts with <code class="docutils literal"><span class="pre">?=</span></code> and is followed by one
+or several lookahead sequences separated by the vertical bar <code class="docutils literal"><span class="pre">|</span></code>,
+the whole list being enclosed by braces.</p>
+<p>If there are several lookaheads, they must all be of the same size
+(contain the same number of characters).</p>
+<p>If the lookahead sequence is just a string, it corresponds to all
+characters of this string in the order (which is different for
+strings outside lookahead sequences, representing a choice of all
+characters).</p>
+<p>Examples of lookaheads:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>?= [ _ &#39;&#39;&#39; | &#39;\\&#39; _ ]
+?= [ &quot;&lt;&lt;&quot; | &quot;&lt;:&quot; ]
+</pre></div>
+</div>
+<p>The first line above matches a stream whose second character is a
+quote or a stream whose first character is a backslash (real example
+in the lexer of OCaml, in the library of Camlp5, named “plexer.ml”).
+The second line matches a stream starting with the two characters
+<code class="docutils literal"><span class="pre">&lt;</span></code> and <code class="docutils literal"><span class="pre">&lt;</span></code> or starting with the two characters <code class="docutils literal"><span class="pre">&lt;</span></code> and <code class="docutils literal"><span class="pre">:</span></code>
+(this is another example in the same file).</p>
+<p class="rubric" id="semantic-actions-of-rules">Semantic actions of rules</p>
+<p>By default, the result of a “lexer” is the current lexing buffer,
+which is of type “<code class="docutils literal"><span class="pre">Plexing.Lexbuf.t</span></code>”. But it is possible to return
+other values, by adding “<code class="docutils literal"><span class="pre">-&gt;</span></code>” at end of rules followed by the
+expression you want to return, as in usual pattern matching in OCaml.</p>
+<p>An interesting result, for example, could be the string corresponding
+to the characters of the lexing buffer. This can be obtained by
+returning the value “<code class="docutils literal"><span class="pre">$buf</span></code>”.</p>
+<p class="rubric" id="a-complete-example">A complete example</p>
+<p>A complete example can be seen in the sources of Camlp5, file
+“lib/plexer.ml”. This is the lexer of OCaml, either “normal” or
+“revised” syntax.</p>
+<p class="rubric" id="compiling">Compiling</p>
+<p>To compile a file containing lexers, just load <code class="docutils literal"><span class="pre">pa_lexer.cmo</span></code> using
+one of the following methods:</p>
+<ul class="simple">
+<li>Either by adding <code class="docutils literal"><span class="pre">pa_lexer.cmo</span></code> among the Camlp5 options. See
+the Camlp5 manual page or documentation.</li>
+<li>Or by adding <code class="docutils literal"><span class="pre">#load</span> <span class="pre">&quot;pa_lexer.cmo&quot;;</span></code> anywhere in the file,
+before the usages of this “lexer” syntax.</li>
+</ul>
+<p class="rubric" id="how-to-display-the-generated-code">How to display the generated code</p>
+<p>You can see the generated code, for a file “bar.ml” containing
+lexers, by typing in a command line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5r</span> <span class="n">pa_lexer</span><span class="o">.</span><span class="n">cmo</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>To see the equivalent code with stream parsers, use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5r</span> <span class="n">pa_lexer</span><span class="o">.</span><span class="n">cmo</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="n">pr_rp</span><span class="o">.</span><span class="n">cmo</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="fparsers.html" class="btn btn-neutral float-right" title="Functional parsers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="parsers.html" class="btn btn-neutral float-left" title="Stream parsers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,646 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Extensions of printing &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Redefining OCaml syntax" href="redef.html" />
+    <link rel="prev" title="Extensions of syntax" href="syntext.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Extensions of printing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstopretty.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="extensions-of-printing">
+<h1>Extensions of printing<a class="headerlink" href="#extensions-of-printing" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Extensions of printing</p>
+<p>Camlp5 provides extensions kits to pretty print programs in revised
+syntax and normal syntax. Some other extensions kits also allow to
+rebuild the parsers, or the EXTEND statements in their initial
+syntax. The pretty print system is itself extensible, by adding new
+rules. We present here how it works in the Camlp5 sources.</p>
+<p>The pretty print system of Camlp5 uses the library modules
+<a class="reference external" href="pretty.html">Pretty</a>, an original system to format output) and
+<a class="reference external" href="extfun.html">Extfun</a>, another original system of extensible
+functions.</p>
+<p>This chapter is designed for programmers that want to understand how
+the pretty printing of OCaml programs work in Camlp5, want to adapt,
+modify or debug it, or want to add their own pretty printing
+extensions.</p>
+<p class="rubric" id="introduction">Introduction</p>
+<p>The files doing the pretty printings are located in Camlp5 sources in
+the directory “etc”. Peruse them if you are interested in creating
+new ones. The main ones are:</p>
+<ul class="simple">
+<li>“etc/pr_r.ml”: pretty print in revised syntax.</li>
+<li>“etc/pr_o.ml”: pretty print in normal syntax.</li>
+<li>“etc/pr_rp.ml”: rebuilding parsers in their original revised
+syntax.</li>
+<li>“etc/pr_op.ml”: rebuilding parsers in their original normal
+syntax.</li>
+<li>“etc/pr_extend.ml”: rebuilding EXTEND in its original syntax.</li>
+</ul>
+<p>We present here how this system works inside these files. First, the
+general principles. Second, more details of the implementation.</p>
+<p class="rubric" id="principles">Principles</p>
+<p class="rubric" id="using-module-pretty">Using module Pretty</p>
+<p>All functions in OCaml pretty printing take a parameter named “the
+printing context” (variable <code class="docutils literal"><span class="pre">pc</span></code>). It is a record holding :</p>
+<ul class="simple">
+<li>The current indendation : <code class="docutils literal"><span class="pre">pc.ind</span></code></li>
+<li>What should be printed before, in the same line : <code class="docutils literal"><span class="pre">pc.bef</span></code></li>
+<li>What should be printed after, in the same line : <code class="docutils literal"><span class="pre">pc.aft</span></code></li>
+<li>The dangling token, useful in normal syntax to know whether
+parentheses are necessary : <code class="docutils literal"><span class="pre">pc.dang</span></code></li>
+</ul>
+<p>A typical pretty printing function calls the function
+<code class="docutils literal"><span class="pre">horiz_vertic</span></code> of the library module <a class="reference external" href="pretty.html">Pretty</a>. This
+function takes two functions as parameter:</p>
+<ul class="simple">
+<li>The way to print the data in one only line (<em>horizontal</em> printing)</li>
+<li>The way to print the data in two or more lines (<em>vertical</em>
+printing)</li>
+</ul>
+<p>Both functions catenate the strings by using the function <code class="docutils literal"><span class="pre">sprintf</span></code>
+of the library module <code class="docutils literal"><span class="pre">Pretty</span></code> which controls whether the printed
+data holds in the line or not. They generally call, recursively,
+other pretty printing functions with the same behaviour.</p>
+<p>Let us see an example (fictitious) of printing an OCaml application.
+Let us suppose we have an application expression “<code class="docutils literal"><span class="pre">e1</span> <span class="pre">e2</span></code>” to
+pretty print where <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are sub-expressions. If both
+expressions and their application holds on one only line, we want to
+see:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">e1</span> <span class="n">e2</span>
+</pre></div>
+</div>
+<p>On the other hand, if they do not hold on one only line, we want to
+see <code class="docutils literal"><span class="pre">e2</span></code> in another line with, say, an indendation of 2 spaces:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">e1</span>
+  <span class="n">e2</span>
+</pre></div>
+</div>
+<p>Here is a possible implementation. The function has been named
+<code class="docutils literal"><span class="pre">expr_app</span></code> and can call the function <code class="docutils literal"><span class="pre">expr</span></code> to print the
+sub-expressions <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">expr_app</span> <span class="n">pc</span> <span class="n">e1</span> <span class="n">e2</span> <span class="o">=</span>
+  <span class="n">horiz_vertic</span>
+    <span class="p">(</span><span class="n">fun</span> <span class="p">()</span> <span class="o">-&gt;</span>
+       <span class="n">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span> <span class="n">aft</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">}</span> <span class="n">e1</span> <span class="ow">in</span>
+       <span class="n">let</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span> <span class="n">bef</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">}</span> <span class="n">e2</span> <span class="ow">in</span>
+       <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">fun</span> <span class="p">()</span> <span class="o">-&gt;</span>
+       <span class="n">let</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span> <span class="n">aft</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">}</span> <span class="n">e1</span> <span class="ow">in</span>
+       <span class="n">let</span> <span class="n">s2</span> <span class="o">=</span>
+         <span class="n">expr</span>
+           <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span>
+              <span class="n">ind</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">ind</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+              <span class="n">bef</span> <span class="o">=</span> <span class="n">tab</span> <span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">ind</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)}</span>
+           <span class="n">e2</span>
+       <span class="ow">in</span>
+       <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">)</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>The first function is the <em>horizontal</em> printing. It ends with a
+<code class="docutils literal"><span class="pre">sprintf</span></code> separating the printing of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> by a space.
+The possible “before part” (<code class="docutils literal"><span class="pre">pc.bef</span></code>) and “after part” (<code class="docutils literal"><span class="pre">pc.aft</span></code>)
+are transmitted in the calls of the sub-functions.</p>
+<p>The second function is the <em>vertical</em> printing. It ends with a
+<code class="docutils literal"><span class="pre">sprintf</span></code> separating the printing of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> by a
+newline. The second line starts with an indendation, using the
+“before part” (<code class="docutils literal"><span class="pre">pc.bef</span></code>) of the second call to <code class="docutils literal"><span class="pre">expr</span></code>.</p>
+<p>The pretty printing library function <code class="docutils literal"><span class="pre">Pretty.horiz_vertic</span></code> calls
+the first (<em>horizontal</em>) function, and if it fails (either because
+<code class="docutils literal"><span class="pre">s1</span></code> or <code class="docutils literal"><span class="pre">s2</span></code> are too long or hold newlines, or because the final
+string produced by <code class="docutils literal"><span class="pre">sprintf</span></code> is too long), calls the second
+(<em>vertical</em>) function.</p>
+<p>Notice that the parameter <code class="docutils literal"><span class="pre">pc</span></code> contains a field <code class="docutils literal"><span class="pre">pc.bef</span></code> (what
+should be printed before in the same line), which in both cases is
+transmitted to the printing of <code class="docutils literal"><span class="pre">e1</span></code> (since the syntax
+<code class="docutils literal"><span class="pre">{(pc)</span> <span class="pre">with</span> <span class="pre">aft</span> <span class="pre">=</span>&#160;&#160; <span class="pre">&quot;&quot;}</span></code> is a record with <code class="docutils literal"><span class="pre">pc.bef</span></code> kept). Same
+for the field <code class="docutils literal"><span class="pre">pc.aft</span></code> transmitted to the printing of <code class="docutils literal"><span class="pre">e2</span></code>.</p>
+<p class="rubric" id="using-extend-printer-statement">Using EXTEND_PRINTER statement</p>
+<p>This system is combined to the <a class="reference external" href="printers.html">extensible
+printers</a> to allow the extensibility of the pretty
+printing.</p>
+<p>The code above actually looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>EXTEND_PRINTER
+  pr_expr:
+    [ [ &lt;:expr&lt; $e1$ $e2$ &gt;&gt; -&gt;
+          horiz_vertic
+            (fun () -&gt;
+               let s1 = curr {(pc) with aft = &quot;&quot;} e1 in
+               let s2 = next {(pc) with bef = &quot;&quot;} e2 in
+               sprintf &quot;%s %s&quot; s1 s2)
+            (fun () -&gt;
+               let s1 = curr {(pc) with aft = &quot;&quot;} e1 in
+               let s2 =
+                 next
+                   {(pc) with
+                      ind = pc.ind + 2;
+                      bef = tab (pc.ind + 2)}
+                   e2
+               in
+               sprintf &quot;%s\n%s&quot; s1 s2) ] ]
+  ;
+END;
+</pre></div>
+</div>
+<p>The variable “<code class="docutils literal"><span class="pre">pc</span></code>” is implicit in the semantic actions of the
+syntax “<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>”, as well as two other variables:
+“<code class="docutils literal"><span class="pre">curr</span></code>” and “<code class="docutils literal"><span class="pre">next</span></code>”.</p>
+<p>These parameters, “<code class="docutils literal"><span class="pre">curr</span></code>” and “<code class="docutils literal"><span class="pre">next</span></code>”, correspond to the pretty
+printing of, respectively, the current level and the next level.
+Since the application in OCaml is left associative, the first
+sub-expression is printed at the same (current) level and the second
+one is printed at the next level. We also see a call to <code class="docutils literal"><span class="pre">next</span></code> in
+the last (2nd) case of the function to treat the other cases in the
+next level.</p>
+<p class="rubric" id="dangling-else-bar-semicolon">Dangling else, bar, semicolon</p>
+<p>In normal syntax, there are cases where it is necessary to enclose
+expressions between parentheses (or between begin and end, which is
+equivalent in that syntax). Three tokens may cause problems: the
+“<code class="docutils literal"><span class="pre">else</span></code>”, the vertical bar “<code class="docutils literal"><span class="pre">|</span></code>” and the semicolon “<code class="docutils literal"><span class="pre">;</span></code>”. Here
+are examples where the presence of these tokens constrains the
+previous expression to be parenthesized. In these three examples,
+removing the begin..end enclosers would change the meaning of the
+expression because the dangling token would be included in that
+expression:</p>
+<p>Dangling else:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">a</span> <span class="n">then</span> <span class="n">begin</span> <span class="k">if</span> <span class="n">b</span> <span class="n">then</span> <span class="n">c</span> <span class="n">end</span> <span class="k">else</span> <span class="n">d</span>
+</pre></div>
+</div>
+<p>Dangling bar:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">function</span>
+  <span class="n">A</span> <span class="o">-&gt;</span>
+    <span class="n">begin</span> <span class="n">match</span> <span class="n">a</span> <span class="k">with</span>
+      <span class="n">B</span> <span class="o">-&gt;</span> <span class="n">c</span>
+    <span class="o">|</span> <span class="n">D</span> <span class="o">-&gt;</span> <span class="n">e</span>
+    <span class="n">end</span>
+<span class="o">|</span> <span class="n">F</span> <span class="o">-&gt;</span> <span class="n">g</span>
+</pre></div>
+</div>
+<p>Dangling semicolon:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">a</span> <span class="n">then</span> <span class="n">b</span>
+<span class="k">else</span> <span class="n">begin</span>
+  <span class="n">let</span> <span class="n">c</span> <span class="o">=</span> <span class="n">d</span> <span class="ow">in</span>
+  <span class="n">e</span>
+<span class="n">end</span><span class="p">;</span>
+<span class="n">f</span>
+</pre></div>
+</div>
+<p>The information is transmitted by the value <code class="docutils literal"><span class="pre">pc.dang</span></code>. In the first
+example above, while displaying the “<code class="docutils literal"><span class="pre">then</span></code>” part of the outer
+“<code class="docutils literal"><span class="pre">if</span></code>”, the sub-expression is called with the value <code class="docutils literal"><span class="pre">pc.dang</span></code> set
+to <code class="docutils literal"><span class="pre">&quot;else&quot;</span></code> to inform the last sub-sub-expression that it is going
+to be followed by that token. When a “<code class="docutils literal"><span class="pre">if</span></code>” expression should be
+displayed without “<code class="docutils literal"><span class="pre">else</span></code>” part, and that its “<code class="docutils literal"><span class="pre">pc.dang</span></code>” is
+“else”, it should be enclosed with spaces.</p>
+<p>This problem does not exist in revised syntax. While pretty printing
+in revised syntax, the parameter <code class="docutils literal"><span class="pre">pc.dang</span></code> is not necessary and
+remains the empty string.</p>
+<p class="rubric" id="by-level">By level</p>
+<p>As explained in the chapter about the <a class="reference external" href="printers.html">extensible
+printers</a> (with the EXTEND_PRINTER statement),
+printers contain levels. The global printer variable of expressions
+is named “<code class="docutils literal"><span class="pre">pr_expr</span></code>” and contain all definitions for pretty
+printing expressions, organized by levels, just like the parsing of
+expressions. The definition of “<code class="docutils literal"><span class="pre">pr_expr</span></code>” actually looks like
+this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">EXTEND_PRINTER</span>
+  <span class="n">pr_expr</span><span class="p">:</span>
+    <span class="p">[</span> <span class="s2">&quot;top&quot;</span>
+      <span class="p">[</span> <span class="p">(</span><span class="o">*</span> <span class="n">code</span> <span class="k">for</span> <span class="n">level</span> <span class="s2">&quot;top&quot;</span> <span class="o">*</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="s2">&quot;add&quot;</span>
+      <span class="p">[</span> <span class="p">(</span><span class="o">*</span> <span class="n">code</span> <span class="k">for</span> <span class="n">level</span> <span class="s2">&quot;add&quot;</span> <span class="o">*</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="s2">&quot;mul&quot;</span>
+      <span class="p">[</span> <span class="p">(</span><span class="o">*</span> <span class="n">code</span> <span class="k">for</span> <span class="n">level</span> <span class="s2">&quot;mul&quot;</span> <span class="o">*</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="s2">&quot;apply&quot;</span>
+      <span class="p">[</span> <span class="p">(</span><span class="o">*</span> <span class="n">code</span> <span class="k">for</span> <span class="n">level</span> <span class="s2">&quot;apply&quot;</span> <span class="o">*</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="s2">&quot;simple&quot;</span>
+      <span class="p">[</span> <span class="p">(</span><span class="o">*</span> <span class="n">code</span> <span class="k">for</span> <span class="n">level</span> <span class="s2">&quot;add&quot;</span> <span class="o">*</span><span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
+  <span class="p">;</span>
+<span class="n">END</span><span class="p">;</span>
+</pre></div>
+</div>
+<p class="rubric" id="the-prtools-module">The Prtools module</p>
+<p>The Prtools module is defined inside Camlp5 for pretty printing kits.
+It provides variables and functions to process comments, and
+meta-functions to process lists (horizontally, vertically,
+paragraphly).</p>
+<p class="rubric" id="comments">Comments</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">comm_bef</span> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">MLast.loc</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">comm_bef</span> <span class="pre">ind</span> <span class="pre">loc</span></code>” get the comment from the source just before
+the given location “<code class="docutils literal"><span class="pre">loc</span></code>”. This comment may be reindented using
+“<code class="docutils literal"><span class="pre">ind</span></code>”. Returns the empty string if no comment found.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">source</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">string;</span></code></dt>
+<dd>The initial source string, which must be set by the pretty
+printing kit. Used by [comm_bef] above.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">set_comm_min_pos</span> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Set the minimum position of the source where comments can be
+found, (to prevent possible duplication of comments).</dd>
+</dl>
+<p class="rubric" id="meta-functions-for-lists">Meta functions for lists</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">=</span> <span class="pre">pr_context</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>Type of printer functions.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">hlist</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">'a);</span></code></dt>
+<dd>[hlist elem pc el] returns the horizontally pretty printed string
+of a list of elements; elements are separated with spaces.
+The list is displayed in one only line. If this function is called
+in the context of the [horiz] function of the function
+[horiz_vertic] of the module Printing, and if the line overflows
+or contains newlines, the function internally fails (the exception
+is catched by [horiz_vertic] for a vertical pretty print).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">hlist2</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">'a);</span></code></dt>
+<dd>horizontal list with a different function from 2nd element on.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">hlistl</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">'a);</span></code></dt>
+<dd>horizontal list with a different function for the last element.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">vlist</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">'a);</span></code></dt>
+<dd>[vlist elem pc el] returns the vertically pretty printed string of
+a list of elements; elements are separated with newlines and
+indentations.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">vlist2</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span>&#160;&#160;&#160; <span class="pre">'a);</span></code></dt>
+<dd>vertical list with different function from 2nd element on.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">vlist3</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">('a</span> <span class="pre">*</span> <span class="pre">bool)</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">('a</span> <span class="pre">*</span> <span class="pre">bool)</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(list</span> <span class="pre">'a);</span></code></dt>
+<dd>vertical list with different function from 2nd element on, the
+boolean value being True for the last element of the list.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">vlistl</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span>&#160;&#160;&#160; <span class="pre">'a);</span></code></dt>
+<dd>vertical list with different function for the last element.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">plist</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">('a</span> <span class="pre">*</span>&#160;&#160;&#160; <span class="pre">string));</span></code></dt>
+<dd>[plist elem sh pc el] returns the pretty printed string of a list
+of elements with separators. The elements are printed horizontally
+as far as possible. When an element does not fit on the line, a
+newline is added and the element is displayed in the next line
+with an indentation of [sh]. [elem] is the function to print
+elements, [el] a list of pairs (element * separator) (the last
+separator being ignored).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">plistb</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span> <span class="pre">('a</span> <span class="pre">*</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">string));</span></code></dt>
+<dd>[plist elem sh pc el] returns the pretty printed string of the
+list of elements, like with [plist] but the value of [pc.bef]
+corresponds to an element already printed, as it were on the list.
+Therefore, if the first element of [el] does not fit in the line,
+a newline and a tabulation is added after [pc.bef].</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">plistl</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">('a</span> <span class="pre">*</span> <span class="pre">string));</span></code></dt>
+<dd>paragraph list with a different function for the last element.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">hvlistl</span> <span class="pre">:</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_fun</span> <span class="pre">(list</span>&#160;&#160;&#160; <span class="pre">'a);</span></code></dt>
+<dd>applies “<code class="docutils literal"><span class="pre">hlistl</span></code>” if the context is horizontal; else applies
+“<code class="docutils literal"><span class="pre">vlistl</span></code>”.</dd>
+</dl>
+<p class="rubric" id="miscellaneous">Miscellaneous</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">tab</span> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>[tab ind] is equivalent to [String.make ind ‘ ‘]</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">flatten_sequence</span> <span class="pre">:</span> <span class="pre">MLast.expr</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">(list</span>&#160;&#160;&#160; <span class="pre">MLast.expr);</span></code></dt>
+<dd>[flatten_sequence e]. If [e] is an expression representing a
+sequence, return the list of expressions of the sequence. If some
+of these expressions are already sequences, they are flattened in
+the list. If that list contains expressions of the form let..in
+sequence, this sub-sequence is also flattened with the let..in
+applying only to the first expression of the sequence. If [e] is a
+let..in sequence, it works the same way. If [e] is not a sequence
+nor a let..in sequence, return None.</dd>
+</dl>
+<p class="rubric" id="example-repeat-until">Example : repeat..until</p>
+<p>This pretty prints the example
+<a class="reference external" href="syntext.html#a:An-example-:-repeat..until">repeat..until</a>
+statement programmed in the chapter <a class="reference external" href="syntext.html">Syntax
+extensions</a> (first version generating a “<code class="docutils literal"><span class="pre">while</span></code>”
+statement).</p>
+<p class="rubric" id="the-code">The code</p>
+<p>The pattern generated by the “repeat” statement is recognized
+(sequence ending with a “<code class="docutils literal"><span class="pre">while</span></code>” whose contents is the same than
+the beginning of the sequence) by the function “is_repeat” and the
+repeat statement is pretty printed in its initial form using the
+function “horiz_vertic” of the Pretty module. File
+“<code class="docutils literal"><span class="pre">pr_repeat.ml</span></code>”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>#load &quot;pa_extprint.cmo&quot;;
+#load &quot;q_MLast.cmo&quot;;
+
+open Pcaml;
+open Pretty;
+open Prtools;
+
+value eq_expr_list el1 el2 =
+  if List.length el1 &lt;&gt; List.length el2 then False
+  else List.for_all2 eq_expr el1 el2
+;
+
+value is_repeat el =
+  match List.rev el with
+  [ [&lt;:expr&lt; while not $e$ do { $list:el2$ } &gt;&gt; :: rel1] -&gt;
+      eq_expr_list (List.rev rel1) el2
+  | _ -&gt; False ]
+;
+
+value semi_after pr pc = pr {(pc) with aft = sprintf &quot;%s;&quot; pc.aft};
+
+EXTEND_PRINTER
+  pr_expr:
+    [ [ &lt;:expr&lt; do { $list:el$ } &gt;&gt; when is_repeat el -&gt;
+          match List.rev el with
+          [ [&lt;:expr&lt; while not $e$ do { $list:el$ } &gt;&gt; :: _] -&gt;
+              horiz_vertic
+                (fun () -&gt;
+                   sprintf &quot;%srepeat %s until %s%s&quot; pc.bef
+                     (hlistl (semi_after curr) curr
+                        {(pc) with bef = &quot;&quot;; aft = &quot;&quot;} el)
+                     (curr {(pc) with bef = &quot;&quot;; aft = &quot;&quot;} e)
+                     pc.aft)
+                (fun () -&gt;
+                   let s1 = sprintf &quot;%srepeat&quot; (tab pc.ind) in
+                   let s2 =
+                     vlistl (semi_after curr) curr
+                       {(pc) with
+                        ind = pc.ind + 2;
+                        bef = tab (pc.ind + 2);
+                        aft = &quot;&quot;}
+                       el
+                   in
+                   let s3 =
+                     sprintf &quot;%suntil %s&quot; (tab pc.ind)
+                       (curr {(pc) with bef = &quot;&quot;} e)
+                   in
+                   sprintf &quot;%s\n%s\n%s&quot; s1 s2 s3)
+          | _ -&gt; assert False ] ] ]
+  ;
+END;
+</pre></div>
+</div>
+<p class="rubric" id="compilation">Compilation</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="o">-</span><span class="n">c</span> <span class="n">pr_repeat</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p class="rubric" id="testing">Testing</p>
+<p>Getting the same files “foo.ml” and “bar.ml” of the repeat syntax
+example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ cat bar.ml
+#load &quot;./foo.cmo&quot;;
+value x = ref 42;
+repeat
+  print_int x.val;
+  print_endline &quot;&quot;;
+  x.val := x.val + 3
+until x.val &gt; 70;
+
+$ camlp
+</pre></div>
+</div>
+<p>Without the pretty printing kit:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ camlp5r pr_r.cmo bar.ml
+#load &quot;./foo.cmo&quot;;
+value x = ref 42;
+do {
+  print_int x.val;
+  print_endline &quot;&quot;;
+  x.val := x.val + 3;
+  while not (x.val &gt; 70) do {
+    print_int x.val;
+    print_endline &quot;&quot;;
+    x.val := x.val + 3
+  }
+};
+</pre></div>
+</div>
+<p>With the pretty printing kit:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ camlp5r pr_r.cmo ./pr_repeat.cmo bar.ml -l 75
+#load &quot;./foo.cmo&quot;;
+value x = ref 42;
+repeat
+  print_int x.val;
+  print_endline &quot;&quot;;
+  x.val := x.val + 3
+until x.val &gt; 70;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="redef.html" class="btn btn-neutral float-right" title="Redefining OCaml syntax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="syntext.html" class="btn btn-neutral float-left" title="Extensions of syntax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

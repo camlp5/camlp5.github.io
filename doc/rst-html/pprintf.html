@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pprintf &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pretty print" href="pretty.html" />
+    <link rel="prev" title="Extensible printers" href="printers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="printing-tools.html">Parsing tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="printers.html">Extensible printers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Pprintf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pretty.html">Pretty print</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="printing-tools.html">Parsing tools</a> &raquo;</li>
+        
+      <li>Pprintf</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstpprintf.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pprintf">
+<h1>Pprintf<a class="headerlink" href="#pprintf" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Pprintf</p>
+<p>This chapter describes “pprintf”, a statement to pretty print data.
+It looks like the “sprintf” function of the OCaml library, and
+borrows some ideas of the Format OCaml library. Another statement,
+“lprintf”, is a slightly different version of “pprintf” handling with
+locations.</p>
+<p class="rubric" id="syntax-of-the-pprintf-statement">Syntax of the pprintf statement</p>
+<p>The “pprintf” statement is added by the <em>parsing kit</em>
+“<code class="docutils literal"><span class="pre">pa_pprintf.cmo</span></code>”.</p>
+<p>Notice that, in opposition to “printf”, “fprintf”, “sprintf”, and all
+its variants, which are functions, this “pprintf” is a <em>statement</em>,
+not a function: “pprintf” is a keyword and the expander analyzes its
+string format parameter to generate specific statements. In
+particular, it cannot be used alone and has no type by itself.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>       <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">pprintf</span><span class="o">-</span><span class="n">statement</span>
+<span class="n">pprintf</span><span class="o">-</span><span class="n">statement</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;pprintf&quot;</span> <span class="n">qualid</span> <span class="nb">format</span> <span class="n">expressions</span>
+           <span class="n">qualid</span> <span class="p">:</span><span class="o">:=</span> <span class="n">qualid</span> <span class="s2">&quot;.&quot;</span> <span class="n">qualid</span>
+                    <span class="o">|</span> <span class="n">uident</span>
+                    <span class="o">|</span> <span class="n">lident</span>
+           <span class="nb">format</span> <span class="p">:</span><span class="o">:=</span> <span class="n">string</span>
+      <span class="n">expressions</span> <span class="p">:</span><span class="o">:=</span> <span class="n">expression</span> <span class="n">expressions</span>
+                    <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p class="rubric" id="semantics-of-pprintf">Semantics of pprintf</p>
+<p>The “pprintf” statement converts the format string into a string like
+the “sprintf” of the OCaml library “Printf” does (see the OCaml
+manual for details). The string format can accept new conversion
+specifications, “%p” and “%q”, and some pretty printing annotations,
+starting with “&#64;” like in the OCaml library “Format”.</p>
+<p>The “pprintf” statement takes as first parameter, a value of type
+“pr_context” defined below. Its second parameter is the extended
+format string. It can take other parameters, depending on the format,
+like “sprintf”.</p>
+<p>The result of “pprintf” is always a string. There is no versions
+applying to files or buffers.</p>
+<p>The strings built by “pprintf” are concatened by the function
+“Pretty.sprintf” (see the chapter entitled “<a class="reference external" href="pretty.html">Pretty
+Print</a>”) which controls the line length and prevents
+overflowing.</p>
+<p class="rubric" id="printing-context">Printing context</p>
+<p>The “pprintf” statement takes, as first parameter, a <em>printing
+context</em>. It is a value of the following type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">pr_context</span> <span class="o">=</span>
+  <span class="p">{</span> <span class="n">ind</span> <span class="p">:</span> <span class="nb">int</span><span class="p">;</span>
+    <span class="n">bef</span> <span class="p">:</span> <span class="n">string</span><span class="p">;</span>
+    <span class="n">aft</span> <span class="p">:</span> <span class="n">string</span><span class="p">;</span>
+    <span class="n">dang</span> <span class="p">:</span> <span class="n">string</span> <span class="p">};</span>
+</pre></div>
+</div>
+<p>The fields are:</p>
+<ul class="simple">
+<li>“<code class="docutils literal"><span class="pre">ind</span></code>” : the current indendation</li>
+<li>“<code class="docutils literal"><span class="pre">bef</span></code>” : what should be printed before, in the same line</li>
+<li>“<code class="docutils literal"><span class="pre">aft</span></code>” : what should be printed after, in the same line</li>
+<li>“<code class="docutils literal"><span class="pre">dang</span></code>” : the dangling token to know whether parentheses are
+necessary</li>
+</ul>
+<p>Basically, the “pprintf” statement concats the “bef” string, the
+formatted string and the “aft” string. The example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello world&quot;</span>
+</pre></div>
+</div>
+<p>is equivalent to (and indeed generates):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">hello world</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span>
+</pre></div>
+</div>
+<p>But if the format string contains conversion specifications “%p” or
+“%q”, the “bef” and “aft” strings are actually transmitted to the
+corresponding functions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello %p world&quot;</span> <span class="n">f</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span>
+   <span class="n">bef</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">hello &quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span><span class="p">;</span>
+   <span class="n">aft</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot; world</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">}</span>
+  <span class="n">x</span>
+</pre></div>
+</div>
+<p>Thus, the decision of including the “bef” and the “aft” strings are
+delayed to the called function, allowing this function to possibly
+concatenate “bef” and “aft” to its own strings.</p>
+<p>A typical case is, while printing programs, when an expression needs
+to be printed between parentheses. The code which does that looks
+like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;(%p)&quot;</span> <span class="n">expr</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>The right parenthesis of this string format is included in the “aft”
+string transmitted to the function “expr”. In a situation when
+several right parentheses are concatened this way, the fact that all
+these parentheses are grouped together allows the function which
+eventually print them to decide to break the line or not, these
+parentheses being taken into account in the line length.</p>
+<p>For example, if the code contains a print of an program containing an
+application whose source is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">myfunction</span> <span class="n">myarg</span>
+</pre></div>
+</div>
+<p>and if the “aft” contains “))))))”, the decision of printing in one
+line as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">myfunction</span> <span class="n">myarg</span><span class="p">))))))</span>
+</pre></div>
+</div>
+<p>or in two lines as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">myfunction</span>
+  <span class="n">myarg</span><span class="p">))))))</span>
+</pre></div>
+</div>
+<p>is exact, the right parentheses being added to “myarg” to determine
+whether the line overflows or not.</p>
+<p class="rubric" id="extended-format">Extended format</p>
+<p>The extended format used by “pprintf” may contain any strings and
+conversion specifications allowed by the “sprintf” function (see
+module “Printf” of the OCaml library), plus:</p>
+<ul>
+<li><p class="first">the conversion specifications: “<code class="docutils literal"><span class="pre">%p</span></code>” and “<code class="docutils literal"><span class="pre">q</span></code>”,</p>
+</li>
+<li><p class="first">the pretty printing annotations introduced by, “<code class="docutils literal"><span class="pre">&#64;</span></code>” and
+followed by:</p>
+<ul>
+<li><p class="first">the character “<code class="docutils literal"><span class="pre">;</span></code>” (semicolon), optionally followed by
+“<code class="docutils literal"><span class="pre">&lt;</span></code>”, two numbers and “<code class="docutils literal"><span class="pre">&gt;</span></code>”,</p>
+</li>
+<li><p class="first">the character “``&nbsp;<a href="#id2"><span class="problematic" id="id3">``</span></a>” (space),</p>
+</li>
+<li><p class="first">the character “<code class="docutils literal"><span class="pre">[</span></code>“, optionally followed by the character
+“<code class="docutils literal"><span class="pre">&lt;</span></code>” and either:</p>
+<ul class="simple">
+<li>the character “<code class="docutils literal"><span class="pre">a</span></code>”</li>
+<li>the character “<code class="docutils literal"><span class="pre">b</span></code>”</li>
+<li>a number</li>
+</ul>
+<p>and the character “<code class="docutils literal"><span class="pre">&gt;</span></code>”, then followed by format string, and
+ended with “<code class="docutils literal"><span class="pre">&#64;]</span></code>”</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>The format string is applied like in the “sprintf” function. Specific
+actions are done for the extended features. The result is a string
+like for the “sprintf” function. The “string before” and “string
+after” defined by the fields “bef” and “aft” of the printing context
+are taken into account and it is not necessary to add them in the
+format.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello, world&quot;</span>
+</pre></div>
+</div>
+<p>generates:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">hello, world</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>An empty format:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>just prints the “before” and “after” strings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">;</span>
+</pre></div>
+</div>
+<p class="rubric" id="line-length">Line length</p>
+<p>The function “pprintf” uses the Camlp5 “Pretty” module. The line
+length can be set by changing the value of the reference
+“Pretty.line_length”.</p>
+<p class="rubric" id="the-conversion-specifications-p-and-q">The conversion specifications “p” and “q”</p>
+<p>The “%p” conversion specification works like the “%a” of the printf
+statement. It takes two arguments and applies the first one to the
+printing context and to the second argument. The first argument must
+therefore have type “<code class="docutils literal"><span class="pre">pr_context</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">unit</span></code>” (for some type
+“<code class="docutils literal"><span class="pre">t</span></code>”) and the second one “t”.</p>
+<p>Notice that this function can be called twice: one to test whether
+the resulting string holds in the line, and another one to possibly
+recall this function to print it in several lines. In the two cases,
+the printing context given as parameter is different.</p>
+<p>It uses the functions defined in the “<a class="reference external" href="pretty.html">Pretty</a>”
+module.</p>
+<p>Example: the following statement:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello, %p, world&quot;</span> <span class="n">f</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span>
+   <span class="n">bef</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">hello, &quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span><span class="p">;</span>
+   <span class="n">aft</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;, world</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">}</span>
+  <span class="n">x</span>
+</pre></div>
+</div>
+<p>The “%q” conversion specification is like “%p” except that it takes a
+third argument which is the value of the “dang” field, useful when
+the syntax has “dangling” problems requiring parentheses. See chapter
+<a class="reference external" href="opretty.html">Extensions of printing</a> for more explanations about
+dangling problems.</p>
+<p>The same example with “%q”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello, %q, world&quot;</span> <span class="n">f</span> <span class="n">x</span> <span class="s2">&quot;abc&quot;</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span>
+   <span class="n">bef</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">hello, &quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span><span class="p">;</span>
+   <span class="n">aft</span> <span class="o">=</span> <span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;, world</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">;</span>
+   <span class="n">dang</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span><span class="p">}</span>
+  <span class="n">x</span>
+</pre></div>
+</div>
+<p class="rubric" id="the-pretty-printing-annotations">The pretty printing annotations</p>
+<p class="rubric" id="breaks">Breaks</p>
+<p>The pretty printing annotations allow to indicate places where lines
+can be broken. They all start with the “at” sign “&#64;”. The main ones
+are called <em>breaks</em> and are:</p>
+<ul class="simple">
+<li>“<code class="docutils literal"><span class="pre">&#64;;</span></code>” specifying: <em>write a space or ‘a newline and an
+indentation incremented by 2 spaces’</em></li>
+<li>“<a href="#id4"><span class="problematic" id="id5">``</span></a>&#64;&nbsp;<a href="#id6"><span class="problematic" id="id7">``</span></a>” specifying: <em>write a space or ‘a newline and the
+indentation’</em></li>
+</ul>
+<p>Example - where “pc” is a variable of type “pr_context” (for example
+“Pprintf.empty_pc”):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello,@;world&quot;</span>
+</pre></div>
+</div>
+<p>builds the string, if it holds in the line:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">hello</span><span class="p">,</span> <span class="n">world</span>
+</pre></div>
+</div>
+<p>and if it does not:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">hello</span><span class="p">,</span>
+  <span class="n">world</span>
+</pre></div>
+</div>
+<p>The second form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;hello,@ world&quot;</span>
+</pre></div>
+</div>
+<p>is printed the same way, if it holds in the line, and if it does not,
+as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">hello</span><span class="p">,</span>
+<span class="n">world</span>
+</pre></div>
+</div>
+<p>The general form is:</p>
+<ul class="simple">
+<li>“<code class="docutils literal"><span class="pre">&#64;;&lt;s</span> <span class="pre">o&gt;</span></code>”, which is a break with “<code class="docutils literal"><span class="pre">s</span></code>” spaces if the string
+holds in the line, or an indentation offset (incrementation of the
+indentation) of “<code class="docutils literal"><span class="pre">o</span></code>” spaces if the string does not hold in the
+line.</li>
+</ul>
+<p>The break “<code class="docutils literal"><span class="pre">&#64;;</span></code>” is therefore equivalent to “<code class="docutils literal"><span class="pre">&#64;;&lt;1</span>&#160;&#160; <span class="pre">2&gt;</span></code>” and
+“<code class="docutils literal"><span class="pre">&#64;&nbsp;``&quot;</span> <span class="pre">is</span> <span class="pre">equivalent</span> <span class="pre">to</span> <span class="pre">&quot;``&#64;;&lt;1</span>&#160;&#160; <span class="pre">0&gt;</span></code>”.</p>
+<p class="rubric" id="parentheses">Parentheses</p>
+<p>A second form of the pretty printing annotations is the
+parenthesization of format strings possibly containing other pretty
+printing annotations. They start with “<code class="docutils literal"><span class="pre">&#64;[</span></code>” and end with “<code class="docutils literal"><span class="pre">&#64;]</span></code>”.</p>
+<p>It allows to change the associativity of the breaks. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;@[the quick brown fox@;jumps@]@;over the lazy dog&quot;</span>
+</pre></div>
+</div>
+<p>If the whole string holds on the line, it is printed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span> <span class="n">jumps</span> <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>If the whole string does not hold on the line, but “the quick brow
+fox jumps” does, it is printed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span> <span class="n">jumps</span>
+  <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>If the string “the quick brown fox jumps” does not hold on the line,
+the whole string is printed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span>
+  <span class="n">jumps</span>
+  <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>Conversely, if the code is right associated:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;the quick brown fox@;@[jumps@;over the lazy dog@]&quot;</span>
+</pre></div>
+</div>
+<p>It can be printed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span> <span class="n">jumps</span> <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span>
+  <span class="n">jumps</span> <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span>
+  <span class="n">jumps</span>
+    <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>The default is left associativity: without parentheses, it is printed
+like in the first example.</p>
+<p class="rubric" id="incrementation-of-indentation">Incrementation of indentation</p>
+<p>The open parenthesis of the parenthesized form, “<code class="docutils literal"><span class="pre">&#64;[</span></code>” can be
+followed by “<code class="docutils literal"><span class="pre">&lt;n&gt;</span></code>” where “<code class="docutils literal"><span class="pre">n</span></code>” is a number. It increments the
+current indentation (for possible newlines in the parenthesized text)
+with this number.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;@[&lt;4&gt;Incrementation@;actually of six characters@]&quot;</span>
+</pre></div>
+</div>
+<p>makes the string (if not holding in the line):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Incrementation</span>
+      <span class="n">actually</span> <span class="n">of</span> <span class="n">six</span> <span class="n">characters</span>
+</pre></div>
+</div>
+<p class="rubric" id="break-all-or-nothing">Break all or nothing</p>
+<p>The open parenthesis of the parenthesized form, “<code class="docutils literal"><span class="pre">&#64;[</span></code>” can be
+followed by “<code class="docutils literal"><span class="pre">&lt;a&gt;</span></code>”. It specifies that if the string does not hold
+in the line, all breaks between the parentheses (at one only level)
+are printed in two lines, even if sub-strings could hold on the line.
+For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;@[&lt;a&gt;the quick brown fox@;jumps@;over the lazy dog@]&quot;</span>
+</pre></div>
+</div>
+<p>can be printed only as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span> <span class="n">jumps</span> <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p>or as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span>
+  <span class="n">jumps</span>
+  <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p class="rubric" id="break-all">Break all</p>
+<p>The open parenthesis of the parenthesized form, “<code class="docutils literal"><span class="pre">&#64;[</span></code>” can be
+followed by “<code class="docutils literal"><span class="pre">&lt;b&gt;</span></code>”. It specifies that all breaks are always
+printed in two lines. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;@[&lt;b&gt;the quick brown fox@;jumps@;over the lazy dog@]&quot;</span>
+</pre></div>
+</div>
+<p>is printed in all circumstances:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">the</span> <span class="n">quick</span> <span class="n">brown</span> <span class="n">fox</span>
+  <span class="n">jumps</span>
+  <span class="n">over</span> <span class="n">the</span> <span class="n">lazy</span> <span class="n">dog</span>
+</pre></div>
+</div>
+<p class="rubric" id="break-all-if">Break all if</p>
+<p>The open parenthesis of the parenthesized form, “<code class="docutils literal"><span class="pre">&#64;[</span></code>” can be
+followed by “<code class="docutils literal"><span class="pre">&lt;i&gt;</span></code>”. Depending on the value of the boolean variable
+of the argument list, the breaks are all printed in two lines like
+with the “break all” option above, or not. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@;@[&lt;i&gt;</span><span class="si">%s</span><span class="s2">,@;</span><span class="si">%s</span><span class="s2">@]&quot;</span> <span class="s2">&quot;good&quot;</span> <span class="kc">True</span> <span class="s2">&quot;morning&quot;</span> <span class="s2">&quot;everybody&quot;</span><span class="p">;</span>
+<span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@;@[&lt;i&gt;</span><span class="si">%s</span><span class="s2">,@;</span><span class="si">%s</span><span class="s2">@]&quot;</span> <span class="s2">&quot;good&quot;</span> <span class="kc">False</span> <span class="s2">&quot;morning&quot;</span> <span class="s2">&quot;everybody&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>are printed:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">good</span>
+  <span class="n">morning</span><span class="p">,</span>
+    <span class="n">everybody</span>
+<span class="n">good</span> <span class="n">morning</span><span class="p">,</span> <span class="n">everybody</span>
+</pre></div>
+</div>
+<p class="rubric" id="parentheses-not-neighbours-of-breaks">Parentheses not neighbours of breaks</p>
+<p>In the examples above, we can remark that the left parentheses are
+always the begin of the string or are preceeded by a break, and that
+the right parentheses are always the end of the string or followed by
+a break.</p>
+<p>When the parentheses “<code class="docutils literal"><span class="pre">&#64;[</span></code>” and “<code class="docutils literal"><span class="pre">&#64;]</span></code>” are not preceeded or
+followed by the string begin nor end, nor preceeded or followed by
+breaks, they are considered as the “bef” or “aft” part of the
+neighbour string. For example, the following forms:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;the quick brown fox@[ jumps over@]&quot;</span>
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;@[the quick brown fox @]jumps over&quot;</span>
+</pre></div>
+</div>
+<p>are respectively equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">pc</span> <span class="o">=</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span> <span class="n">aft</span> <span class="o">=</span> <span class="n">sprintf</span> <span class="s2">&quot; jumps over</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span><span class="p">}</span> <span class="ow">in</span>
+<span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">the quick brown fox</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span>
+</pre></div>
+</div>
+<p>and:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">let</span> <span class="n">pc</span> <span class="o">=</span> <span class="p">{(</span><span class="n">pc</span><span class="p">)</span> <span class="k">with</span> <span class="n">bef</span> <span class="o">=</span> <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">the quick brown fox&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span><span class="p">}</span> <span class="ow">in</span>
+<span class="n">Pretty</span><span class="o">.</span><span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">jumps over</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="n">pc</span><span class="o">.</span><span class="n">bef</span> <span class="n">pc</span><span class="o">.</span><span class="n">aft</span>
+</pre></div>
+</div>
+<p>In these examples, the results are identical, but it can be important
+if the non-parenthesized part contain one or several “%p”. In this
+case, the corresponding function receives the “bef” or “aft” part in
+its pr_context variable and can take it into account when printing
+its data.</p>
+<p class="rubric" id="lprintf">Lprintf</p>
+<p>“Lprintf” is like “pprintf” with the same parameters. It is
+equivalent to an call to the function “expand_lprintf”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">lprintf</span> <span class="n">pc</span> <span class="s2">&quot;...&quot;</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">expand_lprintf</span> <span class="n">pc</span> <span class="n">loc</span> <span class="p">(</span><span class="n">fun</span> <span class="n">pc</span> <span class="o">-&lt;</span> <span class="n">pprintf</span> <span class="n">pc</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function “expand_lprintf” and the variable “loc” must be defined
+by the user in the environment where “lprintf” is used.</p>
+<p>“Lprintf” is used in predefined printers “pr_r.ml” and “pr_o.ml” to
+allow optional insertions of location comments in the output.</p>
+<p class="rubric" id="comparison-with-the-ocaml-modules-printf-and-format">Comparison with the OCaml modules Printf and Format</p>
+<p class="rubric" id="pprintf-and-printf">Pprintf and Printf</p>
+<p>The statement “pprintf” acts like the function “Printf.sprintf”. But
+since it requires this extra parameter of type “pr_context” and needs
+the “%p” and “%q” conversions specifications (which do not exist in
+“Printf”), it was not possible to use the “Printf” machinery directly
+and a new statement had to be added.</p>
+<p>The principle of “pprintf” and “sprintf” are the same. However,
+“pprintf” is a syntax extension and has no type by itself. It cannot
+be used alone or without all its required parameters.</p>
+<p class="rubric" id="pprintf-and-format">Pprintf and Format</p>
+<p>The pretty printing annotations look like the ones of the OCaml
+module Format. Actually, they have different semantics. They do not
+use <em>boxes</em> like “Format” does. In “pprintf” statement, the machinery
+acts only on indentations.</p>
+<p>Notice that, with “pprintf”, it is always possible to know the
+current indentation (it is the field “ind” of the “pr_context”
+variable) and it is therefore possible to take decisions before
+printing.</p>
+<p>For example, it is possible, in a printer of OCaml statements, to
+decide to print all match cases symmetrically, i.e. all with one line
+for each case or all with newlines after the patterns.</p>
+<p>It is what is done in the option “<code class="docutils literal"><span class="pre">-flag</span> <span class="pre">E</span></code>” added by the pretty
+printing kits “pr_r.cmo” (pretty print in revised syntax) and
+“pr_o.cmo” (pretty print in normal syntax). See chapter <a class="reference external" href="commands.html">Commands and
+Files</a> or type “<code class="docutils literal"><span class="pre">camlp5</span> <span class="pre">pr_r.cmo</span> <span class="pre">-help</span></code>” or
+“<code class="docutils literal"><span class="pre">camlp5</span> <span class="pre">pr_o.cmo</span>&#160;&#160; <span class="pre">-help</span></code>”.</p>
+<p>Another difference is that the internal behaviour of this printing
+system is accessible, and it is always possible to use the basic
+functions of the “Pretty” module (“horiz_vertic” and “sprintf”) if
+the behaviour of “pprintf” is not what is desired by the programmer.</p>
+<p class="rubric" id="relation-with-the-camlp5-extensible-printers">Relation with the Camlp5 extensible printers</p>
+<p>The extensible printers of Camlp5 (see its corresponding
+<a class="reference external" href="printers.html">chapter</a>) use the type “<code class="docutils literal"><span class="pre">pr_context</span></code>” of
+“pprintf”. It is therefore possible to use “pprintf” in the semantic
+actions of the extensible printers. But it is not mandatory. An
+extensible printer can just use the “Pretty” module or even neither
+“pprintf” nor “Pretty”.</p>
+<p>The printing kits “<code class="docutils literal"><span class="pre">pr_r.ml</span></code>” and “<code class="docutils literal"><span class="pre">pr_o.ml</span></code>” (respectively
+pretty print in revised and in normal syntax) and some other related
+to them, are examples of usage of the “pprintf” statement.</p>
+<p class="rubric" id="the-pprintf-module">The Pprintf module</p>
+<p>See its <a class="reference external" href="library.html#a:Pprintf-module">section</a> in the chapter
+“Library”.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pretty.html" class="btn btn-neutral float-right" title="Pretty print" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="printers.html" class="btn btn-neutral float-left" title="Extensible printers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

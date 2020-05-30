@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Syntax tree - transitional mode &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Syntax tree - strict mode" href="ast_strict.html" />
+    <link rel="prev" title="Syntax tree" href="ml_ast.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Syntax tree - transitional mode</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstast_transi.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="syntax-tree-transitional-mode">
+<h1>Syntax tree - transitional mode<a class="headerlink" href="#syntax-tree-transitional-mode" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Syntax tree - transitional mode</p>
+<p>This chapter presents the Camlp5 syntax tree when Camlp5 is installed
+in <em>transitional</em> mode.</p>
+<p class="rubric" id="introduction">Introduction</p>
+<p>This syntax tree is defined in the module “<code class="docutils literal"><span class="pre">MLast</span></code>” provided by
+Camlp5. Each node corresponds to a syntactic entity of the
+corresponding type.</p>
+<p>For example, the syntax tree of the statement “<code class="docutils literal"><span class="pre">if</span></code>” can be
+written:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">ExIfe</span> <span class="n">loc</span> <span class="n">e1</span> <span class="n">e2</span> <span class="n">e3</span>
+</pre></div>
+</div>
+<p>where “<code class="docutils literal"><span class="pre">loc</span></code>” is the location in the source, and “<code class="docutils literal"><span class="pre">e1</span></code>”, “<code class="docutils literal"><span class="pre">e2</span></code>”
+and “<code class="docutils literal"><span class="pre">e3</span></code>” are respectively the expression after the “<code class="docutils literal"><span class="pre">if</span></code>”, the
+one after the “<code class="docutils literal"><span class="pre">then</span></code>” and the one after the “<code class="docutils literal"><span class="pre">else</span></code>”.</p>
+<p>If a program needs to manipulate syntax trees, it can use the nodes
+defined in the module “<code class="docutils literal"><span class="pre">MLast</span></code>”. The programmer must know how the
+concrete syntax is transformed into this abstract syntax.</p>
+<p>A simpler solution is to use one of the quotation kit
+“<code class="docutils literal"><span class="pre">q_MLast.cmo</span></code>”. It proposes <a class="reference external" href="quot.html">quotations</a> which
+represent the abstract syntax (the nodes of the module “<code class="docutils literal"><span class="pre">MLast</span></code>”)
+into concrete syntax with antiquotations to bind variables inside.
+The example above can be written:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;:expr&lt; if $e1$ then $e2$ else $e3$ &gt;&gt;
+</pre></div>
+</div>
+<p>This representation is very interesting when one wants to manipulate
+complicated syntax trees. Here is an example taken from the Camlp5
+sources themselves:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;:expr&lt;
+  match try Some $f$ with [ Stream.Failure -&gt; None ] with
+  [ Some $p$ -&gt; $e$
+  | _ -&gt; raise (Stream.Error $e2$) ]
+&gt;&gt;
+</pre></div>
+</div>
+<p>This example was in a position of a pattern. In abstract syntax, it
+should have been written:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">ExMat</span> <span class="n">_</span>
+  <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExTry</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExApp</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExUid</span> <span class="n">_</span> <span class="s2">&quot;Some&quot;</span><span class="p">)</span> <span class="n">f</span><span class="p">)</span>
+     <span class="p">[(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaAcc</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaUid</span> <span class="n">_</span> <span class="s2">&quot;Stream&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaUid</span> <span class="n">_</span> <span class="s2">&quot;Failure&quot;</span><span class="p">),</span>
+       <span class="kc">None</span><span class="p">,</span> <span class="n">MLast</span><span class="o">.</span><span class="n">ExUid</span> <span class="n">_</span> <span class="s2">&quot;None&quot;</span><span class="p">)])</span>
+  <span class="p">[(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaApp</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaUid</span> <span class="n">_</span> <span class="s2">&quot;Some&quot;</span><span class="p">)</span> <span class="n">p</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">e</span><span class="p">);</span>
+   <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaAny</span> <span class="n">_</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">MLast</span><span class="o">.</span><span class="n">ExApp</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExLid</span> <span class="n">_</span> <span class="s2">&quot;raise&quot;</span><span class="p">)</span>
+      <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExApp</span> <span class="n">_</span>
+         <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExAcc</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExUid</span> <span class="n">_</span> <span class="s2">&quot;Stream&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExUid</span> <span class="n">_</span> <span class="s2">&quot;Error&quot;</span><span class="p">))</span>
+         <span class="n">e2</span><span class="p">))]</span>
+</pre></div>
+</div>
+<p>Which is less readable and much more complicated to build and update.</p>
+<p>Instead of thinking of “a syntax tree”, the programmer can think of
+“a piece of program”.</p>
+<p class="rubric" id="location">Location</p>
+<p>In all syntax tree nodes, the first parameter is the source location
+of the node.</p>
+<p class="rubric" id="in-expressions">In expressions</p>
+<p>When a quotation is in the context of an expression, the location
+parameter is “<code class="docutils literal"><span class="pre">loc</span></code>” in the node and in all its possible sub-nodes.
+Example: if we consider the quotation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="p">:</span><span class="n">sig_item</span><span class="o">&lt;</span> <span class="n">value</span> <span class="n">foo</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">&gt;&gt;</span>
+</pre></div>
+</div>
+<p>This quotation, in a context of an expression, is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">SgVal</span> <span class="n">loc</span> <span class="s2">&quot;foo&quot;</span>
+  <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyArr</span> <span class="n">loc</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">loc</span> <span class="s2">&quot;int&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">loc</span> <span class="s2">&quot;bool&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The name “<code class="docutils literal"><span class="pre">loc</span></code>” is predefined. However, it is possible to change
+it, using the argument “<code class="docutils literal"><span class="pre">-loc</span></code>” of the Camlp5 shell commands.</p>
+<p>Consequently, if there is no variable “<code class="docutils literal"><span class="pre">loc</span></code>” defined in the
+context of the quotation, or if it is not of the correct type, a
+semantic error occur in the OCaml compiler (“Unbound value loc”).</p>
+<p>Note that in the <a class="reference external" href="grammars.html">extensible grammars</a>, the
+variable “<code class="docutils literal"><span class="pre">loc</span></code>” is bound, in all semantic actions, to the location
+of the rule.</p>
+<p>If the created node has no location, the programmer can define a
+variable named “<code class="docutils literal"><span class="pre">loc</span></code>” equal to “<code class="docutils literal"><span class="pre">Ploc.dummy</span></code>”.</p>
+<p class="rubric" id="in-patterns">In patterns</p>
+<p>When a quotation is in the context of a pattern, the location
+parameter of all nodes and possible sub-nodes is set to the wildcard
+(“<code class="docutils literal"><span class="pre">_</span></code>”). The same example above:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="p">:</span><span class="n">sig_item</span><span class="o">&lt;</span> <span class="n">value</span> <span class="n">foo</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">&gt;&gt;</span>
+</pre></div>
+</div>
+<p>is equivalent, in a pattern, to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">SgVal</span> <span class="n">_</span> <span class="s2">&quot;foo&quot;</span>
+  <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyArr</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">_</span> <span class="s2">&quot;int&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">_</span> <span class="s2">&quot;bool&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>However, it is possible to generate a binding of the variable
+“<code class="docutils literal"><span class="pre">loc</span></code>” on the top node by writing a “colon” before the “less” in
+the quotation. The same example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="p">:</span><span class="n">sig_item</span><span class="p">:</span><span class="o">&lt;</span> <span class="n">value</span> <span class="n">foo</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">&gt;&gt;</span>
+</pre></div>
+</div>
+<p>is equivalent to:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">SgVal</span> <span class="n">loc</span> <span class="s2">&quot;foo&quot;</span>
+  <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyArr</span> <span class="n">_</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">_</span> <span class="s2">&quot;int&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">TyLid</span> <span class="n">_</span> <span class="s2">&quot;bool&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p class="rubric" id="antiquotations">Antiquotations</p>
+<p>The expressions or patterns between dollar ($) characters are called
+<em>antiquotations</em>. In opposition to quotations which has its own
+syntax rules, the antiquotation is an area in the syntax of the
+enclosing context (expression or pattern). See the chapter about
+<a class="reference external" href="quot.html">quotations</a>.</p>
+<p>If a quotation is in the context of an expression, the antiquotation
+must be an expression. It can be any expression, including function
+calls. Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>value f e el = &lt;:expr&lt; [$e$ :: $loop False el$] &gt;&gt;;
+value patt_list p pl = &lt;:patt&lt; ( $list:[p::pl]$) &gt;&gt;;
+</pre></div>
+</div>
+<p>If a quotation is in the context of an pattern, the antiquotation is
+a pattern. Any pattern is possible, including the wildcard character
+(“<code class="docutils literal"><span class="pre">_</span></code>”). Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>fun [ &lt;:expr&lt; $lid:op$ $_$ $_$ &gt;&gt; -&gt; op ]
+match p with [ &lt;:patt&lt; $_$ | $_$ &gt;&gt; -&gt; Some p ]
+</pre></div>
+</div>
+<p class="rubric" id="nodes-and-quotations">Nodes and Quotations</p>
+<p>This section describes all nodes defined in the module “MLast” of
+Camlp5 and how to write them with quotations. Notice that, inside
+quotations, one is not restricted to these elementary cases, but any
+complex value can be used, resulting on possibly complex combined
+nodes.</p>
+<p>Variables names give information of their types:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">e</span></code>, <code class="docutils literal"><span class="pre">e1</span></code>, <code class="docutils literal"><span class="pre">e2</span></code>, <code class="docutils literal"><span class="pre">e3</span></code>: expr</li>
+<li><code class="docutils literal"><span class="pre">p</span></code>, <code class="docutils literal"><span class="pre">p1</span></code>, <code class="docutils literal"><span class="pre">p2</span></code>, <code class="docutils literal"><span class="pre">p3</span></code>: patt</li>
+<li><code class="docutils literal"><span class="pre">t</span></code>, <code class="docutils literal"><span class="pre">t1</span></code>, <code class="docutils literal"><span class="pre">t2</span></code>, <code class="docutils literal"><span class="pre">e3</span></code>: ctyp</li>
+<li><code class="docutils literal"><span class="pre">s</span></code>: string</li>
+<li><code class="docutils literal"><span class="pre">b</span></code>: bool</li>
+<li><code class="docutils literal"><span class="pre">me</span></code>, <code class="docutils literal"><span class="pre">me1</span></code>, <code class="docutils literal"><span class="pre">me2</span></code>: module_expr</li>
+<li><code class="docutils literal"><span class="pre">mt</span></code>, <code class="docutils literal"><span class="pre">mt1</span></code>, <code class="docutils literal"><span class="pre">mt2</span></code>: module_type</li>
+<li><code class="docutils literal"><span class="pre">le</span></code>: list expr</li>
+<li><code class="docutils literal"><span class="pre">lp</span></code>: list patt</li>
+<li><code class="docutils literal"><span class="pre">lt</span></code>: list ctyp</li>
+<li><code class="docutils literal"><span class="pre">ls</span></code>: list string</li>
+<li><code class="docutils literal"><span class="pre">lse</span></code>: list (string * expr)</li>
+<li><code class="docutils literal"><span class="pre">lpe</span></code>: list (patt * expr)</li>
+<li><code class="docutils literal"><span class="pre">lpp</span></code>: list (patt * patt)</li>
+<li><code class="docutils literal"><span class="pre">lpee</span></code>: list (patt * option expr * expr)</li>
+<li><code class="docutils literal"><span class="pre">op</span></code>: option patt</li>
+<li><code class="docutils literal"><span class="pre">lcsi</span></code>: list class_str_item</li>
+<li><code class="docutils literal"><span class="pre">lcsi</span></code>: list class_sig_item</li>
+</ul>
+<p class="rubric" id="expr">expr</p>
+<p>Expressions of the language.</p>
+<p><code class="docutils literal"><span class="pre">ExAcc</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span></code>            <code class="docutils literal"><span class="pre">$e1$</span> <span class="pre">.</span> <span class="pre">$e2$</span></code>                                     access
+<code class="docutils literal"><span class="pre">ExAnt</span> <span class="pre">loc</span> <span class="pre">e</span></code>                <code class="docutils literal"><span class="pre">$anti:e$</span></code>                                        antiquotation <a class="reference external" href="#expr_1">(1)</a>
+<code class="docutils literal"><span class="pre">ExApp</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span></code>            <code class="docutils literal"><span class="pre">$e1$</span> <span class="pre">$e2$</span></code>                                       application
+<code class="docutils literal"><span class="pre">ExAre</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span></code>            <code class="docutils literal"><span class="pre">$e1$</span> <span class="pre">.(</span> <span class="pre">$e2$</span> <span class="pre">)</span></code>                                  array element
+<code class="docutils literal"><span class="pre">ExArr</span> <span class="pre">loc</span> <span class="pre">le</span></code>               <code class="docutils literal"><span class="pre">[|</span> <span class="pre">$list:le$</span> <span class="pre">|]</span></code>                                 array
+<code class="docutils literal"><span class="pre">ExAsr</span> <span class="pre">loc</span> <span class="pre">e</span></code>                <code class="docutils literal"><span class="pre">assert</span> <span class="pre">$e$</span></code>                                      assert
+<code class="docutils literal"><span class="pre">ExAss</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span></code>            <code class="docutils literal"><span class="pre">$e1$</span> <span class="pre">:=</span> <span class="pre">$e2$</span></code>                                    assignment
+<code class="docutils literal"><span class="pre">ExBae</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">le</span></code>             <code class="docutils literal"><span class="pre">$e$</span> <span class="pre">.{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code>                              big array element
+<code class="docutils literal"><span class="pre">ExChr</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">$chr:s$</span></code>                                         character constant
+<code class="docutils literal"><span class="pre">ExCoe</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">None</span> <span class="pre">t2</span></code>        <code class="docutils literal"><span class="pre">($e$</span> <span class="pre">:&gt;</span> <span class="pre">$t2$)</span></code>                                   coercion
+<code class="docutils literal"><span class="pre">ExCoe</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">(Some</span> <span class="pre">t1)</span> <span class="pre">t2</span></code>   <code class="docutils literal"><span class="pre">($e$</span> <span class="pre">:</span> <span class="pre">$t1$</span> <span class="pre">:&gt;</span> <span class="pre">$t2$)</span></code>                            coercion
+<code class="docutils literal"><span class="pre">ExFlo</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">$flo:s$</span></code>                                         float constant
+<code class="docutils literal"><span class="pre">ExFor</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">e1</span> <span class="pre">e2</span> <span class="pre">True</span> <span class="pre">le</span></code>  <code class="docutils literal"><span class="pre">for</span> <span class="pre">$lid:s$</span> <span class="pre">=</span> <span class="pre">$e1$</span> <span class="pre">to</span> <span class="pre">$e2$</span> <span class="pre">do</span> <span class="pre">{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code>     for (increasing)
+<code class="docutils literal"><span class="pre">ExFor</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">e1</span> <span class="pre">e2</span> <span class="pre">False</span> <span class="pre">le</span></code> <code class="docutils literal"><span class="pre">for</span> <span class="pre">$lid:s$</span> <span class="pre">=</span> <span class="pre">$e1$</span> <span class="pre">downto</span> <span class="pre">$e2$</span> <span class="pre">do</span> <span class="pre">{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code> for (decreasing)
+<code class="docutils literal"><span class="pre">ExFor</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">e1</span> <span class="pre">e2</span> <span class="pre">b</span> <span class="pre">le</span></code>     <code class="docutils literal"><span class="pre">for</span> <span class="pre">$lid:s$</span> <span class="pre">=</span> <span class="pre">$e1$</span> <span class="pre">$to:b$</span> <span class="pre">$e2$</span> <span class="pre">do</span> <span class="pre">{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code> for
+<code class="docutils literal"><span class="pre">ExFun</span> <span class="pre">loc</span> <span class="pre">lpee</span></code>             <code class="docutils literal"><span class="pre">fun</span> <span class="pre">[</span> <span class="pre">$list:lpee$</span> <span class="pre">]</span></code>                             function <a class="reference external" href="#expr_2">(2)</a>
+<code class="docutils literal"><span class="pre">ExIfe</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span> <span class="pre">e3</span></code>         <code class="docutils literal"><span class="pre">if</span> <span class="pre">$e1$</span> <span class="pre">then</span> <span class="pre">$e2$</span> <span class="pre">else</span> <span class="pre">$e3$</span></code>                     if
+<code class="docutils literal"><span class="pre">ExInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;&quot;</span></code>            <code class="docutils literal"><span class="pre">$int:s1$</span></code>                                        integer constant
+<code class="docutils literal"><span class="pre">ExInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;l&quot;</span></code>           <code class="docutils literal"><span class="pre">$int32:s1$</span></code>                                      integer 32 bits
+<code class="docutils literal"><span class="pre">ExInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;L&quot;</span></code>           <code class="docutils literal"><span class="pre">$int64:s1$</span></code>                                      integer 64 bits
+<code class="docutils literal"><span class="pre">ExInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;n&quot;</span></code>           <code class="docutils literal"><span class="pre">$nativeint:s1$</span></code>                                  native integer
+<code class="docutils literal"><span class="pre">ExLab</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">None</span></code>           <code class="docutils literal"><span class="pre">~{$p$}</span></code>                                          label
+<code class="docutils literal"><span class="pre">ExLab</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">(Some</span> <span class="pre">e)</span></code>       <code class="docutils literal"><span class="pre">~{$p$</span> <span class="pre">=</span> <span class="pre">$e$}</span></code>                                    label
+<code class="docutils literal"><span class="pre">ExLab</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">oe</span></code>             <code class="docutils literal"><span class="pre">~{$p$</span> <span class="pre">$opt:oe$}</span></code>                                 label
+<code class="docutils literal"><span class="pre">ExLaz</span> <span class="pre">loc</span> <span class="pre">e</span></code>                <code class="docutils literal"><span class="pre">lazy</span> <span class="pre">$e$</span></code>                                        lazy
+<code class="docutils literal"><span class="pre">ExLet</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">lpe</span> <span class="pre">e</span></code>       <code class="docutils literal"><span class="pre">let</span> <span class="pre">rec</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$e$</span></code>                       let rec
+<code class="docutils literal"><span class="pre">ExLet</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">lpe</span> <span class="pre">e</span></code>      <code class="docutils literal"><span class="pre">let</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$e$</span></code>                           let not rec
+<code class="docutils literal"><span class="pre">ExLet</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">lpe</span> <span class="pre">e</span></code>          <code class="docutils literal"><span class="pre">let</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$e$</span></code>                  let
+<code class="docutils literal"><span class="pre">ExLid</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">$lid:s$</span></code>                                         lowercase identifier
+<code class="docutils literal"><span class="pre">ExLmd</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">me</span> <span class="pre">e</span></code>           <code class="docutils literal"><span class="pre">let</span> <span class="pre">module</span> <span class="pre">$uid:s$</span> <span class="pre">=</span> <span class="pre">$me$</span> <span class="pre">in</span> <span class="pre">$e$</span></code>                let module
+<code class="docutils literal"><span class="pre">ExMat</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">lpee</span></code>           <code class="docutils literal"><span class="pre">match</span> <span class="pre">$e$</span> <span class="pre">with</span> <span class="pre">[</span> <span class="pre">$list:lpee$</span> <span class="pre">]</span></code>                  match <a class="reference external" href="#expr_2">(2)</a>
+<code class="docutils literal"><span class="pre">ExNew</span> <span class="pre">loc</span> <span class="pre">ls</span></code>               <code class="docutils literal"><span class="pre">new</span> <span class="pre">$list:ls$</span></code>                                   new
+<code class="docutils literal"><span class="pre">ExObj</span> <span class="pre">loc</span> <span class="pre">None</span> <span class="pre">lcsi</span></code>        <code class="docutils literal"><span class="pre">object</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>                          object expression
+<code class="docutils literal"><span class="pre">ExObj</span> <span class="pre">loc</span> <span class="pre">(Some</span> <span class="pre">p)</span> <span class="pre">lcsi</span></code>    <code class="docutils literal"><span class="pre">object</span> <span class="pre">($p$)</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>                    object expression
+<code class="docutils literal"><span class="pre">ExObj</span> <span class="pre">loc</span> <span class="pre">op</span> <span class="pre">lcsi</span></code>          <code class="docutils literal"><span class="pre">object</span> <span class="pre">$opt:op$</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>                 object expression
+<code class="docutils literal"><span class="pre">ExOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">None</span></code>           <code class="docutils literal"><span class="pre">?{$p$}</span></code>                                          option label
+<code class="docutils literal"><span class="pre">ExOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">(Some</span> <span class="pre">e)</span></code>       <code class="docutils literal"><span class="pre">?{$p$</span> <span class="pre">=</span> <span class="pre">$e$}</span></code>                                    option label
+<code class="docutils literal"><span class="pre">ExOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">oe</span></code>             <code class="docutils literal"><span class="pre">?{$p$</span> <span class="pre">$opt:oe$}</span></code>                                 option label
+<code class="docutils literal"><span class="pre">ExOvr</span> <span class="pre">loc</span> <span class="pre">lse</span></code>              <code class="docutils literal"><span class="pre">{&lt;</span> <span class="pre">$list:lse$</span> <span class="pre">&gt;}</span></code>                                override
+<code class="docutils literal"><span class="pre">ExPck</span> <span class="pre">loc</span> <span class="pre">me</span> <span class="pre">None</span></code>          <code class="docutils literal"><span class="pre">(module</span> <span class="pre">$me$)</span></code>                                   module packing
+<code class="docutils literal"><span class="pre">ExPck</span> <span class="pre">loc</span> <span class="pre">me</span> <span class="pre">(Some</span> <span class="pre">mt)</span></code>     <code class="docutils literal"><span class="pre">(module</span> <span class="pre">$me$</span> <span class="pre">:</span> <span class="pre">$mt$)</span></code>                            module packing
+<code class="docutils literal"><span class="pre">ExRec</span> <span class="pre">loc</span> <span class="pre">lpe</span> <span class="pre">None</span></code>         <code class="docutils literal"><span class="pre">{$list:lpe$}</span></code>                                    record
+<code class="docutils literal"><span class="pre">ExRec</span> <span class="pre">loc</span> <span class="pre">lpe</span> <span class="pre">(Some</span> <span class="pre">e)</span></code>     <code class="docutils literal"><span class="pre">{($e$)</span> <span class="pre">with</span> <span class="pre">$list:lpe$}</span></code>                         record
+<code class="docutils literal"><span class="pre">ExSeq</span> <span class="pre">loc</span> <span class="pre">le</span></code>               <code class="docutils literal"><span class="pre">do</span> <span class="pre">{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code>                                sequence
+<code class="docutils literal"><span class="pre">ExSnd</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">s</span></code>              <code class="docutils literal"><span class="pre">$e$</span> <span class="pre">#</span> <span class="pre">$s$</span></code>                                       method call
+<code class="docutils literal"><span class="pre">ExSte</span> <span class="pre">loc</span> <span class="pre">e1</span> <span class="pre">e2</span></code>            <code class="docutils literal"><span class="pre">$e1$</span> <span class="pre">.[</span> <span class="pre">$e2$</span> <span class="pre">]</span></code>                                  string element
+<code class="docutils literal"><span class="pre">ExStr</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">$str:s$</span></code>                                         string
+<code class="docutils literal"><span class="pre">ExTry</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">lpee</span></code>           <code class="docutils literal"><span class="pre">try</span> <span class="pre">$e$</span> <span class="pre">with</span> <span class="pre">[</span> <span class="pre">$list:lpee$</span> <span class="pre">]</span></code>                    try <a class="reference external" href="#expr_2">(2)</a>
+<code class="docutils literal"><span class="pre">ExTup</span> <span class="pre">loc</span> <span class="pre">le</span></code>               <code class="docutils literal"><span class="pre">($list:le$)</span></code>                                     t-uple
+<code class="docutils literal"><span class="pre">ExTyc</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">t</span></code>              <code class="docutils literal"><span class="pre">($e$</span> <span class="pre">:</span> <span class="pre">$t$)</span></code>                                     type constraint
+<code class="docutils literal"><span class="pre">ExUid</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">$uid:s$</span></code>                                         uppercase identifier
+<code class="docutils literal"><span class="pre">ExVrn</span> <span class="pre">loc</span> <span class="pre">s</span></code>                <code class="docutils literal"><span class="pre">`</span> <span class="pre">$s$</span></code>                                   variant
+<code class="docutils literal"><span class="pre">ExWhi</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">le</span></code>             <code class="docutils literal"><span class="pre">while</span> <span class="pre">$e$</span> <span class="pre">do</span> <span class="pre">{</span> <span class="pre">$list:le$</span> <span class="pre">}</span></code>                      while
+==============================
+===================================================
+===============================</p>
+<div class="docutils container" id="expr-1">
+(1)
+Node used in the quotation expanders to tells at conversion to
+OCaml compiler syntax tree time, that all locations of the
+sub-tree is correcty located in the quotation. By default, in
+quotations, the locations of all generated nodes are the location
+of the whole quotation. This node allows to make an exception to
+this rule, since we know that the antiquotation belongs to the
+universe of the enclosing program. See the chapter about
+<a class="reference external" href="quot.html">quotations</a> and, in particular, its section about
+antiquotations.</div>
+<div class="docutils container" id="expr-2">
+<p>(2)
+The variable “lpee” found in “function”, “match” and “try”
+statements correspond to a list of
+“<code class="docutils literal"><span class="pre">(patt</span> <span class="pre">*</span> <span class="pre">option</span> <span class="pre">expr</span> <span class="pre">*</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">expr)</span></code>” where the
+“<code class="docutils literal"><span class="pre">option</span> <span class="pre">expr</span></code>” is the “when” optionally following the pattern:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="o">-&gt;</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>is represented by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">p</span> <span class="n">when</span> <span class="n">e1</span> <span class="o">-&gt;</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>is represented by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Some</span> <span class="n">e1</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p class="rubric" id="patt">patt</p>
+<p>Patterns of the language.</p>
+<p>Node                       <code class="docutils literal"><span class="pre">&lt;:patt&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>          Comment
+========================== ===========================
+===============================
+<code class="docutils literal"><span class="pre">PaAcc</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">p2</span></code>        <code class="docutils literal"><span class="pre">$p1$</span> <span class="pre">.</span> <span class="pre">$p2$</span></code>             access
+<code class="docutils literal"><span class="pre">PaAli</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">p2</span></code>        <code class="docutils literal"><span class="pre">($p1$</span> <span class="pre">as</span> <span class="pre">$p2$)</span></code>          alias
+<code class="docutils literal"><span class="pre">PaAnt</span> <span class="pre">loc</span> <span class="pre">p</span></code>            <code class="docutils literal"><span class="pre">$anti:p$</span></code>                antiquotation <a class="reference external" href="#patt_1">(1)</a>
+<code class="docutils literal"><span class="pre">PaAny</span> <span class="pre">loc</span></code>              <code class="docutils literal"><span class="pre">_</span></code>                       wildcard
+<code class="docutils literal"><span class="pre">PaApp</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">p2</span></code>        <code class="docutils literal"><span class="pre">$p1$</span> <span class="pre">$p2$</span></code>               application
+<code class="docutils literal"><span class="pre">PaArr</span> <span class="pre">loc</span> <span class="pre">lp</span></code>           <code class="docutils literal"><span class="pre">[|</span> <span class="pre">$list:lp$</span> <span class="pre">|]</span></code>         array
+<code class="docutils literal"><span class="pre">PaChr</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">$chr:s$</span></code>                 character
+<code class="docutils literal"><span class="pre">PaFlo</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">$flo:s$</span></code>                 float
+<code class="docutils literal"><span class="pre">PaInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;&quot;</span></code>        <code class="docutils literal"><span class="pre">$int:s1$</span></code>                integer constant
+<code class="docutils literal"><span class="pre">PaInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;l&quot;</span></code>       <code class="docutils literal"><span class="pre">$int32:s1$</span></code>              integer 32 bits
+<code class="docutils literal"><span class="pre">PaInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;L&quot;</span></code>       <code class="docutils literal"><span class="pre">$int64:s1$</span></code>              integer 64 bits
+<code class="docutils literal"><span class="pre">PaInt</span> <span class="pre">loc</span> <span class="pre">s1</span> <span class="pre">&quot;n&quot;</span></code>       <code class="docutils literal"><span class="pre">$nativeint:s1$</span></code>          native integer
+<code class="docutils literal"><span class="pre">PaLab</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">None</span></code>      <code class="docutils literal"><span class="pre">~{$p1$}</span></code>                 label
+<code class="docutils literal"><span class="pre">PaLab</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">(Some</span> <span class="pre">p2)</span></code> <code class="docutils literal"><span class="pre">~{$p1$</span> <span class="pre">=</span> <span class="pre">$p2$}</span></code>          label
+<code class="docutils literal"><span class="pre">PaLab</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">op2</span></code>       <code class="docutils literal"><span class="pre">~{$p1$</span> <span class="pre">$opt:op2$}</span></code>       label
+<code class="docutils literal"><span class="pre">PaLaz</span> <span class="pre">loc</span> <span class="pre">p</span></code>            <code class="docutils literal"><span class="pre">lazy</span> <span class="pre">$p$</span></code>                lazy
+<code class="docutils literal"><span class="pre">PaLid</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">$lid:s$</span></code>                 lowercase identifier
+<code class="docutils literal"><span class="pre">PaNty</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">(type</span> <span class="pre">$lid:s$)</span></code>          new type
+<code class="docutils literal"><span class="pre">PaOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">None</span></code>       <code class="docutils literal"><span class="pre">?{$p$}</span></code>                  option label
+<code class="docutils literal"><span class="pre">PaOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">(Some</span> <span class="pre">e)</span></code>   <code class="docutils literal"><span class="pre">?{$p$</span> <span class="pre">=</span> <span class="pre">$e$}</span></code>            option label
+<code class="docutils literal"><span class="pre">PaOlb</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">oe</span></code>         <code class="docutils literal"><span class="pre">?{$p$</span> <span class="pre">$opt:oe$}</span></code>         option label
+<code class="docutils literal"><span class="pre">PaOrp</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">p2</span></code>        <code class="docutils literal"><span class="pre">$p1$</span> <span class="pre">|</span> <span class="pre">$p2$</span></code>             or
+<code class="docutils literal"><span class="pre">PaRec</span> <span class="pre">loc</span> <span class="pre">lpp</span></code>          <code class="docutils literal"><span class="pre">{</span> <span class="pre">$list:lpp$</span> <span class="pre">}</span></code>          record
+<code class="docutils literal"><span class="pre">PaRng</span> <span class="pre">loc</span> <span class="pre">p1</span> <span class="pre">p2</span></code>        <code class="docutils literal"><span class="pre">$p1$</span> <span class="pre">..</span> <span class="pre">$p2$</span></code>            range
+<code class="docutils literal"><span class="pre">PaStr</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">$str:s$</span></code>                 string
+<code class="docutils literal"><span class="pre">PaTup</span> <span class="pre">loc</span> <span class="pre">lp</span></code>           <code class="docutils literal"><span class="pre">($list:lp$)</span></code>             t-uple
+<code class="docutils literal"><span class="pre">PaTyc</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">t</span></code>          <code class="docutils literal"><span class="pre">($p$</span> <span class="pre">:</span> <span class="pre">$t$)</span></code>             type constraint
+<code class="docutils literal"><span class="pre">PaTyp</span> <span class="pre">loc</span> <span class="pre">ls</span></code>           <code class="docutils literal"><span class="pre">#</span> <span class="pre">$list:ls$</span></code>             type pattern
+<code class="docutils literal"><span class="pre">PaUid</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">$uid:s$</span></code>                 uppercase identifier
+<code class="docutils literal"><span class="pre">PaUnp</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">None</span></code>       <code class="docutils literal"><span class="pre">(module</span> <span class="pre">$uid:s$)</span></code>        module unpacking
+<code class="docutils literal"><span class="pre">PaUnp</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">(Some</span> <span class="pre">mt)</span></code>  <code class="docutils literal"><span class="pre">(module</span> <span class="pre">$uid:s$</span> <span class="pre">:</span> <span class="pre">$mt$)</span></code> module unpacking
+<code class="docutils literal"><span class="pre">PaVrn</span> <span class="pre">loc</span> <span class="pre">s</span></code>            <code class="docutils literal"><span class="pre">`</span> <span class="pre">$s$</span></code>           variant
+========================== ===========================
+===============================</p>
+<div class="docutils container" id="patt-1">
+(1) Node used to specify an antiquotation area, like for the
+equivalent node in expressions. See above.</div>
+<p class="rubric" id="ctyp">ctyp</p>
+<p>Type expressions of the language.</p>
+<p>Node                               <code class="docutils literal"><span class="pre">&lt;:ctyp&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>               Comment
+================================== ================================
+====================
+<code class="docutils literal"><span class="pre">TyAcc</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">t2</span></code>                <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">.</span> <span class="pre">$t2$</span></code>                  access
+<code class="docutils literal"><span class="pre">TyAli</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">t2</span></code>                <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">as</span> <span class="pre">$t2$</span></code>                 alias
+<code class="docutils literal"><span class="pre">TyAny</span> <span class="pre">loc</span></code>                      <code class="docutils literal"><span class="pre">_</span></code>                            wildcard
+<code class="docutils literal"><span class="pre">TyApp</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">t2</span></code>                <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">$t2$</span></code>                    application
+<code class="docutils literal"><span class="pre">TyArr</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">t2</span></code>                <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">-&gt;</span> <span class="pre">$t2$</span></code>                 arrow
+<code class="docutils literal"><span class="pre">TyCls</span> <span class="pre">loc</span> <span class="pre">ls</span></code>                   <code class="docutils literal"><span class="pre">#</span> <span class="pre">$list:ls$</span></code>                  class
+<code class="docutils literal"><span class="pre">TyLab</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">t</span></code>                  <code class="docutils literal"><span class="pre">~$s$:</span> <span class="pre">$t$</span></code>                    label
+<code class="docutils literal"><span class="pre">TyLid</span> <span class="pre">loc</span> <span class="pre">s</span></code>                    <code class="docutils literal"><span class="pre">$lid:s$</span></code>                      lowercase identifier
+<code class="docutils literal"><span class="pre">TyMan</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">True</span> <span class="pre">t2</span></code>           <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">==</span> <span class="pre">private</span> <span class="pre">$t2$</span></code>         manifest
+<code class="docutils literal"><span class="pre">TyMan</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">False</span> <span class="pre">t2</span></code>          <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">==</span> <span class="pre">$t2$</span></code>                 manifest
+<code class="docutils literal"><span class="pre">TyMan</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">b</span> <span class="pre">t2</span></code>              <code class="docutils literal"><span class="pre">$t1$</span> <span class="pre">==</span> <span class="pre">$priv:b$</span> <span class="pre">$t2$</span></code>        manifest
+<code class="docutils literal"><span class="pre">TyObj</span> <span class="pre">loc</span> <span class="pre">lst</span> <span class="pre">True</span></code>             <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">$list:lst$</span> <span class="pre">..</span> <span class="pre">&gt;</span></code>            object
+<code class="docutils literal"><span class="pre">TyObj</span> <span class="pre">loc</span> <span class="pre">lst</span> <span class="pre">False</span></code>            <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">$list:lst$</span> <span class="pre">&gt;</span></code>               object
+<code class="docutils literal"><span class="pre">TyObj</span> <span class="pre">loc</span> <span class="pre">lst</span> <span class="pre">b</span></code>                <code class="docutils literal"><span class="pre">&lt;</span> <span class="pre">$list:lst$</span> <span class="pre">$flag:b$</span> <span class="pre">&gt;</span></code>      object
+<code class="docutils literal"><span class="pre">TyOlb</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">t</span></code>                  <code class="docutils literal"><span class="pre">?$s$:</span> <span class="pre">$t$</span></code>                    option label
+<code class="docutils literal"><span class="pre">TyPck</span> <span class="pre">loc</span> <span class="pre">mt</span></code>                   <code class="docutils literal"><span class="pre">(module</span> <span class="pre">$mt$)</span></code>                package
+<code class="docutils literal"><span class="pre">TyPol</span> <span class="pre">loc</span> <span class="pre">ls</span> <span class="pre">t</span></code>                 <code class="docutils literal"><span class="pre">!</span> <span class="pre">$list:ls$</span> <span class="pre">.</span> <span class="pre">$t$</span></code>            polymorph
+<code class="docutils literal"><span class="pre">TyQuo</span> <span class="pre">loc</span> <span class="pre">s</span></code>                    <code class="docutils literal"><span class="pre">'$s$</span></code>                         variable
+<code class="docutils literal"><span class="pre">TyRec</span> <span class="pre">loc</span> <span class="pre">llsbt</span></code>                <code class="docutils literal"><span class="pre">{</span> <span class="pre">$list:llsbt$</span> <span class="pre">}</span></code>             record
+<code class="docutils literal"><span class="pre">TySum</span> <span class="pre">loc</span> <span class="pre">llslt</span></code>                <code class="docutils literal"><span class="pre">[</span> <span class="pre">$list:llslt$</span> <span class="pre">]</span></code>             sum
+<code class="docutils literal"><span class="pre">TyTup</span> <span class="pre">loc</span> <span class="pre">lt</span></code>                   <code class="docutils literal"><span class="pre">(</span> <span class="pre">$list:lt$</span> <span class="pre">)</span></code>                t-uple
+<code class="docutils literal"><span class="pre">TyUid</span> <span class="pre">loc</span> <span class="pre">s</span></code>                    <code class="docutils literal"><span class="pre">$uid:s$</span></code>                      uppercase identifier
+<code class="docutils literal"><span class="pre">TyVrn</span> <span class="pre">loc</span> <span class="pre">lpv</span> <span class="pre">None</span></code>             <code class="docutils literal"><span class="pre">[</span> <span class="pre">=</span> <span class="pre">$list:lpv$</span> <span class="pre">]</span></code>             variant
+<code class="docutils literal"><span class="pre">TyVrn</span> <span class="pre">loc</span> <span class="pre">lpv</span> <span class="pre">(Some</span> <span class="pre">None)</span></code>      <code class="docutils literal"><span class="pre">[</span> <span class="pre">&gt;</span> <span class="pre">$list:lpv$</span> <span class="pre">]</span></code>             variant
+<code class="docutils literal"><span class="pre">TyVrn</span> <span class="pre">loc</span> <span class="pre">lpv</span> <span class="pre">(Some</span> <span class="pre">(Some</span> <span class="pre">[]))</span></code> <code class="docutils literal"><span class="pre">[</span> <span class="pre">&lt;</span> <span class="pre">$list:lpv$</span> <span class="pre">]</span></code>             variant
+<code class="docutils literal"><span class="pre">TyVrn</span> <span class="pre">loc</span> <span class="pre">lpv</span> <span class="pre">(Some</span> <span class="pre">(Some</span> <span class="pre">ls))</span></code> <code class="docutils literal"><span class="pre">[</span> <span class="pre">&lt;</span> <span class="pre">$list:lpv$</span> <span class="pre">&gt;</span> <span class="pre">$list:ls$</span> <span class="pre">]</span></code> variant
+================================== ================================
+====================</p>
+<p class="rubric" id="modules">modules…</p>
+<p class="rubric" id="str-item">str_item</p>
+<p>Structure items, i.e. phrases in a “.ml” file or “struct” elements.</p>
+<p><code class="docutils literal"><span class="pre">StCls</span> <span class="pre">loc</span> <span class="pre">lcice</span></code>      <code class="docutils literal"><span class="pre">class</span> <span class="pre">$list:lcice$</span></code>                         class declaration
+<code class="docutils literal"><span class="pre">StClt</span> <span class="pre">loc</span> <span class="pre">lcict</span></code>      <code class="docutils literal"><span class="pre">class</span> <span class="pre">type</span> <span class="pre">$list:lcict$</span></code>                    class type declaration
+<code class="docutils literal"><span class="pre">StDcl</span> <span class="pre">loc</span> <span class="pre">lsi</span></code>        <code class="docutils literal"><span class="pre">declare</span> <span class="pre">$list:lsi$</span> <span class="pre">end</span></code>                     declare
+<code class="docutils literal"><span class="pre">StDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">None</span></code>     <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span></code>                                  directive
+<code class="docutils literal"><span class="pre">StDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">(Some</span> <span class="pre">e)</span></code> <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span> <span class="pre">$e$</span></code>                              directive
+<code class="docutils literal"><span class="pre">StDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">oe</span></code>       <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span> <span class="pre">$opt:oe$</span></code>                         directive
+<code class="docutils literal"><span class="pre">StExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">[]</span> <span class="pre">[]</span></code>    <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$uid:s$</span></code>                          exception
+<code class="docutils literal"><span class="pre">StExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">lt</span> <span class="pre">[]</span></code>    <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$uid:s$</span> <span class="pre">of</span> <span class="pre">$list:lt$</span></code>             exception
+<code class="docutils literal"><span class="pre">StExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">[]</span> <span class="pre">ls</span></code>    <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$uid:s$</span> <span class="pre">=</span> <span class="pre">$list:ls$</span></code>              exception
+<code class="docutils literal"><span class="pre">StExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">lt</span> <span class="pre">ls</span></code>    <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$uid:s$</span> <span class="pre">of</span> <span class="pre">$list:lt$</span> <span class="pre">=</span> <span class="pre">$list:ls$</span></code> exception
+<code class="docutils literal"><span class="pre">StExp</span> <span class="pre">loc</span> <span class="pre">e</span></code>          <code class="docutils literal"><span class="pre">$exp:e$</span></code>                                    expression
+<code class="docutils literal"><span class="pre">StExt</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">t</span> <span class="pre">ls</span></code>     <code class="docutils literal"><span class="pre">external</span> <span class="pre">$s$</span> <span class="pre">:</span> <span class="pre">$t$</span> <span class="pre">=</span> <span class="pre">$list:ls$</span></code>             external
+<code class="docutils literal"><span class="pre">StInc</span> <span class="pre">loc</span> <span class="pre">me</span></code>         <code class="docutils literal"><span class="pre">include</span> <span class="pre">$me$</span></code>                               include
+<code class="docutils literal"><span class="pre">StMod</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">lsme</span></code>  <code class="docutils literal"><span class="pre">module</span> <span class="pre">rec</span> <span class="pre">$list:lsme$</span></code>                     module rec
+<code class="docutils literal"><span class="pre">StMod</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">lsme</span></code> <code class="docutils literal"><span class="pre">module</span> <span class="pre">$list:lsme$</span></code>                         module non rec
+<code class="docutils literal"><span class="pre">StMod</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">lsme</span></code>     <code class="docutils literal"><span class="pre">module</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lsme$</span></code>                module
+<code class="docutils literal"><span class="pre">StMty</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">mt</span></code>       <code class="docutils literal"><span class="pre">module</span> <span class="pre">type</span> <span class="pre">$s$</span> <span class="pre">=</span> <span class="pre">$mt$</span></code>                     module type
+<code class="docutils literal"><span class="pre">StOpn</span> <span class="pre">loc</span> <span class="pre">ls</span></code>         <code class="docutils literal"><span class="pre">open</span> <span class="pre">$list:ls$</span></code>                             open
+<code class="docutils literal"><span class="pre">StTyp</span> <span class="pre">loc</span> <span class="pre">ltd</span></code>        <code class="docutils literal"><span class="pre">type</span> <span class="pre">$list:ltd$</span></code>                            type declaration
+<code class="docutils literal"><span class="pre">StUse</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">lsil</span></code>     <code class="docutils literal"><span class="pre">#</span> <span class="pre">$str:s$</span> <span class="pre">$list:lsil$</span></code>                      … internal use … <a class="reference external" href="#t_str_item_1">(1)</a>
+<code class="docutils literal"><span class="pre">StVal</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">lpe</span></code>   <code class="docutils literal"><span class="pre">value</span> <span class="pre">rec</span> <span class="pre">$list:lpe$</span></code>                       value rec
+<code class="docutils literal"><span class="pre">StVal</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">lpe</span></code>  <code class="docutils literal"><span class="pre">value</span> <span class="pre">$list:lpe$</span></code>                           value non rec
+<code class="docutils literal"><span class="pre">StVal</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">lpe</span></code>      <code class="docutils literal"><span class="pre">value</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lpe$</span></code>                  value
+========================
+==============================================
+============================================</p>
+<div class="docutils container" id="t-str-item-1">
+(1)
+Node internally used to specify a different file name applying to
+the whole subtree. This is generated by the directive “use” and
+used when converting to the OCaml syntax tree which needs the file
+name in its location type.</div>
+<p class="rubric" id="sig-item">sig_item</p>
+<p>Signature items, i.e. phrases in a “.mli” file or elements inside
+“sig … end”.</p>
+<p>Node                     <code class="docutils literal"><span class="pre">&lt;:sig_item&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>             Comment
+======================== ==================================
+============================================
+<code class="docutils literal"><span class="pre">SgCls</span> <span class="pre">loc</span> <span class="pre">lcict</span></code>      <code class="docutils literal"><span class="pre">class</span> <span class="pre">$list:lcict$</span></code>             class
+<code class="docutils literal"><span class="pre">SgClt</span> <span class="pre">loc</span> <span class="pre">lcict</span></code>      <code class="docutils literal"><span class="pre">class</span> <span class="pre">type</span> <span class="pre">$list:lcict$</span></code>        class type
+<code class="docutils literal"><span class="pre">SgDcl</span> <span class="pre">loc</span> <span class="pre">lsi</span></code>        <code class="docutils literal"><span class="pre">declare</span> <span class="pre">$list:lsi$</span> <span class="pre">end</span></code>         declare
+<code class="docutils literal"><span class="pre">SgDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">None</span></code>     <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span></code>                      directive
+<code class="docutils literal"><span class="pre">SgDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">(Some</span> <span class="pre">e)</span></code> <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span> <span class="pre">$e$</span></code>                  directive
+<code class="docutils literal"><span class="pre">SgDir</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">oe</span></code>       <code class="docutils literal"><span class="pre">#</span> <span class="pre">$lid:s$</span> <span class="pre">$opt:oe$</span></code>             directive
+<code class="docutils literal"><span class="pre">SgExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">[]</span></code>       <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$s$</span></code>                  exception
+<code class="docutils literal"><span class="pre">SgExc</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">lt</span></code>       <code class="docutils literal"><span class="pre">exception</span> <span class="pre">$s$</span> <span class="pre">of</span> <span class="pre">$list:lt$</span></code>     exception
+<code class="docutils literal"><span class="pre">SgExt</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">t</span> <span class="pre">ls</span></code>     <code class="docutils literal"><span class="pre">external</span> <span class="pre">$s$</span> <span class="pre">:</span> <span class="pre">$t$</span> <span class="pre">=</span> <span class="pre">$list:ls$</span></code> external
+<code class="docutils literal"><span class="pre">SgInc</span> <span class="pre">loc</span> <span class="pre">mt</span></code>         <code class="docutils literal"><span class="pre">include</span> <span class="pre">$mt$</span></code>                   include
+<code class="docutils literal"><span class="pre">SgMod</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">lsmt</span></code>  <code class="docutils literal"><span class="pre">module</span> <span class="pre">rec</span> <span class="pre">$list:lsmt$</span></code>         module rec
+<code class="docutils literal"><span class="pre">SgMod</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">lsmt</span></code> <code class="docutils literal"><span class="pre">module</span> <span class="pre">$list:lsmt$</span></code>             module non rec
+<code class="docutils literal"><span class="pre">SgMod</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">lsmt</span></code>     <code class="docutils literal"><span class="pre">module</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lsmt$</span></code>    module
+<code class="docutils literal"><span class="pre">SgMty</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">mt</span></code>       <code class="docutils literal"><span class="pre">module</span> <span class="pre">type</span> <span class="pre">$s$</span> <span class="pre">=</span> <span class="pre">$mt$</span></code>         module type
+<code class="docutils literal"><span class="pre">SgOpn</span> <span class="pre">loc</span> <span class="pre">ls</span></code>         <code class="docutils literal"><span class="pre">open</span> <span class="pre">$list:ls$</span></code>                 open
+<code class="docutils literal"><span class="pre">SgTyp</span> <span class="pre">loc</span> <span class="pre">ltd</span></code>        <code class="docutils literal"><span class="pre">type</span> <span class="pre">$list:ltd$</span></code>                type declaration
+<code class="docutils literal"><span class="pre">SgUse</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">lsil</span></code>     <code class="docutils literal"><span class="pre">#</span> <span class="pre">$str:s$</span> <span class="pre">$list:lsil$</span></code>          … internal use … <a class="reference external" href="#t_sig_item_1">(1)</a>
+<code class="docutils literal"><span class="pre">SgVal</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">t</span></code>        <code class="docutils literal"><span class="pre">value</span> <span class="pre">$s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>                value
+======================== ==================================
+============================================</p>
+<div class="docutils container" id="t-sig-item-1">
+(1)
+Same remark as for “<code class="docutils literal"><span class="pre">str_item</span></code>” above.</div>
+<p class="rubric" id="module-expr">module_expr</p>
+<p>Node                      <code class="docutils literal"><span class="pre">&lt;:module_expr&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>        Comment
+========================= ================================
+======================
+<code class="docutils literal"><span class="pre">MeAcc</span> <span class="pre">loc</span> <span class="pre">me1</span> <span class="pre">me2</span></code>     <code class="docutils literal"><span class="pre">$me1$</span> <span class="pre">.</span> <span class="pre">$me2$</span></code>                access
+<code class="docutils literal"><span class="pre">MeApp</span> <span class="pre">loc</span> <span class="pre">me1</span> <span class="pre">me2</span></code>     <code class="docutils literal"><span class="pre">$me1$</span> <span class="pre">$me2$</span></code>                  application
+<code class="docutils literal"><span class="pre">MeFun</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">mt</span> <span class="pre">me</span></code>     <code class="docutils literal"><span class="pre">functor</span> <span class="pre">($s$</span> <span class="pre">:</span> <span class="pre">$mt$)</span> <span class="pre">-&gt;</span> <span class="pre">$me$</span></code> functor
+<code class="docutils literal"><span class="pre">MeStr</span> <span class="pre">loc</span> <span class="pre">lsi</span></code>         <code class="docutils literal"><span class="pre">struct</span> <span class="pre">$list:lsi$</span> <span class="pre">end</span></code>        struct
+<code class="docutils literal"><span class="pre">MeTyc</span> <span class="pre">loc</span> <span class="pre">me</span> <span class="pre">mt</span></code>       <code class="docutils literal"><span class="pre">($me$</span> <span class="pre">:</span> <span class="pre">$mt$)</span></code>                module type constraint
+<code class="docutils literal"><span class="pre">MeUid</span> <span class="pre">loc</span> <span class="pre">s</span></code>           <code class="docutils literal"><span class="pre">$uid:s$</span></code>                      uppercase identifier
+<code class="docutils literal"><span class="pre">MeUnp</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">None</span></code>      <code class="docutils literal"><span class="pre">(value</span> <span class="pre">$e$)</span></code>                  module unpacking
+<code class="docutils literal"><span class="pre">MeUnp</span> <span class="pre">loc</span> <span class="pre">e</span> <span class="pre">(Some</span> <span class="pre">mt)</span></code> <code class="docutils literal"><span class="pre">(value</span> <span class="pre">$e$</span> <span class="pre">:</span> <span class="pre">$mt$)</span></code>           module unpacking
+========================= ================================
+======================</p>
+<p class="rubric" id="module-type">module_type</p>
+<p>Node                    <code class="docutils literal"><span class="pre">&lt;:module_type&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>          Comment
+======================= ==================================
+====================
+<code class="docutils literal"><span class="pre">MtAcc</span> <span class="pre">loc</span> <span class="pre">mt1</span> <span class="pre">mt2</span></code>   <code class="docutils literal"><span class="pre">$mt1$</span> <span class="pre">.</span> <span class="pre">$mt2$</span></code>                  access
+<code class="docutils literal"><span class="pre">MtApp</span> <span class="pre">loc</span> <span class="pre">mt1</span> <span class="pre">mt2</span></code>   <code class="docutils literal"><span class="pre">$mt1$</span> <span class="pre">$mt2$</span></code>                    application
+<code class="docutils literal"><span class="pre">MtFun</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">mt1</span> <span class="pre">mt2</span></code> <code class="docutils literal"><span class="pre">functor</span> <span class="pre">($s$</span> <span class="pre">:</span> <span class="pre">$mt1$)</span> <span class="pre">-&gt;</span> <span class="pre">$mt2$</span></code> functor
+<code class="docutils literal"><span class="pre">MtLid</span> <span class="pre">loc</span> <span class="pre">s</span></code>         <code class="docutils literal"><span class="pre">$lid:s$</span></code>                        lowercase identifier
+<code class="docutils literal"><span class="pre">MtQuo</span> <span class="pre">loc</span> <span class="pre">s</span></code>         <code class="docutils literal"><span class="pre">'</span> <span class="pre">$s$</span></code>                          abstract
+<code class="docutils literal"><span class="pre">MtSig</span> <span class="pre">loc</span> <span class="pre">lsi</span></code>       <code class="docutils literal"><span class="pre">sig</span> <span class="pre">$list:lsi$</span> <span class="pre">end</span></code>             signature
+<code class="docutils literal"><span class="pre">MtTyo</span> <span class="pre">loc</span> <span class="pre">me</span></code>        <code class="docutils literal"><span class="pre">module</span> <span class="pre">type</span> <span class="pre">of</span> <span class="pre">$me$</span></code>            of module expression
+<code class="docutils literal"><span class="pre">MtUid</span> <span class="pre">loc</span> <span class="pre">s</span></code>         <code class="docutils literal"><span class="pre">$uid:s$</span></code>                        uppercase identifier
+<code class="docutils literal"><span class="pre">MtWit</span> <span class="pre">loc</span> <span class="pre">mt</span> <span class="pre">lwc</span></code>    <code class="docutils literal"><span class="pre">$mt$</span> <span class="pre">with</span> <span class="pre">$list:lwc$</span></code>           with construction
+======================= ==================================
+====================</p>
+<p class="rubric" id="classes">classes…</p>
+<p class="rubric" id="class-expr">class_expr</p>
+<p>Node                        <code class="docutils literal"><span class="pre">&lt;:class_expr&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>            Comment
+=========================== ===================================
+=====================
+<code class="docutils literal"><span class="pre">CeApp</span> <span class="pre">loc</span> <span class="pre">ce</span> <span class="pre">e</span></code>          <code class="docutils literal"><span class="pre">$ce$</span> <span class="pre">$e$</span></code>                        application
+<code class="docutils literal"><span class="pre">CeCon</span> <span class="pre">loc</span> <span class="pre">ls</span> <span class="pre">lt</span></code>         <code class="docutils literal"><span class="pre">[</span> <span class="pre">$list:lt$</span> <span class="pre">]</span> <span class="pre">$list:ls$</span></code>         constructor
+<code class="docutils literal"><span class="pre">CeFun</span> <span class="pre">loc</span> <span class="pre">p</span> <span class="pre">ce</span></code>          <code class="docutils literal"><span class="pre">fun</span> <span class="pre">$p$</span> <span class="pre">-&gt;</span> <span class="pre">$ce$</span></code>                 function
+<code class="docutils literal"><span class="pre">CeLet</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">lpe</span> <span class="pre">ce</span></code>   <code class="docutils literal"><span class="pre">let</span> <span class="pre">rec</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$ce$</span></code>      let rec
+<code class="docutils literal"><span class="pre">CeLet</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">lpe</span> <span class="pre">ce</span></code>  <code class="docutils literal"><span class="pre">let</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$ce$</span></code>          let non rec
+<code class="docutils literal"><span class="pre">CeLet</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">lpe</span> <span class="pre">ce</span></code>      <code class="docutils literal"><span class="pre">let</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lpe$</span> <span class="pre">in</span> <span class="pre">$ce$</span></code> let
+<code class="docutils literal"><span class="pre">CeStr</span> <span class="pre">loc</span> <span class="pre">None</span> <span class="pre">lcsi</span></code>     <code class="docutils literal"><span class="pre">object</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>          object
+<code class="docutils literal"><span class="pre">CeStr</span> <span class="pre">loc</span> <span class="pre">(Some</span> <span class="pre">p)</span> <span class="pre">lcsi</span></code> <code class="docutils literal"><span class="pre">object</span> <span class="pre">($p$)</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>    object
+<code class="docutils literal"><span class="pre">CeStr</span> <span class="pre">loc</span> <span class="pre">op</span> <span class="pre">lcsi</span></code>       <code class="docutils literal"><span class="pre">object</span> <span class="pre">$opt:op$</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code> object
+<code class="docutils literal"><span class="pre">CeTyc</span> <span class="pre">loc</span> <span class="pre">ce</span> <span class="pre">ct</span></code>         <code class="docutils literal"><span class="pre">($ce$</span> <span class="pre">:</span> <span class="pre">$ct$)</span></code>                   class type constraint
+=========================== ===================================
+=====================</p>
+<p class="rubric" id="class-type">class_type</p>
+<p>Node                        <code class="docutils literal"><span class="pre">&lt;:class_type&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>            Comment
+=========================== ===================================
+===========
+<code class="docutils literal"><span class="pre">CtAcc</span> <span class="pre">loc</span> <span class="pre">ct1</span> <span class="pre">ct2</span></code>       <code class="docutils literal"><span class="pre">$ct1$</span> <span class="pre">.</span> <span class="pre">$ct2$</span></code>                   access
+<code class="docutils literal"><span class="pre">CtApp</span> <span class="pre">loc</span> <span class="pre">ct1</span> <span class="pre">ct2</span></code>       <code class="docutils literal"><span class="pre">$ct1$</span> <span class="pre">$ct2$</span></code>                     application
+<code class="docutils literal"><span class="pre">CtCon</span> <span class="pre">loc</span> <span class="pre">ct</span> <span class="pre">lt</span></code>         <code class="docutils literal"><span class="pre">$ct$</span> <span class="pre">[</span> <span class="pre">$list:lt$</span> <span class="pre">]</span></code>              constructor
+<code class="docutils literal"><span class="pre">CtFun</span> <span class="pre">loc</span> <span class="pre">t</span> <span class="pre">ct</span></code>          <code class="docutils literal"><span class="pre">[</span> <span class="pre">$t$</span> <span class="pre">]</span> <span class="pre">-&gt;</span> <span class="pre">$ct$</span></code>                 arrow
+<code class="docutils literal"><span class="pre">CtIde</span> <span class="pre">loc</span> <span class="pre">s</span></code>             <code class="docutils literal"><span class="pre">$id:s$</span></code>                          identifier
+<code class="docutils literal"><span class="pre">CtSig</span> <span class="pre">loc</span> <span class="pre">None</span> <span class="pre">lcsi</span></code>     <code class="docutils literal"><span class="pre">object</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>          object
+<code class="docutils literal"><span class="pre">CtSig</span> <span class="pre">loc</span> <span class="pre">(Some</span> <span class="pre">t)</span> <span class="pre">lcsi</span></code> <code class="docutils literal"><span class="pre">object</span> <span class="pre">($t$)</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>    object
+<code class="docutils literal"><span class="pre">CtSig</span> <span class="pre">loc</span> <span class="pre">ot</span> <span class="pre">lcsi</span></code>       <code class="docutils literal"><span class="pre">object</span> <span class="pre">$opt:ot$</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code> object
+=========================== ===================================
+===========</p>
+<p class="rubric" id="class-str-item">class_str_item</p>
+<p>Node                    <code class="docutils literal"><span class="pre">&lt;:class_sig_item&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>              Comment
+======================= =========================================
+===============
+<code class="docutils literal"><span class="pre">CgCtr</span> <span class="pre">loc</span> <span class="pre">t1</span> <span class="pre">t2</span></code>     <code class="docutils literal"><span class="pre">type</span> <span class="pre">$t1$</span> <span class="pre">=</span> <span class="pre">$t2$</span></code>                      type constraint
+<code class="docutils literal"><span class="pre">CgDcl</span> <span class="pre">loc</span> <span class="pre">lcsi</span></code>      <code class="docutils literal"><span class="pre">declare</span> <span class="pre">$list:lcsi$</span> <span class="pre">end</span></code>               declare
+<code class="docutils literal"><span class="pre">CgInh</span> <span class="pre">loc</span> <span class="pre">ct</span></code>        <code class="docutils literal"><span class="pre">inherit</span> <span class="pre">$ct$</span></code>                          inheritance
+<code class="docutils literal"><span class="pre">CgMth</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">s</span> <span class="pre">t</span></code>  <code class="docutils literal"><span class="pre">method</span> <span class="pre">private</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>          method
+<code class="docutils literal"><span class="pre">CgMth</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">s</span> <span class="pre">t</span></code> <code class="docutils literal"><span class="pre">method</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>                  method
+<code class="docutils literal"><span class="pre">CgMth</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">s</span> <span class="pre">t</span></code>     <code class="docutils literal"><span class="pre">method</span> <span class="pre">$flag:b$</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>         method
+<code class="docutils literal"><span class="pre">CgVal</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">s</span> <span class="pre">t</span></code>  <code class="docutils literal"><span class="pre">value</span> <span class="pre">mutable</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>           value
+<code class="docutils literal"><span class="pre">CgVal</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">s</span> <span class="pre">t</span></code> <code class="docutils literal"><span class="pre">value</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>                   value
+<code class="docutils literal"><span class="pre">CgVal</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">s</span> <span class="pre">t</span></code>     <code class="docutils literal"><span class="pre">value</span> <span class="pre">$flag:b$</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>          value
+<code class="docutils literal"><span class="pre">CgVir</span> <span class="pre">loc</span> <span class="pre">True</span> <span class="pre">s</span> <span class="pre">t</span></code>  <code class="docutils literal"><span class="pre">method</span> <span class="pre">virtual</span> <span class="pre">private</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>  virtual method
+<code class="docutils literal"><span class="pre">CgVir</span> <span class="pre">loc</span> <span class="pre">False</span> <span class="pre">s</span> <span class="pre">t</span></code> <code class="docutils literal"><span class="pre">method</span> <span class="pre">virtual</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code>          virtual method
+<code class="docutils literal"><span class="pre">CgVir</span> <span class="pre">loc</span> <span class="pre">b</span> <span class="pre">s</span> <span class="pre">t</span></code>     <code class="docutils literal"><span class="pre">method</span> <span class="pre">virtual</span> <span class="pre">$flag:b$</span> <span class="pre">$lid:s$</span> <span class="pre">:</span> <span class="pre">$t$</span></code> virtual method
+======================= =========================================
+===============</p>
+<p class="rubric" id="other">other</p>
+<p class="rubric" id="type-decl">type_decl</p>
+<p>What is after ‘type’ or ‘and’ in a type declaration.</p>
+<p><code class="docutils literal"><span class="pre">{tdNam=ls;tdPrm=ltv;tdPrv=True;tdDef=t;tdCon=ltt}</span></code>  <code class="docutils literal"><span class="pre">$tp:ls$</span> <span class="pre">$list:ltv$</span> <span class="pre">=</span> <span class="pre">private</span> <span class="pre">$t$</span> <span class="pre">$list:ltt$</span></code>
+<code class="docutils literal"><span class="pre">{tdNam=ls;tdPrm=ltv;tdPrv=False;tdDef=t;tdCon=ltt}</span></code> <code class="docutils literal"><span class="pre">$tp:ls$</span> <span class="pre">$list:ltv$</span> <span class="pre">=</span> <span class="pre">$t$</span> <span class="pre">$list:ltt$</span></code>
+<code class="docutils literal"><span class="pre">{tdNam=ls;tdPrm=ltv;tdPrv=b;tdDef=t;tdCon=ltt}</span></code>     <code class="docutils literal"><span class="pre">$tp:ls$</span> <span class="pre">$list:ltv$</span> <span class="pre">=</span> <span class="pre">$priv:b$</span> <span class="pre">$t$</span> <span class="pre">$list:ltt$</span></code>
+======================================================
+================================================</p>
+<p class="rubric" id="with-constr">with_constr</p>
+<p>“With” possibly following a module type.</p>
+<p>Node                     <code class="docutils literal"><span class="pre">&lt;:poly_variant&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>             Comment
+======================== ======================================
+===========
+<code class="docutils literal"><span class="pre">PvTag</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">True</span> <span class="pre">[]</span></code>  <code class="docutils literal"><span class="pre">`$s$</span></code>                       constructor
+<code class="docutils literal"><span class="pre">PvTag</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">True</span> <span class="pre">lt</span></code>  <code class="docutils literal"><span class="pre">`$s$</span> <span class="pre">of</span> <span class="pre">&amp;</span> <span class="pre">$list:lt$</span></code>        constructor
+<code class="docutils literal"><span class="pre">PvTag</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">False</span> <span class="pre">lt</span></code> <code class="docutils literal"><span class="pre">`$s$</span> <span class="pre">of</span> <span class="pre">$list:lt$</span></code>          constructor
+<code class="docutils literal"><span class="pre">PvTag</span> <span class="pre">loc</span> <span class="pre">s</span> <span class="pre">b</span> <span class="pre">lt</span></code>     <code class="docutils literal"><span class="pre">`$s$</span> <span class="pre">of</span> <span class="pre">$flag:b$</span> <span class="pre">$list:lt$</span></code> constructor
+<code class="docutils literal"><span class="pre">PvInh</span> <span class="pre">loc</span> <span class="pre">t</span></code>          <code class="docutils literal"><span class="pre">$t$</span></code>                                type
+======================== ======================================
+===========</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ast_strict.html" class="btn btn-neutral float-right" title="Syntax tree - strict mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ml_ast.html" class="btn btn-neutral float-left" title="Syntax tree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

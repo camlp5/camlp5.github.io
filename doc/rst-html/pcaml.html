@@ -1,0 +1,461 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Pcaml module &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Directives" href="directives.html" />
+    <link rel="prev" title="Syntax tree quotations in user syntax" href="q_ast.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>The Pcaml module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstpcaml.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-pcaml-module">
+<h1>The Pcaml module<a class="headerlink" href="#the-pcaml-module" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">The Pcaml module</p>
+<p>All about language parsing entries, language printing functions,
+quotation management at parsing time, extensible directives,
+extensible options, and generalities about Camlp5.</p>
+<p class="rubric" id="language-parsing">Language parsing</p>
+<p class="rubric" id="main-parsing-functions">Main parsing functions</p>
+<div class="line-block">
+<div class="line">The two functions below are called when parsing an interface (.mli
+file) or an implementation (.ml file) to build the syntax tree; the
+returned list contains the phrases (signature items or structure
+items) and their locations; the boolean tells whether the parser
+has encountered a directive; in this case, since the directive may
+change the syntax, the parsing stops, the directive is evaluated,
+and this function is called again.</div>
+<div class="line">These functions are references, because they can be changed to use
+another technology than the Camlp5 extended grammars. By default,
+they use the grammars entries [implem] and [interf] defined below.</div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">parse_interf</span> <span class="p">:</span>
+  <span class="n">ref</span> <span class="p">(</span><span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">char</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">sig_item</span> <span class="o">*</span> <span class="n">MLast</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="o">*</span> <span class="nb">bool</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Function called when parsing an interface (“.mli”) file</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">parse_implem</span> <span class="p">:</span>
+  <span class="n">ref</span> <span class="p">(</span><span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">char</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">str_item</span> <span class="o">*</span> <span class="n">MLast</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="o">*</span> <span class="nb">bool</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>Function called when parsing an implementation (“.ml”) file
+.. rubric:: Grammar</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">grammar</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">gram</span> <span class="pre">:</span> <span class="pre">Grammar.g;</span></code></dt>
+<dd>Grammar variable of the language.</dd>
+</dl>
+<p class="rubric" id="entries">Entries</p>
+<p>Grammar entries which return <a class="reference external" href="ml_ast.html">syntax trees</a>. These
+are set by the parsing kit of the current syntax, through the
+statement <a class="reference external" href="grammars.html">EXTEND</a>. They are usable by other
+possible user syntax extensions.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">expr</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.expr;</span></code></dt>
+<dd>Expressions.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">patt</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.patt;</span></code></dt>
+<dd>Patterns.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">ctyp</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.ctyp;</span></code></dt>
+<dd>Types.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">sig_item</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.sig_item;</span></code></dt>
+<dd>Signature items, i.e. items between “<code class="docutils literal"><span class="pre">sig</span></code>” and “<code class="docutils literal"><span class="pre">end</span></code>”, or
+inside an interface (“.mli”) file.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">str_item</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.str_item;</span></code></dt>
+<dd>Structure items, i.e. items between “<code class="docutils literal"><span class="pre">struct</span></code>” and “<code class="docutils literal"><span class="pre">end</span></code>”, or
+inside an implementation (“.ml”) file.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">module_type</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.module_type;</span></code></dt>
+<dd>Module types, e.g. signatures, functors, identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">module_expr</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.module_expr;</span></code></dt>
+<dd>Module expressions, e.g. structures, functors, identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">let_binding</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">(MLast.patt</span> <span class="pre">*</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.expr);</span></code></dt>
+<dd>Specific entry for the “let binding”, i.e. the association “let
+pattern = expression”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">type_declaration</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.type_decl;</span></code></dt>
+<dd>Specific entry for the “type declaration”, i.e. the association
+“type name = type-expression”</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">class_sig_item</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.class_sig_item;</span></code></dt>
+<dd>Class signature items, i.e. items of class objects types.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">class_str_item</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.class_str_item;</span></code></dt>
+<dd>Class structure items, i.e. items of class objects.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">class_type</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.class_type;</span></code></dt>
+<dd>Class types, e.g. object types, class types functions,
+identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">class_expr</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">MLast.class_expr;</span></code></dt>
+<dd>Class expressions, e.g. objects, class functions, identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">interf</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">(list</span> <span class="pre">(MLast.sig_item</span> <span class="pre">*</span> <span class="pre">MLast.loc)</span> <span class="pre">*</span> <span class="pre">bool);</span></code></dt>
+<dd>Interface, i.e. files with extension “.mli”. The location is the
+top of the tree. The boolean says whether the parsing stopped
+because of the presence of a directive (which potentially could
+change the syntax).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">implem</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">(list</span> <span class="pre">(MLast.str_item</span> <span class="pre">*</span> <span class="pre">MLast.loc)</span> <span class="pre">*</span> <span class="pre">bool);</span></code></dt>
+<dd>Implementation, i.e. files with extension “.ml”. Same remark about
+the location and the boolean.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">top_phrase</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">(option</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.str_item);</span></code></dt>
+<dd>Phrases of the OCaml interactive toplevel. Return “None” in case
+of end of file.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">use_file</span> <span class="pre">:</span> <span class="pre">Grammar.Entry.e</span> <span class="pre">(list</span> <span class="pre">MLast.str_item</span> <span class="pre">*</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">bool);</span></code></dt>
+<dd>Phrases in files included by the directive “<code class="docutils literal"><span class="pre">#use</span></code>”. The boolean
+indicates whether the parsing stopped because of a directive (as
+for “<code class="docutils literal"><span class="pre">interf</span></code>” above).</dd>
+</dl>
+<p class="rubric" id="language-printing">Language printing</p>
+<p class="rubric" id="main-printing-functions">Main printing functions</p>
+<div class="line-block">
+<div class="line">The two function below are called when printing an interface (.mli
+file) of an implementation (.ml file) from the syntax tree; the
+list is the result of the corresponding parsing function.</div>
+<div class="line">These functions are references, to allow using other technologies
+than the Camlp5 extended printers.</div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">print_interf</span> <span class="p">:</span>
+  <span class="n">ref</span> <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">sig_item</span> <span class="o">*</span> <span class="n">MLast</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Function called when printing an interface (“.mli”) file</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">print_implem</span> <span class="p">:</span>
+  <span class="n">ref</span> <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">str_item</span> <span class="o">*</span> <span class="n">MLast</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Function called when printing an implementation (“.ml”) file
+By default, these functions fail. The printer kit “<code class="docutils literal"><span class="pre">pr_dump.cmo</span></code>”
+(loaded by most Camlp5 commands) sets them to functions dumping the
+syntax tree in binary (for the OCaml compiler). The pretty printer
+kits, such as “<code class="docutils literal"><span class="pre">pr_r.cmo</span></code>” and “<code class="docutils literal"><span class="pre">pr_o.cmo</span></code>” set them to functions
+calling the predefined printers (see next section).</p>
+<p class="rubric" id="printers">Printers</p>
+<p>Printers taking <a class="reference external" href="ml_ast.html">syntax trees</a> as parameters and
+returning pretty printed strings. These are set by the printing kits,
+through the statement <a class="reference external" href="printers.html">EXTEND_PRINTER</a>. They are
+usable by other possible user printing extensions.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_expr</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.expr;</span></code></dt>
+<dd>Expressions.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_patt</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.patt;</span></code></dt>
+<dd>Patterns.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_ctyp</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.ctyp;</span></code></dt>
+<dd>Types.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_sig_item</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.sig_item;</span></code></dt>
+<dd>Signature items, i.e. items between “<code class="docutils literal"><span class="pre">sig</span></code>” and “<code class="docutils literal"><span class="pre">end</span></code>”, or
+inside an interface (“.mli”) file.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_str_item</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.str_item;</span></code></dt>
+<dd>Structure items, i.e. items between “<code class="docutils literal"><span class="pre">struct</span></code>” and “<code class="docutils literal"><span class="pre">end</span></code>”, or
+inside an implementation (“.ml”) file.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_module_type</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.module_type;</span></code></dt>
+<dd>Module types, e.g. signatures, functors, identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_module_expr</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.module_expr;</span></code></dt>
+<dd>Module expressions, e.g. structures, functors, identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_class_sig_item</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.class_sig_item;</span></code></dt>
+<dd>Class signature items, i.e. items of class objects types.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_class_str_item</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">MLast.class_str_item;</span></code></dt>
+<dd>Class structure items, i.e. items of class objects.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_class_type</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.class_type;</span></code></dt>
+<dd>Class types, e.g. object types, class types functions,
+identifiers.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">pr_class_expr</span> <span class="pre">:</span> <span class="pre">Eprinter.t</span> <span class="pre">MLast.class_expr;</span></code></dt>
+<dd>Class expressions, e.g. objects, class functions, identifiers.</dd>
+</dl>
+<p class="rubric" id="quotation-management">Quotation management</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">handle_expr_quotation</span> <span class="pre">:</span> <span class="pre">MLast.loc</span> <span class="pre">-&gt;</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-&gt;</span> <span class="pre">MLast.expr;</span></code></dt>
+<dd>Called in the semantic actions of the rules parsing a quotation in
+position of expression.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">handle_patt_quotation</span> <span class="pre">:</span> <span class="pre">MLast.loc</span> <span class="pre">-&gt;</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">-&gt;</span> <span class="pre">MLast.patt;</span></code></dt>
+<dd>Called in the semantic actions of the rules parsing a quotation in
+position of pattern.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">quotation_dump_file</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">(option</span> <span class="pre">string);</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Pcaml.quotation_dump_file</span></code>” optionally tells the compiler to
+dump the result of an expander (of kind “generating a string”) if
+this result is syntactically incorrect. If “<code class="docutils literal"><span class="pre">None</span></code>” (default),
+this result is not dumped. If “<code class="docutils literal"><span class="pre">Some</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">fname</span></code>”, the result
+is dumped in the file “<code class="docutils literal"><span class="pre">fname</span></code>”. The same effect can be done
+with the option “<code class="docutils literal"><span class="pre">-QD</span></code>” of Camlp5 commands.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">quotation_location</span> <span class="pre">:</span> <span class="pre">unit</span> <span class="pre">-&gt;</span> <span class="pre">Ploc.t;</span></code></dt>
+<dd>While expanding a quotation, returns the location of the quotation
+text (between the quotation quotes) in the source; raises
+“<code class="docutils literal"><span class="pre">Failure</span></code>” if not in the context of a quotation expander.</dd>
+</dl>
+<p class="rubric" id="extensible-directives-and-options">Extensible directives and options</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">directive_fun</span> <span class="pre">=</span> <span class="pre">option</span> <span class="pre">MLast.expr</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>The type of functions called to treat a directive with its
+syntactic parameter. Directives act by side effect.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">add_directive</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">directive_fun</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Add a new directive.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">find_directive</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">directive_fun;</span></code></dt>
+<dd>Find the function associated with a directive. Raises
+“<code class="docutils literal"><span class="pre">Not_found</span></code>” if the directive does not exists.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">add_option</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">Arg.spec</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Add an option to the command line of the Camlp5 command.</dd>
+</dl>
+<p class="rubric" id="equalities-over-syntax-trees">Equalities over syntax trees</p>
+<p>These equalities skip the locations.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">eq_expr</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">expr</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">expr</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_patt</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">patt</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">patt</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_ctyp</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">ctyp</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">ctyp</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_str_item</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">str_item</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">str_item</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_sig_item</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">sig_item</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">sig_item</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_module_expr</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">module_expr</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">module_expr</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_module_type</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">module_type</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">module_type</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_class_sig_item</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_sig_item</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_sig_item</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_class_str_item</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_str_item</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_str_item</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_class_type</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_type</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_type</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">eq_class_expr</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_expr</span> <span class="o">-&gt;</span> <span class="n">MLast</span><span class="o">.</span><span class="n">class_expr</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">;</span>
+</pre></div>
+</div>
+<p class="rubric" id="generalities">Generalities</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">version</span> <span class="pre">:</span> <span class="pre">string;</span></code></dt>
+<dd>The current version of Camlp5.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">syntax_name</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">string;</span></code></dt>
+<dd>The name of the current syntax. Set by the loaded syntax kit.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">input_file</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">string;</span></code></dt>
+<dd>The file currently being parsed.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">output_file</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">(option</span> <span class="pre">string);</span></code></dt>
+<dd>The output file, stdout if None (default).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">no_constructors_arity</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>True if the current syntax does not generate constructor arity,
+which is the case of the normal syntax, and not of the revised
+one. This has an impact when converting Camlp5 syntax tree into
+OCaml compiler syntax tree.</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="directives.html" class="btn btn-neutral float-right" title="Directives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="q_ast.html" class="btn btn-neutral float-left" title="Syntax tree quotations in user syntax" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

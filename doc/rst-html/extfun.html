@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Extensible functions &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Future work" href="conclusion.html" />
+    <link rel="prev" title="Pragma directive" href="pragma.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Extensible functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstextfun.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="extensible-functions">
+<h1>Extensible functions<a class="headerlink" href="#extensible-functions" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Extensible functions</p>
+<p>Extensible functions allows the definition of pattern matching
+functions which are extensible by adding new cases that are inserted
+automatically at the proper place by comparing the patterns. The
+pattern cases are ordered according to syntax trees representing
+them, “when” statements being inserted before the cases without
+“when”.</p>
+<p>Notice that extensible functions are functional: when extending a
+function, a new function is returned.</p>
+<p>The extensible functions are used in the <a class="reference external" href="pretty.html">pretty
+printing</a> system of Camlp5.</p>
+<p class="rubric" id="syntax">Syntax</p>
+<p>The syntax of the extensible functions, when loading “pa_extfun.cmo”,
+is the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>         <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">extensible</span><span class="o">-</span><span class="n">function</span>
+<span class="n">extensible</span><span class="o">-</span><span class="n">function</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;extfun&quot;</span> <span class="n">expression</span> <span class="s2">&quot;with&quot;</span> <span class="s2">&quot;[&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">cases</span> <span class="s2">&quot;]&quot;</span>
+        <span class="n">match</span><span class="o">-</span><span class="n">cases</span> <span class="p">:</span><span class="o">:=</span> <span class="n">match</span><span class="o">-</span><span class="n">case</span> <span class="s2">&quot;|&quot;</span> <span class="n">match</span><span class="o">-</span><span class="n">cases</span>
+         <span class="n">match</span><span class="o">-</span><span class="n">case</span> <span class="p">:</span><span class="o">:=</span> <span class="n">pattern</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+                      <span class="o">|</span> <span class="n">pattern</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+</pre></div>
+</div>
+<p>It is an extension of the same syntax as the “match” and “try”
+constructions.</p>
+<p class="rubric" id="semantics">Semantics</p>
+<p>The statement “extend” defined by the syntax takes an extensible
+function and return another extensible function with the new match
+cases inserted at the proper place within the initial extensible
+function.</p>
+<p>Extensible functions are of type “<code class="docutils literal"><span class="pre">Extfun.t</span> <span class="pre">a</span> <span class="pre">b</span></code>”, which is an
+abstract type, where “<code class="docutils literal"><span class="pre">a</span></code>” and “<code class="docutils literal"><span class="pre">b</span></code>” are respectively the type of
+the patterns and the type of the expressions. It corresponds to a
+function of type “<code class="docutils literal"><span class="pre">a</span> <span class="pre">-&gt;</span> <span class="pre">b</span></code>”.</p>
+<p>The function “<code class="docutils literal"><span class="pre">Extfun.apply</span></code>” takes an extensible function as
+parameter and returns a function which can be applied like a normal
+function.</p>
+<p>The value “<code class="docutils literal"><span class="pre">Extfun.empty</span></code>” is an empty extensible function, of type
+“<code class="docutils literal"><span class="pre">Extfun.t</span> <span class="pre">'a</span> <span class="pre">'b</span></code>”. When applied with “<code class="docutils literal"><span class="pre">Extfun.apply</span></code>” and a
+parameter, it raises the exception “<code class="docutils literal"><span class="pre">Extfun.Failure</span></code>” whatever the
+parameter.</p>
+<p>For debugging, it is possible to use the function “<code class="docutils literal"><span class="pre">Extfun.print</span></code>”
+which displays the match cases of the extensible functions. (Only the
+patterns are displayed in clear text, the associated expressions are
+not.)</p>
+<p>The match cases are inserted according to the following rules:</p>
+<ul class="simple">
+<li>The match cases are inserted in the order they are defined in the
+syntax “<code class="docutils literal"><span class="pre">extend</span></code>”</li>
+<li>A match case pattern with “when” is inserted before a match case
+pattern without “when”.</li>
+<li>Two match cases patterns both with “when” or both without “when”
+are inserted according to the alphabetic order of some internal
+syntax tree of the patterns where bound variables names are not
+taken into account.</li>
+<li>If two match cases patterns without “when” have the same patterns
+internal syntax tree, the initial one is silently removed.</li>
+<li>If two match cases patterns with “when” have the same patterns
+internal syntax tree, the new one is inserted before the old one.</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="conclusion.html" class="btn btn-neutral float-right" title="Future work" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pragma.html" class="btn btn-neutral float-left" title="Pragma directive" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Functional parsers &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Backtracking parsers" href="bparsers.html" />
+    <link rel="prev" title="Stream lexers" href="lexers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parsing-tools.html">Printing tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parsers.html">Stream parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexers.html">Stream lexers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Functional parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bparsers.html">Backtracking parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grammars.html">Extensible grammars</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="parsing-tools.html">Printing tools</a> &raquo;</li>
+        
+      <li>Functional parsers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstfparsers.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="functional-parsers">
+<h1>Functional parsers<a class="headerlink" href="#functional-parsers" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Functional parsers</p>
+<p>Purely functional parsers are an alternative of <a class="reference external" href="parsers.html">stream
+parsers</a> where the used stream type is a lazy
+non-destructive type. These streams are lazy values, as in classical
+stream parsers, but the values are not removed as long as the parsing
+advances.</p>
+<p>To make them work, the parsers of purely functional streams return,
+not the simple values, but a value of type option : “<code class="docutils literal"><span class="pre">None</span></code>”
+meaning “no match” (the equivalent of the exception
+“<code class="docutils literal"><span class="pre">Parse.Failure</span></code>” of normal streams) and “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">(r,</span> <span class="pre">s)</span></code>” meaning
+“the result is r and the remaining stream is s”.</p>
+<p class="rubric" id="syntax">Syntax</p>
+<p>The syntax of purely functional parsers, when loading
+“pa_fstream.cmo”, is the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>        <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">fparser</span>
+                     <span class="o">|</span> <span class="n">match</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">fparser</span>
+           <span class="n">fparser</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;fparser&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;[&quot;</span> <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="s2">&quot;]&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;fparser&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="n">parser</span><span class="o">-</span><span class="n">case</span>
+<span class="n">match</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">fparser</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;match&quot;</span> <span class="n">expression</span> <span class="s2">&quot;with&quot;</span> <span class="n">fparser</span>
+      <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="p">:</span><span class="o">:=</span> <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="n">parser</span><span class="o">-</span><span class="n">case</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+       <span class="n">parser</span><span class="o">-</span><span class="n">case</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;[:&quot;</span> <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span> <span class="s2">&quot;:]&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="s2">&quot;[:&quot;</span> <span class="s2">&quot;:]&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+    <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span> <span class="p">:</span><span class="o">:=</span> <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span>
+                     <span class="o">|</span> <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span> <span class="s2">&quot;;&quot;</span> <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span>
+  <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;`&quot;</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="s2">&quot;`&quot;</span> <span class="n">pattern</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="n">pattern</span> <span class="s2">&quot;=&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span>
+           <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="p">:</span><span class="o">:=</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Notice that, unlike classical parsers, there is no difference, in a
+stream pattern, between the first stream pattern component and the
+other ones. In particular, there is no “question mark” syntax and
+expression optionnally ending those components. Moreover, the
+“lookahead” case is not necessary, we see further why. The syntaxes
+“pattern when” and “let..in” inside stream patterns we see in
+classical parsers are not implemented.</p>
+<p class="rubric" id="streams">Streams</p>
+<p>The functional parsers are functions taking as parameters functional
+streams, which are values of type “<code class="docutils literal"><span class="pre">Fstream.t</span>&#160;&#160; <span class="pre">a</span></code>” for some type
+“<code class="docutils literal"><span class="pre">a</span></code>”. It is possible to build functional streams using the
+functions defined in the module “<code class="docutils literal"><span class="pre">Fstream</span></code>”:</p>
+<p class="rubric" id="fstream-from">Fstream.from</p>
+<p>“<code class="docutils literal"><span class="pre">Fstream.from</span> <span class="pre">f</span></code>” returns a stream built from the function
+“<code class="docutils literal"><span class="pre">f</span></code>”. To create a new stream element, the function “<code class="docutils literal"><span class="pre">f</span></code>” is
+called with the current stream count, starting with zero. The user
+function “<code class="docutils literal"><span class="pre">f</span></code>” must return either “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">&lt;value&gt;</span></code>” for a value or
+“<code class="docutils literal"><span class="pre">None</span></code>” to specify the end of the stream.</p>
+<p class="rubric" id="fstream-of-list">Fstream.of_list</p>
+<p>Return a stream built from the list in the same order.</p>
+<p class="rubric" id="fstream-of-string">Fstream.of_string</p>
+<p>Return a stream of the characters of the string parameter.</p>
+<p class="rubric" id="fstream-of-channel">Fstream.of_channel</p>
+<p>Return a stream of the characters read from the input channel
+parameter.</p>
+<p class="rubric" id="semantics-of-parsers">Semantics of parsers</p>
+<p class="rubric" id="fparser">Fparser</p>
+<p>The purely functional parsers act like classical parsers, with a
+recursive descent algorithm, except that:</p>
+<ul class="simple">
+<li>If the first stream pattern component matches the beginning of the
+stream, there is no error if the following stream patterns
+components do not match: the control simply passes to the next
+parser case with the initial stream.</li>
+<li>If the semantic actions are of type “<code class="docutils literal"><span class="pre">t</span></code>”, the result of the
+parser is of type “<code class="docutils literal"><span class="pre">option</span> <span class="pre">(t</span> <span class="pre">*</span> <span class="pre">Fstream.t)</span></code>”, not just “<code class="docutils literal"><span class="pre">t</span></code>”
+like in classical parsers. If a stream pattern matches, the
+semantic action is evaluated, giving some result “<code class="docutils literal"><span class="pre">e</span></code>” and the
+result of the parser is “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">(e,</span> <span class="pre">strm)</span></code>” where “<code class="docutils literal"><span class="pre">strm</span></code>” is
+the remaining stream.</li>
+<li>If no parser case matches, the result of the parser is “<code class="docutils literal"><span class="pre">None</span></code>”.</li>
+</ul>
+<p class="rubric" id="error-position">Error position</p>
+<p>A difficulty, with purely functional parsers, is how to find the
+position of the syntax error, when the input is wrong. Since the
+system tries all parsers cases before returning “<code class="docutils literal"><span class="pre">None</span></code>”, and that
+the initial stream is not affected, it is not possible to directly
+find where the error happened. This is a problem for parsing using
+backtracking (here, it is limited backtracking, but the problem is
+the same).</p>
+<p>The solution is to use the function “<code class="docutils literal"><span class="pre">Fstream.count_unfrozen</span></code>”
+applied to the initial stream. Like its name says, it returns the
+number of unfrozen elements of the stream, which is exactly the
+longest match found. If the input is a stream of characters, the
+return of this function is exactly the position in number of
+characters from the beginning of the stream.</p>
+<p>However, it is not possible to know directly which rule failed and
+therefore it is not possible, as in classical parsers, to specify and
+get clear error messages. Future versions of purely functional
+parsers may propose solutions to resolve this problem.</p>
+<p>Notice that, if using the “<code class="docutils literal"><span class="pre">count_unfrozen</span></code>” method, it is not
+possible to reuse that same stream to call another parser, and hope
+to get the right position of the error, if another error happens,
+since it may test less terminals than the first parser. Use a fresh
+stream in this case, if possible.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bparsers.html" class="btn btn-neutral float-right" title="Backtracking parsers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lexers.html" class="btn btn-neutral float-left" title="Stream lexers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

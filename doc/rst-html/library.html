@@ -1,0 +1,1254 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Library &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Camlp5 sources" href="sources.html" />
+    <link rel="prev" title="Commands and Files" href="commands.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="appendix.html">Appendix</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="commands.html">Commands and Files</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Camlp5 sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html">About</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="appendix.html">Appendix</a> &raquo;</li>
+        
+      <li>Library</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstlibrary.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="library">
+<h1>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Library</p>
+<p>All modules defined in “gramlib.cma”, but <em>not</em> including all Camlp5
+modules used by the Camlp5 commands and kits.</p>
+<p class="rubric" id="ploc-module">Ploc module</p>
+<p>Building and combining locations. This module also contains some
+pervasive types and functions.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">=</span> <span class="pre">'abstract;</span></code></dt>
+<dd>Location type.</dd>
+</dl>
+<p class="rubric" id="located-exceptions">located exceptions</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">exception</span> <span class="pre">Exc</span> <span class="pre">of</span> <span class="pre">location</span> <span class="pre">and</span> <span class="pre">exn;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.Exc</span> <span class="pre">loc</span> <span class="pre">e</span></code>” is an encapsulation of the exception “<code class="docutils literal"><span class="pre">e</span></code>”
+with the input location “<code class="docutils literal"><span class="pre">loc</span></code>”. To be used to specify a
+location for an error. This exception must not be raised by the
+OCaml function “<code class="docutils literal"><span class="pre">raise</span></code>”, but rather by “<code class="docutils literal"><span class="pre">Ploc.raise</span></code>” (see
+below), to prevent the risk of several encapsulations of
+“<code class="docutils literal"><span class="pre">Ploc.Exc</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">raise</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">exn</span> <span class="pre">-&gt;</span> <span class="pre">'a;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.raise</span> <span class="pre">loc</span> <span class="pre">e</span></code>”, if “<code class="docutils literal"><span class="pre">e</span></code>” is already the exception
+“<code class="docutils literal"><span class="pre">Ploc.Exc</span></code>”, re-raise it (ignoring the new location “<code class="docutils literal"><span class="pre">loc</span></code>”),
+else raise the exception “<code class="docutils literal"><span class="pre">Ploc.Exc</span> <span class="pre">loc</span> <span class="pre">e</span></code>”.</dd>
+</dl>
+<p class="rubric" id="making-locations">making locations</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">make_loc</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">(int</span> <span class="pre">*</span> <span class="pre">int)</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.make_loc</span> <span class="pre">fname</span> <span class="pre">line_nb</span> <span class="pre">bol_pos</span> <span class="pre">(bp,</span> <span class="pre">ep)</span> <span class="pre">comm</span></code>” creates a
+location starting at line number “<code class="docutils literal"><span class="pre">line_nb</span></code>”, where the position
+of the beginning of the line is “<code class="docutils literal"><span class="pre">bol_pos</span></code>” and between the
+positions “<code class="docutils literal"><span class="pre">bp</span></code>” (included) and “<code class="docutils literal"><span class="pre">ep</span></code>” excluded. And
+“<code class="docutils literal"><span class="pre">comm</span></code>” is the comment before the location. The positions are
+in number of characters since the begin of the stream.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">make_unlined</span> <span class="pre">:</span> <span class="pre">(int</span> <span class="pre">*</span> <span class="pre">int)</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.make_unlined</span></code>” is like “<code class="docutils literal"><span class="pre">Ploc.make</span></code>” except that the
+line number is not provided (to be used e.g. when the line number
+is unknown).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">dummy</span> <span class="pre">:</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.dummy</span></code>” is a dummy location, used in situations when
+location has no meaning.</dd>
+</dl>
+<p class="rubric" id="getting-location-info">getting location info</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">file_name</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.file_name</span> <span class="pre">loc</span></code>” returns the file name of the location.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">first_pos</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.first_pos</span> <span class="pre">loc</span></code>” returns the initial position of the
+location in number of characters since the beginning of the
+stream.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">last_pos</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.last_pos</span> <span class="pre">loc</span></code>” returns the final position plus one of the
+location in number of characters since the beginning of the
+stream.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">line_nb</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.line_nb</span> <span class="pre">loc</span></code>” returns the line number of the location or
+“<code class="docutils literal"><span class="pre">-1</span></code>” if the location does not contain a line number (i.e.
+built with “<code class="docutils literal"><span class="pre">Ploc.make_unlined</span></code>” above).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">bol_pos</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.bol_pos</span> <span class="pre">loc</span></code>” returns the position of the beginning of
+the line of the location in number of characters since the
+beginning of the stream, or “<code class="docutils literal"><span class="pre">0</span></code>” if the location does not
+contain a line number (i.e. built the with “<code class="docutils literal"><span class="pre">Ploc.make_unlined</span></code>”
+above).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">comment</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.comment</span> <span class="pre">loc</span></code>” returns the comment before the location.</dd>
+</dl>
+<p class="rubric" id="combining-locations">combining locations</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">encl</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.encl</span> <span class="pre">loc1</span> <span class="pre">loc2</span></code>” returns the location starting at the
+smallest start and ending at the greatest end of the locations
+“<code class="docutils literal"><span class="pre">loc1</span></code>” and “<code class="docutils literal"><span class="pre">loc2</span></code>”. In other words, it is the location
+enclosing “<code class="docutils literal"><span class="pre">loc1</span></code>” and “<code class="docutils literal"><span class="pre">loc2</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">shift</span> <span class="pre">:</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.shift</span> <span class="pre">sh</span> <span class="pre">loc</span></code>” returns the location “<code class="docutils literal"><span class="pre">loc</span></code>” shifted
+with “<code class="docutils literal"><span class="pre">sh</span></code>” characters. The line number is not recomputed.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">sub</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.sub</span> <span class="pre">loc</span> <span class="pre">sh</span> <span class="pre">len</span></code>” is the location “<code class="docutils literal"><span class="pre">loc</span></code>” shifted with
+“<code class="docutils literal"><span class="pre">sh</span></code>” characters and with length “<code class="docutils literal"><span class="pre">len</span></code>”. The previous ending
+position of the location is lost.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">after</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.after</span> <span class="pre">loc</span> <span class="pre">sh</span> <span class="pre">len</span></code>” is the location just after loc
+(starting at the end position of “<code class="docutils literal"><span class="pre">loc</span></code>”) shifted with “<code class="docutils literal"><span class="pre">sh</span></code>”
+characters and of length “<code class="docutils literal"><span class="pre">len</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">with_comment</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t;</span></code></dt>
+<dd>Change the comment part of the given location</dd>
+</dl>
+<p class="rubric" id="miscellaneous">miscellaneous</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">name</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">string;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.name.val</span></code>” is the name of the location variable used in
+grammars and in the predefined quotations for OCaml syntax trees.
+Default: “``”loc”``”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">get</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">(int</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">*</span> <span class="pre">int);</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.get</span> <span class="pre">fname</span> <span class="pre">loc</span></code>” returns in order: 1/ the line number of
+the begin of the location, 2/ its column, 3/ the line number of
+the first character not in the location, 4/ its column and 5/ the
+length of the location. The parameter “<code class="docutils literal"><span class="pre">fname</span></code>” is the file
+where the location occurs.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">from_file</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">-&gt;</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">*</span> <span class="pre">int</span> <span class="pre">*</span> <span class="pre">int);</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.from_file</span> <span class="pre">fname</span> <span class="pre">loc</span></code>” reads the file “<code class="docutils literal"><span class="pre">fname</span></code>” up to
+the location “<code class="docutils literal"><span class="pre">loc</span></code>” and returns the real input file, the line
+number and the characters location in the line; the real input
+file can be different from “<code class="docutils literal"><span class="pre">fname</span></code>” because of possibility of
+line directives typically generated by /lib/cpp.</dd>
+</dl>
+<p class="rubric" id="pervasives">pervasives</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">vala</span> <span class="s1">&#39;a =</span>
+  <span class="p">[</span> <span class="n">VaAnt</span> <span class="n">of</span> <span class="n">string</span>
+  <span class="o">|</span> <span class="n">VaVal</span> <span class="n">of</span> <span class="s1">&#39;a ]</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>Encloser of many abstract syntax tree notes types, in “strict” mode.
+This allow the system of antiquotations of abstract syntax tree
+quotations to work when using the quotation kit “<code class="docutils literal"><span class="pre">q_ast.cmo</span></code>”.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">call_with</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">('b</span> <span class="pre">-&gt;</span> <span class="pre">'c)</span> <span class="pre">-&gt;</span> <span class="pre">'b</span> <span class="pre">-&gt;</span> <span class="pre">'c;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Ploc.call_with</span> <span class="pre">r</span> <span class="pre">v</span> <span class="pre">f</span> <span class="pre">a</span></code>” sets the reference “<code class="docutils literal"><span class="pre">r</span></code>” to the
+value “<code class="docutils literal"><span class="pre">v</span></code>”, then calls “<code class="docutils literal"><span class="pre">f</span> <span class="pre">a</span></code>”, and resets “<code class="docutils literal"><span class="pre">r</span></code>” to its
+initial value. If “<code class="docutils literal"><span class="pre">f</span> <span class="pre">a</span></code>” raises an exception, its initial value
+is also reset and the exception is reraised. The result is the
+result of “<code class="docutils literal"><span class="pre">f</span>&#160;&#160;&#160;&#160; <span class="pre">a</span></code>”.</dd>
+</dl>
+<p class="rubric" id="plexing-module">Plexing module</p>
+<p>Lexing for Camlp5 grammars.</p>
+<p>This module defines the Camlp5 lexer type to be used in extensible
+grammars (see module “<code class="docutils literal"><span class="pre">Grammar</span></code>”). It also provides some useful
+functions to create lexers.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">pattern</span> <span class="pre">=</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string);</span></code></dt>
+<dd><p class="first">Type for values used by the generated code of the EXTEND statement
+to represent terminals in entry rules.</p>
+<ul class="last simple">
+<li>The first string is the constructor name (must start with an
+uppercase character). When empty, the second string should be a
+keyword.</li>
+<li>The second string is the constructor parameter. Empty if it has
+no parameter (corresponding to the ‘wildcard’ pattern).</li>
+<li>The way tokens patterns are interpreted to parse tokens is done
+by the lexer, function “<code class="docutils literal"><span class="pre">tok_match</span></code>” below.</li>
+</ul>
+</dd>
+<dt><code class="docutils literal"><span class="pre">exception</span> <span class="pre">Error</span> <span class="pre">of</span> <span class="pre">string;</span></code></dt>
+<dd>A lexing error exception to be used by lexers.</dd>
+</dl>
+<p class="rubric" id="lexer-type">lexer type</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">lexer</span> <span class="s1">&#39;te =</span>
+  <span class="p">{</span> <span class="n">tok_func</span> <span class="p">:</span> <span class="n">lexer_func</span> <span class="s1">&#39;te;</span>
+    <span class="n">tok_using</span> <span class="p">:</span> <span class="n">pattern</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+    <span class="n">tok_removing</span> <span class="p">:</span> <span class="n">pattern</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+    <span class="n">tok_match</span> <span class="p">:</span> <span class="n">mutable</span> <span class="n">pattern</span> <span class="o">-&gt;</span> <span class="s1">&#39;te -&gt; string;</span>
+    <span class="n">tok_text</span> <span class="p">:</span> <span class="n">pattern</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">;</span>
+    <span class="n">tok_comm</span> <span class="p">:</span> <span class="n">mutable</span> <span class="n">option</span> <span class="p">(</span><span class="nb">list</span> <span class="n">Ploc</span><span class="o">.</span><span class="n">t</span><span class="p">)</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>The type for lexers compatible with Camlp5 grammars. The parameter
+type “<code class="docutils literal"><span class="pre">'te</span></code>” is the type of the tokens.</p>
+<ul class="simple">
+<li>The field “<code class="docutils literal"><span class="pre">tok_func</span></code>” is the main lexer function. See
+“<code class="docutils literal"><span class="pre">lexer_func</span></code>” type below.</li>
+<li>The field “<code class="docutils literal"><span class="pre">tok_using</span></code>” is a function called by the “<code class="docutils literal"><span class="pre">EXTEND</span></code>”
+statement to warn the lexer that a rule uses this pattern (given
+as parameter). This allow the lexer 1/ to check that the pattern
+constructor is really among its possible constructors 2/ to enter
+the keywords in its tables.</li>
+<li>The field “<code class="docutils literal"><span class="pre">tok_removing</span></code>” is a function possibly called by the
+“<code class="docutils literal"><span class="pre">DELETE_RULE</span></code>” statement to warn the lexer that this pattern
+(given as parameter) is no longer used in the grammar (the grammar
+system maintains a number of usages of all patterns and calls this
+function when this number falls to zero). If it is a keyword, this
+allows the lexer to remove it in its tables.</li>
+<li>The field “<code class="docutils literal"><span class="pre">tok_match</span></code>” is a function called by the Camlp5
+grammar system to ask the lexer how the input tokens should be
+matched against the patterns. Warning: for efficiency, this
+function must be written as a function taking patterns as
+parameters and, for each pattern value, returning a function
+matching a token, <em>not</em> as a function with two parameters.</li>
+<li>The field “<code class="docutils literal"><span class="pre">tok_text</span></code>” is a function called by the grammar
+system to get the name of the tokens for the error messages, in
+case of syntax error, or for the displaying of the rules of an
+entry.</li>
+<li>The field “<code class="docutils literal"><span class="pre">tok_comm</span></code>” is a mutable place where the lexer can
+put the locations of the comments, if its initial value is not
+“<code class="docutils literal"><span class="pre">None</span></code>”. If it is “<code class="docutils literal"><span class="pre">None</span></code>”, nothing has to be done by the
+lexer.</li>
+</ul>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">and</span> <span class="pre">lexer_func</span> <span class="pre">'te</span> <span class="pre">=</span> <span class="pre">Stream.t</span> <span class="pre">char</span> <span class="pre">-&gt;</span> <span class="pre">(Stream.t</span> <span class="pre">'te</span> <span class="pre">*</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">location_function)</span></code></dt>
+<dd>The type of a lexer function (field “<code class="docutils literal"><span class="pre">tok_func</span></code>” of the type
+“<code class="docutils literal"><span class="pre">lexer</span></code>”). The character stream is the input stream to be
+lexed. The result is a pair of a token stream and a location
+function (see below) for this tokens stream.</dd>
+<dt><code class="docutils literal"><span class="pre">and</span> <span class="pre">location_function</span> <span class="pre">=</span> <span class="pre">int</span> <span class="pre">-&gt;</span> <span class="pre">Ploc.t;</span></code></dt>
+<dd>The type of a function giving the location of a token in the
+source from the token number in the stream (starting from zero).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">lexer_text</span> <span class="pre">:</span> <span class="pre">pattern</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>A simple “<code class="docutils literal"><span class="pre">tok_text</span></code>” function.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">default_match</span> <span class="pre">:</span> <span class="pre">pattern</span> <span class="pre">-&gt;</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span> <span class="pre">-&gt;</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">string;</span></code></dt>
+<dd>A simple “<code class="docutils literal"><span class="pre">tok_match</span></code>” function, appling to the token type
+“<code class="docutils literal"><span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span></code>”.</dd>
+</dl>
+<p class="rubric" id="lexers-from-parsers-or-ocamllex">lexers from parsers or ocamllex</p>
+<p>The functions below create lexer functions either from a
+“<code class="docutils literal"><span class="pre">char</span>&#160;&#160;&#160; <span class="pre">stream</span></code>” parser or for an “<code class="docutils literal"><span class="pre">ocamllex</span></code>” function. With
+the returned function “<code class="docutils literal"><span class="pre">f</span></code>”, it is possible to get a simple lexer
+(of the type “<code class="docutils literal"><span class="pre">Plexing.lexer</span></code>” above):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">Plexing</span><span class="o">.</span><span class="n">tok_func</span> <span class="o">=</span> <span class="n">f</span><span class="p">;</span>
+ <span class="n">Plexing</span><span class="o">.</span><span class="n">tok_using</span> <span class="o">=</span> <span class="p">(</span><span class="n">fun</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="p">());</span>
+ <span class="n">Plexing</span><span class="o">.</span><span class="n">tok_removing</span> <span class="o">=</span> <span class="p">(</span><span class="n">fun</span> <span class="n">_</span> <span class="o">-&gt;</span> <span class="p">());</span>
+ <span class="n">Plexing</span><span class="o">.</span><span class="n">tok_match</span> <span class="o">=</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">default_match</span><span class="p">;</span>
+ <span class="n">Plexing</span><span class="o">.</span><span class="n">tok_text</span> <span class="o">=</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer_text</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Note that a better “<code class="docutils literal"><span class="pre">tok_using</span></code>” function would check the used
+tokens and raise “<code class="docutils literal"><span class="pre">Plexing.Error</span></code>” for incorrect ones. The other
+functions “<code class="docutils literal"><span class="pre">tok_removing</span></code>”, “<code class="docutils literal"><span class="pre">tok_match</span></code>” and “<code class="docutils literal"><span class="pre">tok_text</span></code>” may
+have other implementations as well.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">lexer_func_of_parser</span> <span class="p">:</span>
+  <span class="p">((</span><span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">char</span> <span class="o">*</span> <span class="n">ref</span> <span class="nb">int</span> <span class="o">*</span> <span class="n">ref</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s1">&#39;te * Ploc.t)) -&gt; lexer_func &#39;</span><span class="n">te</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A lexer function from a lexer written as a char stream parser
+returning the next token and its location. The two references with
+the char stream contain the current line number and the position of
+the beginning of the current line.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">lexer_func_of_ocamllex</span> <span class="p">:</span> <span class="p">(</span><span class="n">Lexing</span><span class="o">.</span><span class="n">lexbuf</span> <span class="o">-&gt;</span> <span class="s1">&#39;te) -&gt; lexer_func &#39;</span><span class="n">te</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>A lexer function from a lexer created by “<code class="docutils literal"><span class="pre">ocamllex</span></code>”.
+.. rubric:: function to build a stream and a location function</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">function-to-build-a-stream-and-a-location-function</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">make_stream_and_location</span> <span class="p">:</span>
+  <span class="p">(</span><span class="n">unit</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s1">&#39;te * Ploc.t)) -&gt; (Stream.t &#39;</span><span class="n">te</span> <span class="o">*</span> <span class="n">location_function</span><span class="p">);</span>
+</pre></div>
+</div>
+<p class="rubric" id="useful-functions-and-values">useful functions and values</p>
+<p><code class="docutils literal"><span class="pre">value</span> <span class="pre">eval_char</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">char;</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">eval_string</span> <span class="pre">:</span> <span class="pre">Ploc.t</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></p>
+<blockquote>
+<div>Convert a char or a string token, where the backslashes are not
+been interpreted into a real char or string; raise “<code class="docutils literal"><span class="pre">Failure</span></code>”
+if a bad backslash sequence is found;
+“<code class="docutils literal"><span class="pre">Plexing.eval_char</span> <span class="pre">(Char.escaped</span> <span class="pre">c)</span></code>” returns “<code class="docutils literal"><span class="pre">c</span></code>” and
+“<code class="docutils literal"><span class="pre">Plexing.eval_string</span> <span class="pre">(String.escaped</span> <span class="pre">s)</span></code>” returns <code class="docutils literal"><span class="pre">s</span></code>.</div></blockquote>
+<p><code class="docutils literal"><span class="pre">value</span> <span class="pre">restore_lexing_info</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">(option</span> <span class="pre">(int</span> <span class="pre">*</span> <span class="pre">int));</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">line_nb</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">(ref</span> <span class="pre">int);</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">bol_pos</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">(ref</span> <span class="pre">int);</span></code></p>
+<blockquote>
+<div>Special variables used to reinitialize line numbers and position
+of beginning of line with their correct current values when a
+parser is called several times with the same character stream.
+Necessary for directives (e.g. #load or #use) which interrupt the
+parsing. Without usage of these variables, locations after the
+directives can be wrong.</div></blockquote>
+<p class="rubric" id="backward-compatibilities">backward compatibilities</p>
+<p>Deprecated since version 4.08.</p>
+<p><code class="docutils literal"><span class="pre">type</span> <span class="pre">location</span> <span class="pre">=</span> <span class="pre">Ploc.t;</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">make_loc</span> <span class="pre">:</span> <span class="pre">(int</span> <span class="pre">*</span> <span class="pre">int)</span> <span class="pre">-&gt;</span> <span class="pre">location;</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">dummy_loc</span> <span class="pre">:</span> <span class="pre">location;</span></code>
+.. rubric:: Plexer module</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">plexer-module</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>This module contains a lexer used for OCaml syntax (revised and
+normal).</p>
+<p class="rubric" id="lexer">lexer</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">gmake</span> <span class="pre">:</span> <span class="pre">unit</span> <span class="pre">-&gt;</span> <span class="pre">Plexing.lexer</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string);</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">gmake</span> <span class="pre">()</span></code>” returns a lexer compatible with the extensible
+grammars. The returned tokens follow the normal syntax and the
+revised syntax lexing rules.</dd>
+</dl>
+<p>The token type is “<code class="docutils literal"><span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span></code>” just like the pattern type.</p>
+<p>The meaning of the tokens are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">(&quot;&quot;,</span> <span class="pre">s)</span></code> is the keyword <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;LIDENT&quot;,</span> <span class="pre">s)</span></code> is the ident <code class="docutils literal"><span class="pre">s</span></code> starting with a lowercase
+letter,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;UIDENT&quot;,</span> <span class="pre">s)</span></code> is the ident <code class="docutils literal"><span class="pre">s</span></code> starting with an uppercase
+letter,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;INT&quot;,</span> <span class="pre">s)</span></code> is an integer constant whose string source is
+<code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;INT_l&quot;,</span> <span class="pre">s)</span></code> is an 32 bits integer constant whose string
+source is <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;INT_L&quot;,</span> <span class="pre">s)</span></code> is an 64 bits integer constant whose string
+source is <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;INT_n&quot;,</span> <span class="pre">s)</span></code> is an native integer constant whose string source
+is <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;FLOAT&quot;,</span> <span class="pre">s)</span></code> is a float constant whose string source is <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;STRING&quot;,</span> <span class="pre">s)</span></code> is the string constant <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;CHAR&quot;,</span> <span class="pre">s)</span></code> is the character constant <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;TILDEIDENT&quot;,</span> <span class="pre">s)</span></code> is the tilde character “<code class="docutils literal"><span class="pre">~</span></code>” followed by
+the ident <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;TILDEIDENTCOLON&quot;,</span> <span class="pre">s)</span></code> is the tilde character “<code class="docutils literal"><span class="pre">~</span></code>” followed
+by the ident <code class="docutils literal"><span class="pre">s</span></code> and a colon “<code class="docutils literal"><span class="pre">:</span></code>”,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;QUESTIONIDENT&quot;,</span> <span class="pre">s)</span></code> is the question mark “<code class="docutils literal"><span class="pre">?</span></code>” followed by
+the ident <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;QUESTIONIDENTCOLON&quot;,</span> <span class="pre">s)</span></code> is the question mark “<code class="docutils literal"><span class="pre">?</span></code>”
+followed by the ident <code class="docutils literal"><span class="pre">s</span></code> and a colon “<code class="docutils literal"><span class="pre">:</span></code>”,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;QUOTATION&quot;,</span> <span class="pre">&quot;t:s&quot;)</span></code> is a quotation “<code class="docutils literal"><span class="pre">t</span></code>” holding the string
+<code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;ANTIQUOT&quot;,</span> <span class="pre">&quot;t:s&quot;)</span></code> is an antiquotation “<code class="docutils literal"><span class="pre">t</span></code>” holding the
+string <code class="docutils literal"><span class="pre">s</span></code>,</li>
+<li><code class="docutils literal"><span class="pre">(&quot;EOI&quot;,</span> <span class="pre">&quot;&quot;)</span></code> is the end of input.</li>
+</ul>
+<p>The associated token patterns in the EXTEND statement hold the same
+names as the first string (constructor name) of the tokens
+expressions above.</p>
+<p>Warning: the string associated with the “<code class="docutils literal"><span class="pre">STRING</span></code>” constructor is
+the string found in the source without any interpretation. In
+particular, the backslashes are not interpreted. For example, if the
+input is <code class="docutils literal"><span class="pre">&quot;\n&quot;</span></code> the string is *not* a string with one element
+containing the “newline” character, but a string of two elements: the
+backslash and the <code class="docutils literal"><span class="pre">&quot;n&quot;</span></code> letter.</p>
+<p>Same thing for the string associated with the “<code class="docutils literal"><span class="pre">CHAR</span></code>” constructor.</p>
+<p>The functions “<code class="docutils literal"><span class="pre">Plexing.eval_string</span></code>” and “<code class="docutils literal"><span class="pre">Plexing.eval_char</span></code>”
+allow to convert them into the real corresponding string or char
+value.</p>
+<p class="rubric" id="flags">flags</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">dollar_for_antiquotation</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>When True (default), the next call to “<code class="docutils literal"><span class="pre">Plexer.gmake</span> <span class="pre">()</span></code>”
+returns a lexer where the dollar sign is used for antiquotations.
+If False, there is no antiquotations and the dollar sign can be
+used as normal token.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">specific_space_dot</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>When “<code class="docutils literal"><span class="pre">False</span></code>” (default), the next call to “<code class="docutils literal"><span class="pre">Plexer.gmake</span> <span class="pre">()</span></code>”
+returns a lexer where there is no difference between dots which
+have spaces before and dots which don’t have spaces before. If
+“<code class="docutils literal"><span class="pre">True</span></code>”, dots which have spaces before return the keyword
+<code class="docutils literal"><span class="pre">&quot;</span> <span class="pre">.&quot;</span></code> (space dot) and the ones which don’t have spaces before
+return the keyword <code class="docutils literal"><span class="pre">&quot;.&quot;</span></code> (dot alone).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">no_quotations</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>When “<code class="docutils literal"><span class="pre">True</span></code>”, all lexers built by “<code class="docutils literal"><span class="pre">Plexer.gmake</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">()</span></code>”
+do not lex the quotation syntax. Default is “<code class="docutils literal"><span class="pre">False</span></code>”
+(quotations are lexed).</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">utf8_lexing</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>When “<code class="docutils literal"><span class="pre">True</span></code>”, all lexers built by “<code class="docutils literal"><span class="pre">Plexer.gmake</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">()]</span></code>”
+use utf-8 encoding to specify letters and punctuation marks.
+Default is False (all characters between ‘128’ and ‘255’ are
+considered as letters).</dd>
+</dl>
+<p class="rubric" id="gramext-module">Gramext module</p>
+<p>This module is not intended to be used by the casual programmer.</p>
+<p>It shows, in clear, the implementations of grammars and entries
+types, the normal access being through the “<code class="docutils literal"><span class="pre">Grammar</span></code>” module where
+these types are abstract. It can be useful for programmers interested
+in scanning the contents of grammars and entries, for example to make
+analyses on them.</p>
+<p class="rubric" id="grammar-type">grammar type</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">grammar</span> <span class="s1">&#39;te =</span>
+  <span class="p">{</span> <span class="n">gtokens</span> <span class="p">:</span> <span class="n">Hashtbl</span><span class="o">.</span><span class="n">t</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">pattern</span> <span class="p">(</span><span class="n">ref</span> <span class="nb">int</span><span class="p">);</span>
+    <span class="n">glexer</span> <span class="p">:</span> <span class="n">mutable</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer</span> <span class="s1">&#39;te }</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>The visible type of grammars, i.e. the implementation of the abstract
+type “<code class="docutils literal"><span class="pre">Grammar.g</span></code>”. It is also the implementation of an internal
+grammar type used in the Grammar functorial interface.
+The type parameter “<code class="docutils literal"><span class="pre">'te</span></code>” is the type of the tokens, which is
+“<code class="docutils literal"><span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span></code>” for grammars built with
+“<code class="docutils literal"><span class="pre">Grammar.gcreate</span></code>”, and any type for grammars built with the
+functorial interface. The field “<code class="docutils literal"><span class="pre">gtokens</span></code>” records the count of
+usages of each token pattern, allowing to call the lexer function
+“<code class="docutils literal"><span class="pre">tok_removing</span></code>” (see the <a class="reference external" href="#a:Plexing-module">Plexing module</a>)
+when this count reaches zero. The field “<code class="docutils literal"><span class="pre">lexer</span></code>” is the lexer.
+.. rubric:: entry type</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">entry-type</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">g_entry</span> <span class="s1">&#39;te =</span>
+  <span class="p">{</span> <span class="n">egram</span> <span class="p">:</span> <span class="n">grammar</span> <span class="s1">&#39;te;</span>
+    <span class="n">ename</span> <span class="p">:</span> <span class="n">string</span><span class="p">;</span>
+    <span class="n">elocal</span> <span class="p">:</span> <span class="nb">bool</span><span class="p">;</span>
+    <span class="n">estart</span> <span class="p">:</span> <span class="n">mutable</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;te -&gt; Obj.t;</span>
+    <span class="n">econtinue</span> <span class="p">:</span> <span class="n">mutable</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="n">Obj</span><span class="o">.</span><span class="n">t</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;te -&gt; Obj.t;</span>
+    <span class="n">edesc</span> <span class="p">:</span> <span class="n">mutable</span> <span class="n">g_desc</span> <span class="s1">&#39;te }</span>
+</pre></div>
+</div>
+<p>The visible type for grammar entries, i.e. the implementation of the
+abstract type “<code class="docutils literal"><span class="pre">Grammar.Entry.e</span></code>” and the type of entries in the
+Grammar functorial interface. Notice that these entry types have a
+type parameter which does not appear in the “<code class="docutils literal"><span class="pre">g_entry</span></code>” type (the
+“<code class="docutils literal"><span class="pre">'te</span></code>” parameter is, as for grammars above, the type of the
+tokens). This is due to the specific typing system of the EXTEND
+statement which sometimes must hide real types, the OCaml normal type
+system not being able to type Camlp5 grammars.
+Meaning of the fields:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">egram</span></code> : the associated grammar</li>
+<li><code class="docutils literal"><span class="pre">ename</span></code> : the entry name</li>
+<li><code class="docutils literal"><span class="pre">elocal</span></code> : True if the entry is local (local entries are written
+with a star character “*” by Grammar.Entry.print)</li>
+<li><code class="docutils literal"><span class="pre">estart</span></code> and <code class="docutils literal"><span class="pre">econtinue</span></code> are parsers of the entry used in the
+<a class="reference external" href="grammars.html#a:Grammar-machinery">grammar machinery</a></li>
+<li><code class="docutils literal"><span class="pre">edesc</span></code> : the entry description (see below)</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ow">and</span> <span class="n">g_desc</span> <span class="s1">&#39;te =</span>
+  <span class="p">[</span> <span class="n">Dlevels</span> <span class="n">of</span> <span class="nb">list</span> <span class="p">(</span><span class="n">g_level</span> <span class="s1">&#39;te)</span>
+  <span class="o">|</span> <span class="n">Dparser</span> <span class="n">of</span> <span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;te -&gt; Obj.t ]</span>
+</pre></div>
+</div>
+<p>The entry description.</p>
+<ul class="simple">
+<li>The constructor “<code class="docutils literal"><span class="pre">Dlevels</span></code>” is for entries built by
+“<code class="docutils literal"><span class="pre">Grammar.Entry.create</span></code>” and extendable by the EXTEND statement.</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Dparser</span></code>” is for entries built by
+“<code class="docutils literal"><span class="pre">Grammar.Entry.of_parser</span></code>”.</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ow">and</span> <span class="n">g_level</span> <span class="s1">&#39;te =</span>
+  <span class="p">{</span> <span class="n">assoc</span> <span class="p">:</span> <span class="n">g_assoc</span><span class="p">;</span>
+    <span class="n">lname</span> <span class="p">:</span> <span class="n">option</span> <span class="n">string</span><span class="p">;</span>
+    <span class="n">lsuffix</span> <span class="p">:</span> <span class="n">g_tree</span> <span class="s1">&#39;te;</span>
+    <span class="n">lprefix</span> <span class="p">:</span> <span class="n">g_tree</span> <span class="s1">&#39;te }</span>
+<span class="ow">and</span> <span class="n">g_assoc</span> <span class="o">=</span> <span class="p">[</span> <span class="n">NonA</span> <span class="o">|</span> <span class="n">RightA</span> <span class="o">|</span> <span class="n">LeftA</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Description of an entry level.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">assoc</span></code> : the level associativity</li>
+<li><code class="docutils literal"><span class="pre">lname</span></code> : the level name, if any</li>
+<li><code class="docutils literal"><span class="pre">lsuffix</span></code> : the tree composed of the rules starting with
+“<code class="docutils literal"><span class="pre">SELF</span></code>”</li>
+<li><code class="docutils literal"><span class="pre">lprefix</span></code> : the tree composed of the rules not starting with
+“<code class="docutils literal"><span class="pre">SELF</span></code>”</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ow">and</span> <span class="n">g_symbol</span> <span class="s1">&#39;te =</span>
+  <span class="p">[</span> <span class="n">Smeta</span> <span class="n">of</span> <span class="n">string</span> <span class="ow">and</span> <span class="nb">list</span> <span class="p">(</span><span class="n">g_symbol</span> <span class="s1">&#39;te) and Obj.t</span>
+  <span class="o">|</span> <span class="n">Snterm</span> <span class="n">of</span> <span class="n">g_entry</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">Snterml</span> <span class="n">of</span> <span class="n">g_entry</span> <span class="s1">&#39;te and string</span>
+  <span class="o">|</span> <span class="n">Slist0</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">Slist0sep</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te and g_symbol &#39;</span><span class="n">te</span>
+  <span class="o">|</span> <span class="n">Slist1</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">Slist1sep</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te and g_symbol &#39;</span><span class="n">te</span>
+  <span class="o">|</span> <span class="n">Sopt</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">Sflag</span> <span class="n">of</span> <span class="n">g_symbol</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">Sself</span>
+  <span class="o">|</span> <span class="n">Snext</span>
+  <span class="o">|</span> <span class="n">Stoken</span> <span class="n">of</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">pattern</span>
+  <span class="o">|</span> <span class="n">Stree</span> <span class="n">of</span> <span class="n">g_tree</span> <span class="s1">&#39;te ]</span>
+</pre></div>
+</div>
+<p>Description of a rule symbol.</p>
+<ul class="simple">
+<li>The constructor “<code class="docutils literal"><span class="pre">Smeta</span></code>” is used by the extensions <a class="reference external" href="grammars.html#a:Extensions-FOLD0-and-FOLD1">FOLD0 and
+FOLD1</a></li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Snterm</span></code>” is the representation of a
+non-terminal (a call to another entry)</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Snterml</span></code>” is the representation of a
+non-terminal at some given level</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Slist0</span></code>” is the representation of the symbol
+LIST0</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Slist0sep</span></code>” is the representation of the
+symbol LIST0 followed by SEP</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Slist1</span></code>” is the representation of the symbol
+LIST1</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Slist1sep</span></code>” is the representation of the
+symbol LIST1 followed by SEP</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Sopt</span></code>” is the representation of the symbol OPT</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Sflag</span></code>” is the representation of the symbol
+FLAG</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Sself</span></code>” is the representation of the symbol
+SELF</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Snext</span></code>” is the representation of the symbol
+NEXT</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Stoken</span></code>” is the representation of a token
+pattern</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">Stree</span></code>” is the representation of a anonymous
+rule list (between brackets).</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ow">and</span> <span class="n">g_action</span> <span class="o">=</span> <span class="n">Obj</span><span class="o">.</span><span class="n">t</span>
+</pre></div>
+</div>
+<p>The semantic action, represented by a type “<code class="docutils literal"><span class="pre">Obj.t</span></code>” due to the
+specific typing of the EXTEND statement (the semantic action being
+able to be any function type, depending on the rule).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ow">and</span> <span class="n">g_tree</span> <span class="s1">&#39;te =</span>
+  <span class="p">[</span> <span class="n">Node</span> <span class="n">of</span> <span class="n">g_node</span> <span class="s1">&#39;te</span>
+  <span class="o">|</span> <span class="n">LocAct</span> <span class="n">of</span> <span class="n">g_action</span> <span class="ow">and</span> <span class="nb">list</span> <span class="n">g_action</span>
+  <span class="o">|</span> <span class="n">DeadEnd</span> <span class="p">]</span>
+<span class="ow">and</span> <span class="n">g_node</span> <span class="s1">&#39;te =</span>
+  <span class="p">{</span> <span class="n">node</span> <span class="p">:</span> <span class="n">g_symbol</span> <span class="s1">&#39;te; son : g_tree &#39;</span><span class="n">te</span><span class="p">;</span> <span class="n">brother</span> <span class="p">:</span> <span class="n">g_tree</span> <span class="s1">&#39;te }</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>The types of tree and tree nodes, representing a list of factorized
+rules in an entry level.</p>
+<ul class="simple">
+<li>The constructor “<code class="docutils literal"><span class="pre">Node</span></code>” is a representation of a symbol (field
+“<code class="docutils literal"><span class="pre">node</span></code>”), the rest of the rule tree (field “<code class="docutils literal"><span class="pre">son</span></code>”), and the
+following node, if this node fails (field “<code class="docutils literal"><span class="pre">brother</span></code>”)</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">LocAct</span></code>” is the representation of an action,
+which is a function having all pattern variables of the rule as
+parameters and returning the rule semantic action. The list of
+actions in the constructor correspond to possible previous actions
+when it happens that rules are masked by other rules.</li>
+<li>The constructor “<code class="docutils literal"><span class="pre">DeadEnd</span></code>” is a representation of a nodes where
+the tree fails or is in syntax error.</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">position</span> <span class="o">=</span>
+  <span class="p">[</span> <span class="n">First</span>
+  <span class="o">|</span> <span class="n">Last</span>
+  <span class="o">|</span> <span class="n">Before</span> <span class="n">of</span> <span class="n">string</span>
+  <span class="o">|</span> <span class="n">After</span> <span class="n">of</span> <span class="n">string</span>
+  <span class="o">|</span> <span class="n">Level</span> <span class="n">of</span> <span class="n">string</span> <span class="p">]</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>The type of position where an entry extension takes place.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">First</span></code> : corresponds to FIRST</li>
+<li><code class="docutils literal"><span class="pre">Last</span></code> : corresponds to LAST</li>
+<li><code class="docutils literal"><span class="pre">Before</span> <span class="pre">s</span></code> : corresponds to BEFORE “s”</li>
+<li><code class="docutils literal"><span class="pre">After</span> <span class="pre">s</span></code> : corresponds to AFTER “s”</li>
+<li><code class="docutils literal"><span class="pre">Level</span> <span class="pre">s</span></code> : corresponds to LEVEL “s”</li>
+</ul>
+<p>The module contains other definitions but for internal use.</p>
+<p class="rubric" id="grammar-module">Grammar module</p>
+<p>Extensible grammars.</p>
+<p>This module implements the Camlp5 extensible grammars system.
+Grammars entries can be extended using the <code class="docutils literal"><span class="pre">EXTEND</span></code> statement,
+added by loading the Camlp5 “<code class="docutils literal"><span class="pre">pa_extend.cmo</span></code>” file.</p>
+<p class="rubric" id="main-types-and-values">main types and values</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">g</span> <span class="pre">=</span> <span class="pre">'abstract;</span></code></dt>
+<dd>The type of grammars, holding entries.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">gcreate</span> <span class="pre">:</span> <span class="pre">Plexing.lexer</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">string)</span> <span class="pre">-&gt;</span> <span class="pre">g;</span></code></dt>
+<dd>Create a new grammar, without keywords, using the given lexer.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">tokens</span> <span class="pre">:</span> <span class="pre">g</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">list</span> <span class="pre">(string</span> <span class="pre">*</span> <span class="pre">int);</span></code></dt>
+<dd><p class="first">Given a grammar and a token pattern constructor, returns the list
+of the corresponding values currently used in all entries of this
+grammar. The integer is the number of times this pattern value is
+used. Examples:</p>
+<ul class="last simple">
+<li>The call: <code class="docutils literal"><span class="pre">Grammar.tokens</span> <span class="pre">g</span> <span class="pre">&quot;&quot;</span></code> returns the keywords list.</li>
+<li>The call: <code class="docutils literal"><span class="pre">Grammar.tokens</span> <span class="pre">g</span> <span class="pre">&quot;IDENT&quot;</span></code> returns the list of all
+usages of the pattern “IDENT” in the <code class="docutils literal"><span class="pre">EXTEND</span></code> statements.</li>
+</ul>
+</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">glexer</span> <span class="pre">:</span> <span class="pre">g</span> <span class="pre">-&gt;</span> <span class="pre">Plexing.lexer</span> <span class="pre">token;</span></code></dt>
+<dd>Return the lexer used by the grammar</dd>
+</dl>
+<p><code class="docutils literal"><span class="pre">type</span> <span class="pre">parsable</span> <span class="pre">=</span> <span class="pre">'abstract;</span></code>
+<code class="docutils literal"><span class="pre">value</span> <span class="pre">parsable</span> <span class="pre">:</span> <span class="pre">g</span> <span class="pre">-&gt;</span> <span class="pre">Stream.t</span> <span class="pre">char</span> <span class="pre">-&gt;</span> <span class="pre">parsable;</span></code></p>
+<blockquote>
+<div>Type and value allowing to keep the same token stream between
+several calls of entries of the same grammar, to prevent loss of
+tokens. To be used with <code class="docutils literal"><span class="pre">Entry.parse_parsable</span></code> below</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">Entry</span> <span class="o">=</span>
+  <span class="n">sig</span>
+    <span class="nb">type</span> <span class="n">e</span> <span class="s1">&#39;a = &#39;</span><span class="n">x</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">create</span> <span class="p">:</span> <span class="n">g</span> <span class="o">-&gt;</span> <span class="n">string</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="s1">&#39;a;</span>
+    <span class="n">value</span> <span class="n">parse</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Stream.t char -&gt; &#39;</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">parse_all</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Stream.t char -&gt; list &#39;</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">parse_token_stream</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Stream.t token -&gt; &#39;</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">parse_parsable</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; parsable -&gt; &#39;</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">name</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; string;</span>
+    <span class="n">value</span> <span class="n">of_parser</span> <span class="p">:</span> <span class="n">g</span> <span class="o">-&gt;</span> <span class="n">string</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">token</span> <span class="o">-&gt;</span> <span class="s1">&#39;a) -&gt; e &#39;</span><span class="n">a</span><span class="p">;</span>
+    <span class="n">value</span> <span class="nb">print</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; unit;</span>
+    <span class="n">value</span> <span class="n">find</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; string -&gt; e Obj.t;</span>
+    <span class="n">external</span> <span class="n">obj</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Gramext.g_entry token = &quot;</span><span class="si">%i</span><span class="s1">dentity&quot;;</span>
+  <span class="n">end</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Module to handle entries.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.e</span></code> : type for entries returning values of type
+“<code class="docutils literal"><span class="pre">'a</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.create</span> <span class="pre">g</span> <span class="pre">n</span></code> : creates a new entry named “<code class="docutils literal"><span class="pre">n</span></code>”
+in the grammar “<code class="docutils literal"><span class="pre">g</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.parse</span> <span class="pre">e</span></code> : returns the stream parser of the entry
+“<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.parse_all</span> <span class="pre">e</span></code> : returns the stream parser
+returning all possible values while parsing with the entry
+“<code class="docutils literal"><span class="pre">e</span></code>”: may return more than one value when the parsing algorithm
+is “<code class="docutils literal"><span class="pre">Grammar.Backtracking</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.parse_token_stream</span> <span class="pre">e</span></code> : returns the token stream
+parser of the entry “<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.parse_parsable</span> <span class="pre">e</span></code> : returns the parsable parser
+of the entry “<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.name</span> <span class="pre">e</span></code> : returns the name of the entry “<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.of_parser</span> <span class="pre">g</span> <span class="pre">n</span> <span class="pre">p</span></code> : makes an entry from a token
+stream parser.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.print</span> <span class="pre">e</span></code> : displays the entry “<code class="docutils literal"><span class="pre">e</span></code>” using
+“<code class="docutils literal"><span class="pre">Format</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.find</span> <span class="pre">e</span> <span class="pre">s</span></code> : finds the entry named <code class="docutils literal"><span class="pre">s</span></code> in the
+rules of “<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Entry.obj</span> <span class="pre">e</span></code> : converts an entry into a
+“<code class="docutils literal"><span class="pre">Gramext.g_entry</span></code>” allowing to see what it holds.</li>
+</ul>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">of_entry</span> <span class="pre">:</span> <span class="pre">Entry.e</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">g;</span></code></dt>
+<dd>Return the grammar associated with an entry.</dd>
+</dl>
+<p class="rubric" id="printing-grammar-entries">printing grammar entries</p>
+<p>The function “<code class="docutils literal"><span class="pre">Grammar.Entry.print</span></code>” displays the current contents
+of an entry. Interesting for debugging, to look at the result of a
+syntax extension, to see the names of the levels.</p>
+<p>Try, for example, in the OCaml toplevel:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Grammar</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">print</span> <span class="n">Format</span><span class="o">.</span><span class="n">std_formatter</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">expr</span>
+</pre></div>
+</div>
+<p>The display does not include the patterns nor the semantic actions,
+whose sources are not recorded in the grammar entries data.</p>
+<p>Moreover, the local entries (not specified in the GLOBAL indicator of
+the EXTEND statement) are indicated with a star (“<code class="docutils literal"><span class="pre">*</span></code>”) to inform
+that they are not directly accessible.</p>
+<p class="rubric" id="clearing-grammars-and-entries">clearing grammars and entries</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">Unsafe</span> <span class="p">:</span>
+  <span class="n">sig</span>
+    <span class="n">value</span> <span class="n">gram_reinit</span> <span class="p">:</span> <span class="n">g</span> <span class="o">-&gt;</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer</span> <span class="n">token</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">clear_entry</span> <span class="p">:</span> <span class="n">Entry</span><span class="o">.</span><span class="n">e</span> <span class="s1">&#39;a -&gt; unit;</span>
+  <span class="n">end</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Module for clearing grammars and entries. To be manipulated with
+care, because: 1) reinitializing a grammar destroys all tokens and
+there may be problems with the associated lexer if there are
+keywords; 2) clearing an entry does not destroy the tokens used only
+by itself.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Grammar.Unsafe.reinit_gram</span> <span class="pre">g</span> <span class="pre">lex</span></code> removes the tokens of the
+grammar and sets “<code class="docutils literal"><span class="pre">lex</span></code>” as a new lexer for “<code class="docutils literal"><span class="pre">g</span></code>”. Warning:
+the lexer itself is not reinitialized.</li>
+<li><code class="docutils literal"><span class="pre">Grammar.Unsafe.clear_entry</span> <span class="pre">e</span></code> removes all rules of the entry
+“<code class="docutils literal"><span class="pre">e</span></code>”.</li>
+</ul>
+<p class="rubric" id="scan-entries">scan entries</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">print_entry</span> <span class="pre">:</span> <span class="pre">Format.formatter</span> <span class="pre">-&gt;</span> <span class="pre">Gramext.g_entry</span> <span class="pre">'te</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>General printer for all kinds of entries (obj entries).</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">iter_entry</span> <span class="p">:</span>
+  <span class="p">(</span><span class="n">Gramext</span><span class="o">.</span><span class="n">g_entry</span> <span class="s1">&#39;te -&gt; unit) -&gt; Gramext.g_entry &#39;</span><span class="n">te</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>“<code class="docutils literal"><span class="pre">Grammar.iter_entry</span> <span class="pre">f</span> <span class="pre">e</span></code>” applies “<code class="docutils literal"><span class="pre">f</span></code>” to the entry “<code class="docutils literal"><span class="pre">e</span></code>” and
+transitively all entries called by “<code class="docutils literal"><span class="pre">e</span></code>”. The order in which the
+entries are passed to “<code class="docutils literal"><span class="pre">f</span></code>” is the order they appear in each entry.
+Each entry is passed only once.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">fold_entry</span> <span class="pre">:</span> <span class="pre">(Gramext.g_entry</span> <span class="pre">'te</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">'a)</span> <span class="pre">-&gt;</span> <span class="pre">Gramext.g_entry</span> <span class="pre">'te</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">'a;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Grammar.fold_entry</span> <span class="pre">f</span> <span class="pre">e</span> <span class="pre">init</span></code>” computes
+“<code class="docutils literal"><span class="pre">(f</span> <span class="pre">eN</span> <span class="pre">..</span> <span class="pre">(f</span>&#160;&#160;&#160;&#160; <span class="pre">e2</span> <span class="pre">(f</span> <span class="pre">e1</span> <span class="pre">init)))</span></code>”, where “<code class="docutils literal"><span class="pre">e1</span> <span class="pre">..</span> <span class="pre">eN</span></code>” are
+“<code class="docutils literal"><span class="pre">e</span></code>” and transitively all entries called by “<code class="docutils literal"><span class="pre">e</span></code>”. The order
+in which the entries are passed to “<code class="docutils literal"><span class="pre">f</span></code>” is the order they
+appear in each entry. Each entry is passed only once.</dd>
+</dl>
+<p class="rubric" id="parsing-algorithm">parsing algorithm</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">type</span> <span class="n">parse_algorithm</span> <span class="o">=</span> <span class="n">Gramext</span><span class="o">.</span><span class="n">parse_algorithm</span> <span class="o">==</span>
+  <span class="p">[</span> <span class="n">Imperative</span> <span class="o">|</span> <span class="n">Backtracking</span> <span class="o">|</span> <span class="n">DefaultAlgorithm</span> <span class="p">]</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>Type of algorithm used in grammar entries.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Imperative</span></code>: use imperative streams</li>
+<li><code class="docutils literal"><span class="pre">Functional</span></code>: use functional streams with limited backtracking</li>
+<li><code class="docutils literal"><span class="pre">Backtracking</span></code>: use functional streams with full backtracking</li>
+<li><code class="docutils literal"><span class="pre">DefaultAlgorithm</span></code>: use the general default algorithm set by the
+function “<code class="docutils literal"><span class="pre">set_default_algorithm</span></code>” below, or through the
+environment variable <code class="docutils literal"><span class="pre">CAMLP5PARAM</span></code>.</li>
+</ul>
+<p>The default, when a grammar is created, is <code class="docutils literal"><span class="pre">DefaultAlgorithm</span></code>.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">set_algorithm</span> <span class="pre">:</span> <span class="pre">g</span> <span class="pre">-&gt;</span> <span class="pre">parse_algorithm</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Set the parsing algorithm for all entries of a given grammar.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">set_default_algorithm</span> <span class="pre">:</span> <span class="pre">parse_algorithm</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Set the default parsing algorithm for all grammars. If the
+environment variable CAMLP5PARAM contains “b”, the default is
+<code class="docutils literal"><span class="pre">Backtracking</span></code>; if it contains ‘f’, the default is
+<code class="docutils literal"><span class="pre">Functional</span></code>; if it contains ‘p’, the default is <code class="docutils literal"><span class="pre">Predictive</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">default_algorithm</span> <span class="pre">:</span> <span class="pre">unit</span> <span class="pre">-&gt;</span> <span class="pre">parse_algorithm;</span></code></dt>
+<dd>Return the current default algorithm.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">backtrack_stalling_limit</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">int;</span></code></dt>
+<dd>Limitation of backtracking to prevent stalling in case of syntax
+error. In backtracking algorithm, when there is a syntax error,
+the parsing continues trying to find another solution. It some
+grammars, it can be very long before checking all possibilities.
+This number limits the number of tokens tests after a backtrack.
+(The number of tokens tests is reset to zero when the token stream
+overtakes the last reached token.) The default is 10000. If set to
+0, there is no limit. Can be set by the environment variable
+CAMLP5PARAM by “l=value”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">backtrack_parse</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>Deprecated since 2017-06-06; rather use “set_default_algorithm
+Backtracking”.</dd>
+</dl>
+<p class="rubric" id="functorial-interface">functorial interface</p>
+<p>Alternative for grammar use. Grammars are not Ocaml values: there is
+no type for them. Modules generated preserve the rule “an entry
+cannot call an entry of another grammar” by normal OCaml typing.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="nb">type</span> <span class="n">GLexerType</span> <span class="o">=</span>
+  <span class="n">sig</span>
+    <span class="nb">type</span> <span class="n">te</span> <span class="o">=</span> <span class="s1">&#39;x;</span>
+    <span class="n">value</span> <span class="n">lexer</span> <span class="p">:</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer</span> <span class="n">te</span><span class="p">;</span>
+  <span class="n">end</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The input signature for the functor “<code class="docutils literal"><span class="pre">Grammar.GMake</span></code>”: “<code class="docutils literal"><span class="pre">te</span></code>” is
+the type of the tokens.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="nb">type</span> <span class="n">S</span> <span class="o">=</span>
+  <span class="n">sig</span>
+    <span class="nb">type</span> <span class="n">te</span> <span class="o">=</span> <span class="s1">&#39;x;</span>
+    <span class="nb">type</span> <span class="n">parsable</span> <span class="o">=</span> <span class="s1">&#39;x;</span>
+    <span class="n">value</span> <span class="n">parsable</span> <span class="p">:</span> <span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">char</span> <span class="o">-&gt;</span> <span class="n">parsable</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">tokens</span> <span class="p">:</span> <span class="n">string</span> <span class="o">-&gt;</span> <span class="nb">list</span> <span class="p">(</span><span class="n">string</span> <span class="o">*</span> <span class="nb">int</span><span class="p">);</span>
+    <span class="n">value</span> <span class="n">glexer</span> <span class="p">:</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer</span> <span class="n">te</span><span class="p">;</span>
+    <span class="n">value</span> <span class="n">set_algorithm</span> <span class="p">:</span> <span class="n">parse_algorithm</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+    <span class="n">module</span> <span class="n">Entry</span> <span class="p">:</span>
+      <span class="n">sig</span>
+        <span class="nb">type</span> <span class="n">e</span> <span class="s1">&#39;a = &#39;</span><span class="n">y</span><span class="p">;</span>
+        <span class="n">value</span> <span class="n">create</span> <span class="p">:</span> <span class="n">string</span> <span class="o">-&gt;</span> <span class="n">e</span> <span class="s1">&#39;a;</span>
+        <span class="n">value</span> <span class="n">parse</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; parsable -&gt; &#39;</span><span class="n">a</span><span class="p">;</span>
+        <span class="n">value</span> <span class="n">parse_token_stream</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Stream.t te -&gt; &#39;</span><span class="n">a</span><span class="p">;</span>
+        <span class="n">value</span> <span class="n">name</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; string;</span>
+        <span class="n">value</span> <span class="n">of_parser</span> <span class="p">:</span> <span class="n">string</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Stream</span><span class="o">.</span><span class="n">t</span> <span class="n">te</span> <span class="o">-&gt;</span> <span class="s1">&#39;a) -&gt; e &#39;</span><span class="n">a</span><span class="p">;</span>
+        <span class="n">value</span> <span class="nb">print</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; unit;</span>
+        <span class="n">external</span> <span class="n">obj</span> <span class="p">:</span> <span class="n">e</span> <span class="s1">&#39;a -&gt; Gramext.g_entry te = &quot;</span><span class="si">%i</span><span class="s1">dentity&quot;;</span>
+      <span class="n">end</span><span class="p">;</span>
+    <span class="n">module</span> <span class="n">Unsafe</span> <span class="p">:</span>
+      <span class="n">sig</span>
+        <span class="n">value</span> <span class="n">gram_reinit</span> <span class="p">:</span> <span class="n">Plexing</span><span class="o">.</span><span class="n">lexer</span> <span class="n">te</span> <span class="o">-&gt;</span> <span class="n">unit</span><span class="p">;</span>
+        <span class="n">value</span> <span class="n">clear_entry</span> <span class="p">:</span> <span class="n">Entry</span><span class="o">.</span><span class="n">e</span> <span class="s1">&#39;a -&gt; unit;</span>
+      <span class="n">end</span><span class="p">;</span>
+  <span class="n">end</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Signature type of the functor “<code class="docutils literal"><span class="pre">Grammar.GMake</span></code>”. The types and
+functions are almost the same than in generic interface, but:</p>
+<ul class="simple">
+<li>Grammars are not values. Functions holding a grammar as parameter
+do not have this parameter yet.</li>
+<li>The type “<code class="docutils literal"><span class="pre">parsable</span></code>” is used in function “<code class="docutils literal"><span class="pre">parse</span></code>” instead of
+the char stream, avoiding the possible loss of tokens.</li>
+<li>The type of tokens (expressions and patterns) can be any type
+(instead of (string * string)); the module parameter must specify
+a way to show them as (string * string).</li>
+</ul>
+<p><code class="docutils literal"><span class="pre">module</span> <span class="pre">GMake</span> <span class="pre">(L</span> <span class="pre">:</span> <span class="pre">GLexerType)</span> <span class="pre">:</span> <span class="pre">S</span> <span class="pre">with</span> <span class="pre">type</span> <span class="pre">te</span> <span class="pre">=</span> <span class="pre">L.te;</span></code></p>
+<p class="rubric" id="grammar-flags">grammar flags</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">skip_item</span> <span class="pre">:</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">'a;</span></code></dt>
+<dd><code class="docutils literal"><span class="pre">Grammar.skip_item</span> <span class="pre">x</span></code> can be called in a semantic action of a
+grammar rule to ask the grammar to skip that item if it is called
+in a list (LIST0 or LIST1). The function returns the item itself
+(for typing reasons) but its value is ignored. This function is
+used to allow IFDEF and IFNDEF for cases of constructor
+declarations and pattern matchings.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">error_verbose</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>Flag for displaying more information in case of parsing error;
+default = “<code class="docutils literal"><span class="pre">False</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">warning_verbose</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>Flag for displaying warnings while extension; default =
+“<code class="docutils literal"><span class="pre">True</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">strict_parsing</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">bool;</span></code></dt>
+<dd>Flag to apply strict parsing, without trying to recover errors;
+default = “<code class="docutils literal"><span class="pre">False</span></code>”.</dd>
+</dl>
+<p class="rubric" id="diff-module">Diff module</p>
+<p>Differences between two arrays. Used in Camlp5 sources, but can be
+used for other applications, independantly from Camlp5 stuff.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">f</span> <span class="p">:</span> <span class="n">array</span> <span class="s1">&#39;a -&gt; array &#39;</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">array</span> <span class="nb">bool</span> <span class="o">*</span> <span class="n">array</span> <span class="nb">bool</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">Diff.f</span> <span class="pre">a1</span> <span class="pre">a2</span></code> returns a pair of boolean arrays <code class="docutils literal"><span class="pre">(d1,</span> <span class="pre">d2)</span></code>.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">d1</span></code> has the same size as <code class="docutils literal"><span class="pre">a1</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">d2</span></code> has the same size as <code class="docutils literal"><span class="pre">a2</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">d1.(i)</span></code> is <code class="docutils literal"><span class="pre">True</span></code> if <code class="docutils literal"><span class="pre">a1.(i)</span></code> has no corresponding value in
+<code class="docutils literal"><span class="pre">a2</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">d2.(i)</span></code> is <code class="docutils literal"><span class="pre">True</span></code> if <code class="docutils literal"><span class="pre">a2.(i)</span></code> has no corresponding value in
+<code class="docutils literal"><span class="pre">a1</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">d1</span></code> and <code class="docutils literal"><span class="pre">d2</span></code> have the same number of values equal to
+<code class="docutils literal"><span class="pre">False</span></code>.</li>
+</ul>
+<p>Can be used, e.g., to write the <code class="docutils literal"><span class="pre">diff</span></code> program (comparison of two
+files), the input arrays being the array of lines of each file.</p>
+<p>Can be used also to compare two strings (they must have been exploded
+into arrays of chars), or two DNA strings, and so on.</p>
+<p class="rubric" id="extfold-module">Extfold module</p>
+<p>Module internally used to make the symbols <a class="reference external" href="grammars.html#a:Extensions-FOLD0-and-FOLD1">FOLD0 and
+FOLD1</a> work in the
+EXTEND statement + extension “<code class="docutils literal"><span class="pre">pa_extfold.cmo</span></code>”.</p>
+<p class="rubric" id="extfun-module">Extfun module</p>
+<p>Extensible functions.</p>
+<p>This module implements pattern matching extensible functions which
+work with the parsing kit “<code class="docutils literal"><span class="pre">pa_extfun.cmo</span></code>”, the syntax of an
+extensible function being:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">extfun</span> <span class="n">e</span> <span class="k">with</span> <span class="p">[</span> <span class="n">pattern_matching</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>See chapter : <a class="reference external" href="extfun.html">Extensible functions</a>.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">=</span> <span class="pre">'x;</span></code></dt>
+<dd>The type of the extensible functions of type <code class="docutils literal"><span class="pre">'a</span> <span class="pre">-&gt;</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">'b</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">empty</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">'b;</span></code></dt>
+<dd>Empty extensible function.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">apply</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">'b;</span></code></dt>
+<dd>Apply an extensible function.</dd>
+<dt><code class="docutils literal"><span class="pre">exception</span> <span class="pre">Failure;</span></code></dt>
+<dd>Match failure while applying an extensible function.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">print</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Print patterns in the order they are recorded in the data
+structure.</dd>
+</dl>
+<p class="rubric" id="eprinter-module">Eprinter module</p>
+<p>This module allows creation of printers, apply them and clear them.
+It is also internally used by the “<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>” statement.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">=</span> <span class="pre">'abstract;</span></code></dt>
+<dd>Printer type, to print values of type “<code class="docutils literal"><span class="pre">'a</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">pr_context</span> <span class="pre">=</span> <span class="pre">Pprintf.pr_context;</span></code></dt>
+<dd>Printing context.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">make</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">'a;</span></code></dt>
+<dd>Builds a printer. The string parameter is used in error messages.
+The printer is created empty and can be extended with the
+“<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>” statement.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">apply</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">pr_context</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">string;</span></code></dt>
+<dd>Applies a printer, returning the printed string of the parameter.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">apply_level</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">pr_context</span> <span class="pre">-&gt;</span> <span class="pre">'a</span> <span class="pre">-&gt;</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">string;</span></code></dt>
+<dd>Applies a printer at some specific level. Raises “<code class="docutils literal"><span class="pre">Failure</span></code>” if
+the given level does not exist.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">clear</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Clears a printer, removing all its levels and rules.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">print</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>Print printer patterns, in the order they are recorded, for
+debugging purposes.</dd>
+</dl>
+<p>Some other types and functions exist, for internal use.</p>
+<p class="rubric" id="fstream-module">Fstream module</p>
+<p>This module implement functional streams and parsers together with
+backtracking parsers.</p>
+<p>To be used with syntax “<code class="docutils literal"><span class="pre">pa_fstream.cmo</span></code>”. The syntax is:</p>
+<ul class="simple">
+<li>stream: “<code class="docutils literal"><span class="pre">fstream</span> <span class="pre">[:</span> <span class="pre">...</span> <span class="pre">:]</span></code>”</li>
+<li>functional parser: “<code class="docutils literal"><span class="pre">fparser</span> <span class="pre">[</span> <span class="pre">[:</span> <span class="pre">...</span> <span class="pre">:]</span> <span class="pre">-&gt;</span> <span class="pre">...</span> <span class="pre">|</span> <span class="pre">...</span> <span class="pre">]</span></code>”</li>
+<li>backtracking parser: “<code class="docutils literal"><span class="pre">bparser</span> <span class="pre">[</span> <span class="pre">[:</span> <span class="pre">...</span> <span class="pre">:]</span> <span class="pre">-&gt;</span> <span class="pre">...</span> <span class="pre">|</span> <span class="pre">...</span> <span class="pre">]</span></code>”</li>
+</ul>
+<p>Functional parsers are of type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;a -&gt; option (&#39;</span><span class="n">b</span> <span class="o">*</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;a)</span>
+</pre></div>
+</div>
+<p>Backtracking parsers are of type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;a -&gt; option (&#39;</span><span class="n">b</span> <span class="o">*</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;a * Fstream.kont &#39;</span><span class="n">a</span> <span class="s1">&#39;b)</span>
+</pre></div>
+</div>
+<p>Functional parsers use limited backtrack, i.e if a rule fails, the
+next rule is tested with the initial stream; limited because in the
+case of a rule with two consecutive symbols “<code class="docutils literal"><span class="pre">a</span></code>” and “<code class="docutils literal"><span class="pre">b</span></code>”, if
+“<code class="docutils literal"><span class="pre">b</span></code>” fails, the rule fails: there is no try with the next rule of
+“<code class="docutils literal"><span class="pre">a</span></code>”.</p>
+<p>Backtracking parsers have full backtrack. If a rule fails, the next
+case of the previous rule is tested.</p>
+<p class="rubric" id="functional-streams">Functional streams</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">=</span> <span class="pre">'x;</span></code></dt>
+<dd>The type of ‘a functional streams.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">from</span> <span class="pre">:</span> <span class="pre">(int</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">'a)</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">'a;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Fstream.from</span> <span class="pre">f</span></code>” returns a stream built from the function
+“<code class="docutils literal"><span class="pre">f</span></code>”. To create a new stream element, the function “<code class="docutils literal"><span class="pre">f</span></code>” is
+called with the current stream count. The user function “<code class="docutils literal"><span class="pre">f</span></code>”
+must return either “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">&lt;value&gt;</span></code>” for a value or “<code class="docutils literal"><span class="pre">None</span></code>” to
+specify the end of the stream.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">of_list</span> <span class="pre">:</span> <span class="pre">list</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">'a;</span></code></dt>
+<dd>Return the stream holding the elements of the list in the same
+order.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">of_string</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">char;</span></code></dt>
+<dd>Return the stream of the characters of the string parameter.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">of_channel</span> <span class="pre">:</span> <span class="pre">in_channel</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">char;</span></code></dt>
+<dd>Return the stream of the characters read from the input channel.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">iter</span> <span class="pre">:</span> <span class="pre">('a</span> <span class="pre">-&gt;</span> <span class="pre">unit)</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">unit;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">Fstream.iter</span> <span class="pre">f</span> <span class="pre">s</span></code>” scans the whole stream s, applying function
+“<code class="docutils literal"><span class="pre">f</span></code>” in turn to each stream element encountered.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">next</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">('a</span> <span class="pre">*</span> <span class="pre">t</span> <span class="pre">'a);</span></code></dt>
+<dd>Return “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">(a,</span> <span class="pre">s)</span></code>” where “<code class="docutils literal"><span class="pre">a</span></code>” is the first element of the
+stream and <code class="docutils literal"><span class="pre">s</span></code> the remaining stream, or “<code class="docutils literal"><span class="pre">None</span></code>” if the stream
+is empty.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">empty</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">(unit</span> <span class="pre">*</span> <span class="pre">t</span> <span class="pre">'a);</span></code></dt>
+<dd>Return “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">((),</span> <span class="pre">s)</span></code>” if the stream is empty where <code class="docutils literal"><span class="pre">s</span></code> is
+itself, else “<code class="docutils literal"><span class="pre">None</span></code>”.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">count</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>Return the current count of the stream elements, i.e. the number
+of the stream elements discarded.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">count_unfrozen</span> <span class="pre">:</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">int;</span></code></dt>
+<dd>Return the number of unfrozen elements in the beginning of the
+stream; useful to determine the position of a parsing error
+(longest path).</dd>
+</dl>
+<p class="rubric" id="backtracking-parsers">Backtracking parsers</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">kont</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">=</span> <span class="pre">[</span> <span class="pre">K</span> <span class="pre">of</span> <span class="pre">unit</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">('b</span> <span class="pre">*</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">*</span> <span class="pre">kont</span> <span class="pre">'a</span> <span class="pre">'b)</span> <span class="pre">];</span></code></dt>
+<dd>The type of continuation of a backtracking parser.</dd>
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">bp</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">=</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">('b</span> <span class="pre">*</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">*</span> <span class="pre">kont</span> <span class="pre">'a</span> <span class="pre">'b);</span></code></dt>
+<dd>The type of a backtracking parser.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">bcontinue</span> <span class="pre">:</span> <span class="pre">kont</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">-&gt;</span> <span class="pre">option</span> <span class="pre">('b</span> <span class="pre">*</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">*</span> <span class="pre">kont</span> <span class="pre">'a</span> <span class="pre">'b);</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">bcontinue</span> <span class="pre">k</span></code>” return the next solution of a backtracking
+parser.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">bparse_all</span> <span class="pre">:</span> <span class="pre">bp</span> <span class="pre">'a</span> <span class="pre">'b</span> <span class="pre">-&gt;</span> <span class="pre">t</span> <span class="pre">'a</span> <span class="pre">-&gt;</span> <span class="pre">list</span> <span class="pre">'b;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">bparse_all</span> <span class="pre">p</span> <span class="pre">strm</span></code>” return the list of all solutions of a
+backtracking parser applied to a functional stream.</dd>
+</dl>
+<p class="rubric" id="pprintf-module">Pprintf module</p>
+<p>Definitions for pprintf statement.</p>
+<p>This module contains types and functions for the “pprintf” statement
+used by the syntax extension “pa_pprintf.cmo”.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">type</span> <span class="pre">pr_context</span> <span class="pre">=</span> <span class="pre">{</span> <span class="pre">ind</span> <span class="pre">:</span> <span class="pre">int;</span> <span class="pre">bef</span> <span class="pre">:</span> <span class="pre">string;</span> <span class="pre">aft</span> <span class="pre">:</span> <span class="pre">string;</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">dang</span> <span class="pre">:</span> <span class="pre">string</span> <span class="pre">};</span></code></dt>
+<dd><p class="first">Printing context.</p>
+<ul class="last simple">
+<li>“<code class="docutils literal"><span class="pre">ind</span></code>” : the current indendation</li>
+<li>“<code class="docutils literal"><span class="pre">bef</span></code>” : what should be printed before, in the same line</li>
+<li>“<code class="docutils literal"><span class="pre">aft</span></code>” : what should be printed after, in the same line</li>
+<li>“<code class="docutils literal"><span class="pre">dang</span></code>” : the dangling token to know whether parentheses are
+necessary</li>
+</ul>
+</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">empty_pc</span> <span class="pre">:</span> <span class="pre">pr_context;</span></code></dt>
+<dd>Empty printer context, equal to
+<code class="docutils literal"><span class="pre">{ind</span> <span class="pre">=</span> <span class="pre">0;</span> <span class="pre">bef</span> <span class="pre">=</span> <span class="pre">&quot;&quot;;</span> <span class="pre">aft</span> <span class="pre">=</span>&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">&quot;&quot;;</span> <span class="pre">dang</span> <span class="pre">=</span> <span class="pre">&quot;&quot;}</span></code></dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">sprint_break</span> <span class="p">:</span>
+  <span class="nb">int</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">-&gt;</span> <span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="p">(</span><span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>“<code class="docutils literal"><span class="pre">sprint_break</span> <span class="pre">nspaces</span> <span class="pre">offset</span> <span class="pre">pc</span> <span class="pre">f</span> <span class="pre">g</span></code>” concat the two strings
+returned by “<code class="docutils literal"><span class="pre">f</span></code>” and “<code class="docutils literal"><span class="pre">g</span></code>”, either in one line, if it holds
+without overflowing (see module “<code class="docutils literal"><span class="pre">Pretty</span></code>”), with “<code class="docutils literal"><span class="pre">nspaces</span></code>”
+spaces betwen them, or in two lines with “<code class="docutils literal"><span class="pre">offset</span></code>” spaces added in
+the indentation for the second line.
+This function don’t need to be called directly. It is generated by
+the “<code class="docutils literal"><span class="pre">pprintf</span></code>” statement according to its parameters when the
+format contains breaks, like “<code class="docutils literal"><span class="pre">&#64;;</span></code>” and “<a href="#id2"><span class="problematic" id="id3">``</span></a>&#64;&nbsp;<a href="#id4"><span class="problematic" id="id5">``</span></a>”.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">value</span> <span class="n">sprint_break_all</span> <span class="p">:</span>
+  <span class="nb">bool</span> <span class="o">-&gt;</span> <span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span>
+    <span class="nb">list</span> <span class="p">(</span><span class="nb">int</span> <span class="o">*</span> <span class="nb">int</span> <span class="o">*</span> <span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>“<code class="docutils literal"><span class="pre">sprint_break_all</span> <span class="pre">force_newlines</span> <span class="pre">pc</span> <span class="pre">f</span> <span class="pre">fl</span></code>” concat all strings
+returned by the list with separators “<code class="docutils literal"><span class="pre">f-fl</span></code>”, the separators being
+the number of spaces and the offset like in the function
+“<code class="docutils literal"><span class="pre">sprint_break</span></code>”. The function works as “all or nothing”, i.e. if
+the resulting string does not hold on the line, all strings are
+printed in different lines (even if sub-parts could hold in single
+lines). If the parameter “<code class="docutils literal"><span class="pre">force_newline</span></code>” is “<code class="docutils literal"><span class="pre">True</span></code>”, all
+strings are printed in different lines, no horizontal printing is
+tested.
+This function don’t need to be called directly. It is generated by
+the “<code class="docutils literal"><span class="pre">pprintf</span></code>” statement according to its parameters when the
+format contains parenthesized parts with “break all” like “<code class="docutils literal"><span class="pre">&#64;[&lt;a&gt;</span></code>”
+and “<code class="docutils literal"><span class="pre">&#64;]</span></code>”, or “<code class="docutils literal"><span class="pre">&#64;[&lt;b&gt;</span></code>” and “<code class="docutils literal"><span class="pre">&#64;]</span></code>”.
+.. rubric:: Pretty module</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">name:</th><td class="field-body">pretty-module</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Pretty printing on strings. Basic functions.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">horiz_vertic</span> <span class="pre">:</span> <span class="pre">(unit</span> <span class="pre">-&gt;</span> <span class="pre">'a)</span> <span class="pre">-&gt;</span> <span class="pre">(unit</span> <span class="pre">-&gt;</span> <span class="pre">'a)</span> <span class="pre">-&gt;</span> <span class="pre">'a;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">horiz_vertic</span> <span class="pre">h</span> <span class="pre">v</span></code>” first calls “<code class="docutils literal"><span class="pre">h</span></code>” to print the data
+horizontally, i.e. without newlines. If the displaying contains
+newlines or if its size exceeds the maximum line length (see
+variable “<code class="docutils literal"><span class="pre">line_length</span></code>” below), then the function “<code class="docutils literal"><span class="pre">h</span></code>” stops
+and the function “<code class="docutils literal"><span class="pre">v</span></code>” is called which can print using several
+lines.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">sprintf</span> <span class="pre">:</span> <span class="pre">format</span> <span class="pre">'a</span> <span class="pre">unit</span> <span class="pre">string</span> <span class="pre">-&gt;</span> <span class="pre">'a;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">sprintf</span> <span class="pre">fmt</span> <span class="pre">...</span></code>” formats some string like
+“<code class="docutils literal"><span class="pre">Printf.sprintf</span></code>” does, except that, if it is called in the
+context of the *first* function of “<code class="docutils literal"><span class="pre">horiz_vertic</span></code>” above, it
+checks whether the resulting string has chances to fit in the
+line. If not, i.e. if it contains newlines or if its length is
+greater than “<code class="docutils literal"><span class="pre">max_line_length.val</span></code>”, the function gives up
+(raising some internal exception). Otherwise the built string is
+returned. “<code class="docutils literal"><span class="pre">sprintf</span></code>” behaves like “<code class="docutils literal"><span class="pre">Printf.sprintf</span></code>” if it is
+called in the context of the *second* function of
+“<code class="docutils literal"><span class="pre">horiz_vertic</span></code>” or without context at all.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">line_length</span> <span class="pre">:</span> <span class="pre">ref</span> <span class="pre">int;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">line_length</span></code>” is the maximum length (in characters) of the
+line. Default = 78. Can be set to any other value before printing.</dd>
+<dt><code class="docutils literal"><span class="pre">value</span> <span class="pre">horizontally</span> <span class="pre">:</span> <span class="pre">unit</span> <span class="pre">-&gt;</span> <span class="pre">bool;</span></code></dt>
+<dd>“<code class="docutils literal"><span class="pre">horizontally</span> <span class="pre">()</span></code>” returns the fact that the context is an
+horizontal print.</dd>
+</dl>
+<p class="rubric" id="deprecated-modules-stdpp-and-token">Deprecated modules Stdpp and Token</p>
+<p>The modules “<code class="docutils literal"><span class="pre">Stdpp</span></code>” and “<code class="docutils literal"><span class="pre">Token</span></code>” have been deprecated since
+version 5.00. The module “<code class="docutils literal"><span class="pre">Stdpp</span></code>” was renamed “<code class="docutils literal"><span class="pre">Ploc</span></code>” and most
+of its variables and types were also renamed. The module “<code class="docutils literal"><span class="pre">Token</span></code>”
+was renamed “<code class="docutils literal"><span class="pre">Plexing</span></code>”</p>
+<p>Backward compatibility is assured. See the files “<code class="docutils literal"><span class="pre">stdpp.mli</span></code>” and
+“<code class="docutils literal"><span class="pre">token.mli</span></code>” in the Camlp5 distribution to convert from old to new
+names, if any. After several versions or years, the modules
+“<code class="docutils literal"><span class="pre">Stdpp</span></code>” and “<code class="docutils literal"><span class="pre">Token</span></code>” will disappear from Camlp5.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sources.html" class="btn btn-neutral float-right" title="Camlp5 sources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="commands.html" class="btn btn-neutral float-left" title="Commands and Files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

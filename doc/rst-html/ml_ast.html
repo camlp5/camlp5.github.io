@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Syntax tree &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Syntax tree - transitional mode" href="ast_transi.html" />
+    <link rel="prev" title="Locations" href="locations.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Syntax tree</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstml_ast.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="syntax-tree">
+<h1>Syntax tree<a class="headerlink" href="#syntax-tree" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Syntax tree</p>
+<p>In Camlp5, one often uses syntax trees. For example, in grammars of
+the language (semantic actions), in pretty printing (as patterns), in
+optimizing syntax code (typically stream parsers). Syntax trees are
+mainly defined by sum types, one for each kind of tree: “<code class="docutils literal"><span class="pre">expr</span></code>”
+for expressions, “<code class="docutils literal"><span class="pre">patt</span></code>” for patterns, “<code class="docutils literal"><span class="pre">ctyp</span></code>” for types,
+“<code class="docutils literal"><span class="pre">str_item</span></code>” for structure items, and so on. Each node corresponds
+to a possible value of this type.</p>
+<p class="rubric" id="transitional-and-strict-modes">Transitional and Strict modes</p>
+<p>Since version 5.00 of Camlp5, the definition of the syntax tree has
+been different according to the mode Camlp5 has been installed:</p>
+<ul class="simple">
+<li>In <a class="reference external" href="ast_transi.html">transitional</a> mode, this definition is the
+same than in the previous Camlp5 versions.</li>
+<li>In <a class="reference external" href="ast_strict.html">strict</a> mode, many constructor parameters
+have a type enclosed by the predefined type “<code class="docutils literal"><span class="pre">Ploc.vala</span></code>”.</li>
+</ul>
+<p>The advantage of the transitional mode is that the abstract syntax
+tree is fully compatible with previous versions of Camlp5. Its
+drawback is that when using the <a class="reference external" href="q_ast.html">syntax tree quotations in user
+syntax</a>, it is not possible to use antiquotations, a
+significatant limitation.</p>
+<p>In strict mode, the abstract syntax is not compatible with versions
+of Camlp5 previous to 5.00. Most of the parameters of the constructor
+are enclosed with the type “<code class="docutils literal"><span class="pre">Ploc.vala</span></code>” whose aim is to allow
+nodes to be either of the type argument, or an antiquotation. In this
+mode, the syntax tree quotations in user syntax can be used, with the
+same power of the previous syntax tree quotations provided by Camlp5.</p>
+<p class="rubric" id="compatibility">Compatibility</p>
+<p>As there is a problem of compatibility in strict mode, a good
+solution, for the programmer, is to always use syntax trees using
+quotations, which is backward compatible. See the chapter about
+<a class="reference external" href="ast_strict.html">syntax tree in strict mode</a>.</p>
+<p>For example, if the program made a value of the syntax tree of the
+“let” statement, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ExLet</span> <span class="n">loc</span> <span class="n">rf</span> <span class="n">pel</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>In strict mode, to be equivalent, this expression should be rewritten
+like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ExLet</span> <span class="n">loc</span> <span class="p">(</span><span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span> <span class="n">rf</span><span class="p">)</span> <span class="p">(</span><span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span> <span class="n">pel</span><span class="p">)</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>where “<code class="docutils literal"><span class="pre">Ploc.VaVal</span></code>” is a value of the type “<code class="docutils literal"><span class="pre">vala</span></code>” defined in
+the module <a class="reference external" href="library.html">Ploc</a> (see its section “pervasives”).</p>
+<p>This necessary conversion is a drawback if the programmer wants that
+his programs remain compilable with previous versions of Camlp5.</p>
+<p>The recommended solution is to always write this code with
+quotations, namely, in this example, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;:expr&lt; let $flag:rf$ $list:pel$ in $e$ &gt;&gt;
+</pre></div>
+</div>
+<p>The quotation expanders ensure that, in strict mode, the variable
+“rf” is still of type “<code class="docutils literal"><span class="pre">bool</span></code>”, and that the variable “pel” of type
+“<code class="docutils literal"><span class="pre">list</span> <span class="pre">(patt</span> <span class="pre">*</span> <span class="pre">expr)</span></code>”, by enclosing them around “<code class="docutils literal"><span class="pre">Ploc.VaVal</span></code>”.</p>
+<p>In transitional mode, it is equivalent to the first form above. In
+strict mode, it is equivalent to the second form. And the previous
+versions of Camlp5 also recognizes this form.</p>
+<p class="rubric" id="two-quotations-expanders">Two quotations expanders</p>
+<p>Camlp5 provides two quotations expanders of syntax trees:
+“<code class="docutils literal"><span class="pre">q_MLast.cmo</span></code>” and “<code class="docutils literal"><span class="pre">q_ast.cmo</span></code>”.</p>
+<p>Both allow writing syntax trees in concrete syntax as explained in
+the previous section.</p>
+<p>The first one, “<code class="docutils literal"><span class="pre">q_MLast.cmo</span></code>” requires that the contents of the
+quotation be in <a class="reference external" href="revsynt.html">revised syntax</a> without any syntax
+extension (even the <a class="reference external" href="parsers.html">stream parsers</a>). It works in
+transitional and in strict modes.</p>
+<p>The second one, “<code class="docutils literal"><span class="pre">q_ast.cmo</span></code>” requires that the contents of the
+quotation be in the current user syntax (normal, revised, lisp,
+scheme, or other) and can accept all the syntax extensions he added
+to compile his program. It fully works only in strict mode. In
+transitional mode, the antiquotations are not available.</p>
+<p class="rubric" id="syntax-tree-and-quotations-in-the-two-modes">Syntax tree and Quotations in the two modes</p>
+<p>For the detail of the syntax tree and the quotations forms, see the
+chapters about the <a class="reference external" href="ast_transi.html">syntax tree in transitional
+mode</a> and the <a class="reference external" href="ast_strict.html">syntax tree in strict
+mode</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ast_transi.html" class="btn btn-neutral float-right" title="Syntax tree - transitional mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="locations.html" class="btn btn-neutral float-left" title="Locations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

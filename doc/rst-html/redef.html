@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Redefining OCaml syntax &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quotations" href="quot.html" />
+    <link rel="prev" title="Extensions of printing" href="opretty.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Redefining OCaml syntax</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstredef.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="redefining-ocaml-syntax">
+<h1>Redefining OCaml syntax<a class="headerlink" href="#redefining-ocaml-syntax" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Redefining OCaml syntax</p>
+<p>Better than just <a class="reference external" href="syntext.html">syntax extensions</a>, it is possible
+to redefine the whole syntax of the language. For example, to:</p>
+<ul class="simple">
+<li>define your own syntax, like the <a class="reference external" href="revsynt.html">revised syntax</a>
+does,</li>
+<li>have a version whose keywords are translated in your native
+language,</li>
+<li>restrict the OCaml language,</li>
+<li>interpret XML (or other languages) as OCaml source,</li>
+<li>and so on…</li>
+</ul>
+<p class="rubric" id="starting-with-an-example">Starting with an example</p>
+<p>A way to start doing this is to take, in Camlp5 sources, one of the
+files “etc/pa_o.ml” or file “meta/pa_r.ml”. The first one defines the
+OCaml standard syntax and the second one the revised syntax.</p>
+<p>Let’s say you want to take the normal syntax and make some
+readjustments. You first make a copy of “etc/pa_o.ml” naming it,
+e.g., “mysyntax.ml” (the example below works similarly if you take
+“meta/pa_r.ml” instead):</p>
+<p>To test, you can compile it with the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>ocamlc -pp camlp5r -I $(camlp5 -where) -c mysyntax.ml
+</pre></div>
+</div>
+<p>This produces the file “mysyntax.cmo”. Now you can compile one of
+your files, e.g. “foo.ml”, if written in this syntax, i.e. the normal
+OCaml syntax if you made no changes in “mysyntax.ml”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="s1">&#39;camlp5 ./mysyntax.cmo pr_dump.cmo&#39;</span> <span class="o">-</span><span class="n">c</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>If there si no changes in “mysyntax.ml” from “pa_o.ml”, this is just
+a compilation with the normal OCaml syntax. To make changes, you can
+edit the file “mysyntax.ml” and recompile it. As an exercice, try to
+translate some keywords in your native language (or another language
+if it is not English).</p>
+<p>Reading the way Camlp5 <a class="reference external" href="grammars.html">extensible grammars</a> and
+<a class="reference external" href="ast_strict.html">syntax tree</a> work (both used in “pa_o.ml” and
+“pa_r.ml”), you can make more complicated changes or change
+everything, if you want.</p>
+<p class="rubric" id="a-file-for-an-ocaml-syntax">A file for an OCaml syntax</p>
+<p>This is what you can find in the files “pa_o.ml” and “pa_r.ml”.</p>
+<p>An OCaml syntax files uses the Camlp5 library module
+<a class="reference external" href="pcaml.html">Pcaml</a>. All grammar entries are defined there. The
+first thing is the reinitialization of the grammar (which clear all
+tokens and define a lexer) and all grammar entries, to be sure that
+no possible previous loaded grammars remain.</p>
+<p>If using the same lexer (provided in Camlp5 library module
+<a class="reference external" href="library.html#a:Plexer-module">Plexer</a>), it is done by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Grammar</span><span class="o">.</span><span class="n">Unsafe</span><span class="o">.</span><span class="n">gram_reinit</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">gram</span> <span class="p">(</span><span class="n">Plexer</span><span class="o">.</span><span class="n">gmake</span> <span class="p">())</span>
+</pre></div>
+</div>
+<p>The cleanup of all grammar entries are done by calls to the function
+“Grammar.Unsafe.clear_entry”. The main entries are Pcaml.interf, for
+compiling an interface (a “.mli” file) and Pcaml.implem, for
+compiling an implementation (a “.ml” file). And all other grammars
+entries you want to use must be cleared:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Grammar</span><span class="o">.</span><span class="n">Unsafe</span><span class="o">.</span><span class="n">clear_entry</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">interf</span><span class="p">;</span>
+<span class="n">Grammar</span><span class="o">.</span><span class="n">Unsafe</span><span class="o">.</span><span class="n">clear_entry</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">implem</span><span class="p">;</span>
+<span class="n">Grammar</span><span class="o">.</span><span class="n">Unsafe</span><span class="o">.</span><span class="n">clear_entry</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">expr</span><span class="p">;</span>
+<span class="n">Grammar</span><span class="o">.</span><span class="n">Unsafe</span><span class="o">.</span><span class="n">clear_entry</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">patt</span><span class="p">;</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Actually, the camlp5 command can compile the input file with other
+ways than using the Camlp5 grammars. The variables
+“Pcaml.parse_interf” and “Pcaml.parse_implem” are references to the
+functions called by camlp5. By default, it is the Camlp5 grammar
+syntax, but to be sure it goes on using it (if a previous load
+changed that), the following statement are added:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Pcaml</span><span class="o">.</span><span class="n">parse_interf</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">Grammar</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">parse</span> <span class="n">interf</span><span class="p">;</span>
+<span class="n">Pcaml</span><span class="o">.</span><span class="n">parse_implem</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">Pcaml</span><span class="o">.</span><span class="n">Grammar</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">parse</span> <span class="n">implem</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>In the files “pa_o.ml” and “pa_r.ml”, some local functions follow,
+which are themselves followed by a call to the big statement
+“EXTEND”, the main statement of the Camlp5 extensible grammars
+system.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="quot.html" class="btn btn-neutral float-right" title="Quotations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="opretty.html" class="btn btn-neutral float-left" title="Extensions of printing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

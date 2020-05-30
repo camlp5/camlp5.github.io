@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Extensible printers &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pprintf" href="pprintf.html" />
+    <link rel="prev" title="Parsing tools" href="printing-tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="printing-tools.html">Parsing tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Extensible printers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pprintf.html">Pprintf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pretty.html">Pretty print</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="printing-tools.html">Parsing tools</a> &raquo;</li>
+        
+      <li>Extensible printers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstprinters.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="extensible-printers">
+<h1>Extensible printers<a class="headerlink" href="#extensible-printers" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Extensible printers</p>
+<p>This chapter describes the syntax and semantics of the extensible
+printers of Camlp5.</p>
+<p>Similar to the <a class="reference external" href="grammars.html">extensible grammars</a>, the
+extensible printers allow to define and extend printers of data or
+programs. A specific statement “<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>” allow to define
+these extensions.</p>
+<p class="rubric" id="getting-started">Getting started</p>
+<p>A printer is a value of type “<code class="docutils literal"><span class="pre">Eprinter.t</span> <span class="pre">a</span></code>” where “<code class="docutils literal"><span class="pre">a</span></code>” is the
+type of the item to be printed. When applied, a printer returns a
+string, representing the printed item.</p>
+<p>To create a printer, one must use the function “<code class="docutils literal"><span class="pre">Eprinter.make</span></code>”
+with, as parameter, the name of the printer, (used in error
+messages). A printer is created empty, i.e. it fails if it is
+applied.</p>
+<p>As with grammar entries, printers may have several levels. When the
+function “<code class="docutils literal"><span class="pre">Eprinter.apply</span></code>” is applied to a printer, the first
+level is called. The function “<code class="docutils literal"><span class="pre">Eprinter.apply_level</span></code>” allows to
+call a printer at some specific level possibly different from the
+first one. When a level does not match any value of the printed item,
+the next level is tested. If there is no more levels, the printer
+fails.</p>
+<p>In semantic actions of printers, functions are provided to
+recursively call the current level and the next level. Moreover, a
+<em>printing context</em> variable is also given, giving the current
+indentation, what should be printed before in the same line and what
+should be printed after in the same line (it is not mandatory to use
+them).</p>
+<p>The extension of printers can be done with the “<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>”
+statement added by the <em>parsing kit</em> “<code class="docutils literal"><span class="pre">pa_extprint.cmo</span></code>”.</p>
+<p class="rubric" id="syntax-of-the-extend-printer-statement">Syntax of the EXTEND_PRINTER statement</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>      <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">extend</span><span class="o">-</span><span class="n">statement</span>
+<span class="n">extend</span><span class="o">-</span><span class="n">statement</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;EXTEND_PRINTER&quot;</span> <span class="n">extend</span><span class="o">-</span><span class="n">body</span> <span class="s2">&quot;END&quot;</span>
+     <span class="n">extend</span><span class="o">-</span><span class="n">body</span> <span class="p">:</span><span class="o">:=</span> <span class="n">extend</span><span class="o">-</span><span class="n">printers</span>
+ <span class="n">extend</span><span class="o">-</span><span class="n">printers</span> <span class="p">:</span><span class="o">:=</span> <span class="n">extend</span><span class="o">-</span><span class="n">printer</span> <span class="n">extend</span><span class="o">-</span><span class="n">printers</span>
+                   <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+  <span class="n">extend</span><span class="o">-</span><span class="n">printer</span> <span class="p">:</span><span class="o">:=</span> <span class="n">printer</span><span class="o">-</span><span class="n">name</span> <span class="s2">&quot;:&quot;</span> <span class="n">position</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;[&quot;</span> <span class="n">levels</span> <span class="s2">&quot;]&quot;</span>
+    <span class="n">position</span><span class="o">-</span><span class="n">opt</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;FIRST&quot;</span>
+                   <span class="o">|</span> <span class="s2">&quot;LAST&quot;</span>
+                   <span class="o">|</span> <span class="s2">&quot;BEFORE&quot;</span> <span class="n">label</span>
+                   <span class="o">|</span> <span class="s2">&quot;AFTER&quot;</span> <span class="n">label</span>
+                   <span class="o">|</span> <span class="s2">&quot;LEVEL&quot;</span> <span class="n">label</span>
+                   <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+          <span class="n">levels</span> <span class="p">:</span><span class="o">:=</span> <span class="n">level</span> <span class="s2">&quot;|&quot;</span> <span class="n">levels</span>
+                   <span class="o">|</span> <span class="n">level</span>
+           <span class="n">level</span> <span class="p">:</span><span class="o">:=</span> <span class="n">label</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;[&quot;</span> <span class="n">rules</span> <span class="s2">&quot;]&quot;</span>
+       <span class="n">label</span><span class="o">-</span><span class="n">opt</span> <span class="p">:</span><span class="o">:=</span> <span class="n">label</span>
+                   <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+           <span class="n">rules</span> <span class="p">:</span><span class="o">:=</span> <span class="n">rule</span> <span class="s2">&quot;|&quot;</span> <span class="n">rules</span>
+                   <span class="o">|</span> <span class="n">rule</span>
+            <span class="n">rule</span> <span class="p">:</span><span class="o">:=</span> <span class="n">pattern</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+                   <span class="o">|</span> <span class="n">pattern</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+    <span class="n">printer</span><span class="o">-</span><span class="n">name</span> <span class="p">:</span><span class="o">:=</span> <span class="n">qualid</span>
+          <span class="n">qualid</span> <span class="p">:</span><span class="o">:=</span> <span class="n">qualid</span> <span class="s2">&quot;.&quot;</span> <span class="n">qualid</span>
+                   <span class="o">|</span> <span class="n">uident</span>
+                   <span class="o">|</span> <span class="n">lident</span>
+          <span class="n">uident</span> <span class="p">:</span><span class="o">:=</span> <span class="s1">&#39;A&#39;</span><span class="o">-</span><span class="s1">&#39;Z&#39;</span> <span class="n">ident</span>
+          <span class="n">lident</span> <span class="p">:</span><span class="o">:=</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="o">-</span><span class="s1">&#39;z&#39;</span> <span class="o">|</span> <span class="s1">&#39;_&#39;</span> <span class="o">|</span> <span class="n">misc</span><span class="o">-</span><span class="n">byte</span><span class="p">)</span> <span class="n">ident</span>
+           <span class="n">ident</span> <span class="p">:</span><span class="o">:=</span> <span class="n">ident</span><span class="o">-</span><span class="n">char</span><span class="o">*</span>
+      <span class="n">ident</span><span class="o">-</span><span class="n">char</span> <span class="p">:</span><span class="o">:=</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="o">-</span><span class="s1">&#39;a&#39;</span> <span class="o">|</span> <span class="s1">&#39;A&#39;</span><span class="o">-</span><span class="s1">&#39;Z&#39;</span> <span class="o">|</span> <span class="s1">&#39;0&#39;</span><span class="o">-</span><span class="s1">&#39;9&#39;</span> <span class="o">|</span> <span class="s1">&#39;_&#39;</span> <span class="o">|</span> <span class="s1">&#39;&#39;&#39; | misc-byte)</span>
+<span class="s1">       misc-byte ::= &#39;</span><span class="se">\12</span><span class="s1">8&#39;-&#39;</span><span class="se">\255</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<p class="rubric" id="semantics-of-extend-printer">Semantics of EXTEND_PRINTER</p>
+<p class="rubric" id="printers-definition-list">Printers definition list</p>
+<p>All printers are extended according to their corresponding
+definitions which start with an optional “position” and follow with
+the “levels” definition.</p>
+<p class="rubric" id="optional-position">Optional position</p>
+<p>After the colon, it is possible to specify where to insert the
+defined levels:</p>
+<ul class="simple">
+<li>The identifier “<code class="docutils literal"><span class="pre">FIRST</span></code>” (resp. “<code class="docutils literal"><span class="pre">LAST</span></code>”) indicates that the
+level must be inserted before (resp. after) all possibly existing
+levels of the entry. They become their first (resp. last) levels.</li>
+<li>The identifier “<code class="docutils literal"><span class="pre">BEFORE</span></code>” (resp. “<code class="docutils literal"><span class="pre">AFTER</span></code>”) followed by a
+level label (a string) indicates that the levels must be inserted
+before (resp. after) that level, if it exists. If it does not
+exist, the extend statement fails at run time.</li>
+<li>The identifier “<code class="docutils literal"><span class="pre">LEVEL</span></code>” followed by a label indicates that the
+first level defined in the extend statement must be inserted at
+the given level, extending and modifying it. The other levels
+defined in the statement are inserted after this level, and before
+the possible levels following this level. If there is no level
+with this label, the extend statement fails at run time.</li>
+<li>By default, if the entry has no level, the levels defined in the
+statement are inserted in the entry. Otherwise the first defined
+level is inserted at the first level of the entry, extending or
+modifying it. The other levels are inserted afterwards (before the
+possible second level which may previously exist in the entry).</li>
+</ul>
+<p class="rubric" id="levels">Levels</p>
+<p>After the optional “position”, the <em>level</em> list follow. The levels
+are separated by vertical bars, the whole list being between
+brackets.</p>
+<p>A level starts with an optional label, which corresponds to its name.
+This label is useful to specify this level in case of future
+extensions, using the <em>position</em> (see previous section) or for
+possible direct calls to this specific level.</p>
+<p class="rubric" id="rules">Rules</p>
+<p>A level is a list of <em>rules</em> separated by vertical bars, the whole
+list being between brackets.</p>
+<p>A rule is an usual pattern association (in a function or in the
+“match” statement), i.e. a pattern, an arrow and an expression. The
+expression is the semantic action which must be of type “<code class="docutils literal"><span class="pre">string</span></code>”.</p>
+<p class="rubric" id="rules-insertion">Rules insertion</p>
+<p>The rules are sorted by their patterns, according to the rules of the
+<a class="reference external" href="extfun.html">extensible functions</a>.</p>
+<p class="rubric" id="semantic-action">Semantic action</p>
+<p>The semantic action, i.e. the expression following the right arrow in
+rules, contains in its environment the variables bound by the pattern
+and three more variables:</p>
+<ul class="simple">
+<li>The variable “<code class="docutils literal"><span class="pre">curr</span></code>” which is a function which can be called to
+recursively invoke the printer at the current level,</li>
+<li>The variable “<code class="docutils literal"><span class="pre">next</span></code>” which is a function which can be called to
+invoke the printer at the next level,</li>
+<li>The variable “<code class="docutils literal"><span class="pre">pc</span></code>” which contains the printing context of type
+“<code class="docutils literal"><span class="pre">Pprintf.pr_context</span></code>” (see chapter <a class="reference external" href="pprintf.html">Pprintf</a>).</li>
+</ul>
+<p>The variables “<code class="docutils literal"><span class="pre">curr</span></code>” and “<code class="docutils literal"><span class="pre">next</span></code>” are of type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pr_context</span> <span class="o">-&gt;</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="n">string</span>
+</pre></div>
+</div>
+<p>where “<code class="docutils literal"><span class="pre">t</span></code>” is the type of the printer (i.e. the type of its
+patterns).</p>
+<p>The variable “<code class="docutils literal"><span class="pre">curr</span></code>”, “<code class="docutils literal"><span class="pre">next</span></code>” and “<code class="docutils literal"><span class="pre">pc</span></code>” have predefined
+names and can hide the possible identifiers having the same names in
+the pattern or in the environment of the “<code class="docutils literal"><span class="pre">EXTEND_PRINTER</span></code>”
+statement.</p>
+<p class="rubric" id="the-eprinter-module">The Eprinter module</p>
+<p>See its <a class="reference external" href="library.html#a:Eprinter-module">section</a> in the chapter
+“Library”.</p>
+<p class="rubric" id="examples">Examples</p>
+<p class="rubric" id="parser-and-printer-of-expressions">Parser and Printer of expressions</p>
+<p>This example illustrates the symmetry between parsers and printers. A
+simple type of expressions is defined. A parser converts a string to
+a value of this type, and a printer converts a value of this type to
+a string.</p>
+<p>In the printer, there is no use of the “<code class="docutils literal"><span class="pre">pc</span></code>” parameter and no use
+of the “<code class="docutils literal"><span class="pre">Pretty</span></code>” module. The strings are printed on a single line.</p>
+<p>Here is the source (file “<code class="docutils literal"><span class="pre">foo.ml</span></code>”):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;pa_extend.cmo&quot;;</span>
+<span class="c1">#load &quot;pa_extprint.cmo&quot;;</span>
+
+<span class="nb">open</span> <span class="n">Printf</span><span class="p">;</span>
+
+<span class="nb">type</span> <span class="n">expr</span> <span class="o">=</span>
+  <span class="p">[</span> <span class="n">Op</span> <span class="n">of</span> <span class="n">string</span> <span class="ow">and</span> <span class="n">expr</span> <span class="ow">and</span> <span class="n">expr</span>
+  <span class="o">|</span> <span class="n">Int</span> <span class="n">of</span> <span class="nb">int</span>
+  <span class="o">|</span> <span class="n">Var</span> <span class="n">of</span> <span class="n">string</span> <span class="p">]</span>
+<span class="p">;</span>
+
+<span class="n">value</span> <span class="n">g</span> <span class="o">=</span> <span class="n">Grammar</span><span class="o">.</span><span class="n">gcreate</span> <span class="p">(</span><span class="n">Plexer</span><span class="o">.</span><span class="n">gmake</span> <span class="p">());</span>
+<span class="n">value</span> <span class="n">pa_e</span> <span class="o">=</span> <span class="n">Grammar</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">create</span> <span class="n">g</span> <span class="s2">&quot;expr&quot;</span><span class="p">;</span>
+<span class="n">value</span> <span class="n">pr_e</span> <span class="o">=</span> <span class="n">Eprinter</span><span class="o">.</span><span class="n">make</span> <span class="s2">&quot;expr&quot;</span><span class="p">;</span>
+
+<span class="n">EXTEND</span>
+  <span class="n">pa_e</span><span class="p">:</span>
+    <span class="p">[</span> <span class="p">[</span> <span class="n">x</span> <span class="o">=</span> <span class="n">SELF</span><span class="p">;</span> <span class="s2">&quot;+&quot;</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SELF</span> <span class="o">-&gt;</span> <span class="n">Op</span> <span class="s2">&quot;+&quot;</span> <span class="n">x</span> <span class="n">y</span>
+      <span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">SELF</span><span class="p">;</span> <span class="s2">&quot;-&quot;</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SELF</span> <span class="o">-&gt;</span> <span class="n">Op</span> <span class="s2">&quot;-&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="p">[</span> <span class="n">x</span> <span class="o">=</span> <span class="n">SELF</span><span class="p">;</span> <span class="s2">&quot;*&quot;</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SELF</span> <span class="o">-&gt;</span> <span class="n">Op</span> <span class="s2">&quot;*&quot;</span> <span class="n">x</span> <span class="n">y</span>
+      <span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">SELF</span><span class="p">;</span> <span class="s2">&quot;/&quot;</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">SELF</span> <span class="o">-&gt;</span> <span class="n">Op</span> <span class="s2">&quot;/&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="p">[</span> <span class="n">x</span> <span class="o">=</span> <span class="n">INT</span> <span class="o">-&gt;</span> <span class="n">Int</span> <span class="p">(</span><span class="n">int_of_string</span> <span class="n">x</span><span class="p">)</span>
+      <span class="o">|</span> <span class="n">x</span> <span class="o">=</span> <span class="n">LIDENT</span> <span class="o">-&gt;</span> <span class="n">Var</span> <span class="n">x</span>
+      <span class="o">|</span> <span class="s2">&quot;(&quot;</span><span class="p">;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">SELF</span><span class="p">;</span> <span class="s2">&quot;)&quot;</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="p">]</span> <span class="p">]</span>
+  <span class="p">;</span>
+<span class="n">END</span><span class="p">;</span>
+
+<span class="n">EXTEND_PRINTER</span>
+  <span class="n">pr_e</span><span class="p">:</span>
+    <span class="p">[</span> <span class="p">[</span> <span class="n">Op</span> <span class="s2">&quot;+&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> + </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">(</span><span class="n">curr</span> <span class="n">pc</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">pc</span> <span class="n">y</span><span class="p">)</span>
+      <span class="o">|</span> <span class="n">Op</span> <span class="s2">&quot;-&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">(</span><span class="n">curr</span> <span class="n">pc</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">pc</span> <span class="n">y</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="p">[</span> <span class="n">Op</span> <span class="s2">&quot;*&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> * </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">(</span><span class="n">curr</span> <span class="n">pc</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">pc</span> <span class="n">y</span><span class="p">)</span>
+      <span class="o">|</span> <span class="n">Op</span> <span class="s2">&quot;/&quot;</span> <span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">sprintf</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> / </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="p">(</span><span class="n">curr</span> <span class="n">pc</span> <span class="n">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">next</span> <span class="n">pc</span> <span class="n">y</span><span class="p">)</span> <span class="p">]</span>
+    <span class="o">|</span> <span class="p">[</span> <span class="n">Int</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">string_of_int</span> <span class="n">x</span>
+      <span class="o">|</span> <span class="n">Var</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span>
+      <span class="o">|</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">sprintf</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="p">(</span><span class="n">Eprinter</span><span class="o">.</span><span class="n">apply</span> <span class="n">pr_e</span> <span class="n">pc</span> <span class="n">x</span><span class="p">)</span> <span class="p">]</span> <span class="p">]</span>
+  <span class="p">;</span>
+<span class="n">END</span><span class="p">;</span>
+
+<span class="n">value</span> <span class="n">parse</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Grammar</span><span class="o">.</span><span class="n">Entry</span><span class="o">.</span><span class="n">parse</span> <span class="n">pa_e</span> <span class="p">(</span><span class="n">Stream</span><span class="o">.</span><span class="n">of_string</span> <span class="n">s</span><span class="p">);</span>
+<span class="n">value</span> <span class="nb">print</span> <span class="n">e</span> <span class="o">=</span> <span class="n">Eprinter</span><span class="o">.</span><span class="n">apply</span> <span class="n">pr_e</span> <span class="n">Pprintf</span><span class="o">.</span><span class="n">empty_pc</span> <span class="n">e</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="n">Sys</span><span class="o">.</span><span class="n">interactive</span><span class="o">.</span><span class="n">val</span> <span class="n">then</span> <span class="p">()</span>
+<span class="k">else</span> <span class="n">print_endline</span> <span class="p">(</span><span class="nb">print</span> <span class="p">(</span><span class="n">parse</span> <span class="n">Sys</span><span class="o">.</span><span class="n">argv</span><span class="o">.</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+</pre></div>
+</div>
+<p>Remark on the use of “curr” and “next” while printing operators: due
+to left associativity, the first operand uses “curr” and the second
+operand uses “next”. For right associativity operators, they should
+be inverted. For no associativity, both should use “next”.</p>
+<p>The last line of the file allows use in either the OCaml toplevel or
+as standalone program, taking the string to be printed as parameter.
+It can be compiled this way:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">gramlib</span><span class="o">.</span><span class="n">cma</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>Examples of use (notice the redundant parentheses automatically
+removed by the printing algorithm):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ./a.out &quot;(3 * x) + (2 / y)&quot;
+3 * x + 2 / y
+$ ./a.out &quot;(x+y)*(x-y)&quot;
+(x + y) * (x - y)
+$ ./a.out &quot;x + y - z&quot;
+x + y - z
+$ ./a.out &quot;(x + y) - z&quot;
+x + y - z
+$ ./a.out &quot;x + (y - z)&quot;
+x + (y - z)
+</pre></div>
+</div>
+<p class="rubric" id="printing-ocaml-programs">Printing OCaml programs</p>
+<p>Complete examples of usage of extensible printers are the printers in
+syntaxes and extended syntaxes provided by Camlp5 in the pretty
+printing <em>kits</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">pr_r.cmo</span></code>: pretty print in revised syntax</li>
+<li><code class="docutils literal"><span class="pre">pr_o.cmo</span></code>: pretty print in normal syntax</li>
+<li><code class="docutils literal"><span class="pre">pr_rp.cmo</span></code>: also pretty print the parsers in revised syntax</li>
+<li><code class="docutils literal"><span class="pre">pr_op.cmo</span></code>: also pretty print the parsers in normal syntax</li>
+</ul>
+<p>See the chapter entitled “<a class="reference external" href="opretty.html">Printing programs</a>”.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pprintf.html" class="btn btn-neutral float-right" title="Pprintf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="printing-tools.html" class="btn btn-neutral float-left" title="Parsing tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

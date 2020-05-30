@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Extensions of syntax &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensions of printing" href="opretty.html" />
+    <link rel="prev" title="Directives" href="directives.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="directives.html">Directives</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Extensions of syntax</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstsyntext.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="extensions-of-syntax">
+<h1>Extensions of syntax<a class="headerlink" href="#extensions-of-syntax" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Extensions of syntax</p>
+<p>Camlp5 allows one to extend the syntax of the OCaml language, and
+even change the entire syntax.</p>
+<p>It uses for that one of its parsing tools: the <a class="reference external" href="grammars.html">extensible
+grammars</a>.</p>
+<p>To understand the whole syntax in the examples given in this chapter,
+it is good to understand this parsing tool (the extensible grammars),
+but we shall try to give some minimal explanations to allow the
+reader to follow them.</p>
+<p>A syntax extension is an OCaml object file (ending with “.cmo” or
+“.cma”) which is loaded inside Camlp5. The source of this file uses
+calls to the specific statement EXTEND applied to entries defined in
+the Camlp5 module “<code class="docutils literal"><span class="pre">Pcaml</span></code>”.</p>
+<p class="rubric" id="entries">Entries</p>
+<p>The grammar of OCaml contains several entries, corresponding to the
+major notions of the language, which are modifiable this way, and
+even erasable. They are defined in this module “<code class="docutils literal"><span class="pre">Pcaml</span></code>”.</p>
+<p>Most important entries:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">expr</span></code>: the expressions.</li>
+<li><code class="docutils literal"><span class="pre">patt</span></code>: the patterns.</li>
+<li><code class="docutils literal"><span class="pre">ctyp</span></code>: the types.</li>
+<li><code class="docutils literal"><span class="pre">str_item</span></code>: the structure items, i.e. the items between “struct”
+and “end”, and the toplevel phrases in a “.ml” file.</li>
+<li><code class="docutils literal"><span class="pre">sig_item</span></code>: the signature items, i.e. the items between “sig”
+and “end”, and the toplevel phrases in a “.mli” file.</li>
+<li><code class="docutils literal"><span class="pre">module_expr</span></code>: the module expressions.</li>
+<li><code class="docutils literal"><span class="pre">module_type</span></code>: the module types.</li>
+</ul>
+<p>Entries of object programming:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">class_expr</span></code>: the class expressions.</li>
+<li><code class="docutils literal"><span class="pre">class_type</span></code>: the class types.</li>
+<li><code class="docutils literal"><span class="pre">class_str_item</span></code>: the objects items.</li>
+<li><code class="docutils literal"><span class="pre">class_sig_item</span></code>: the objects types items.</li>
+</ul>
+<p>Main entries of files and interactive toplevel parsing:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">implem</span></code>: the phrases that can be found in a “.ml” file.</li>
+<li><code class="docutils literal"><span class="pre">interf</span></code>: the phrases that can be found in a “.mli” file.</li>
+<li><code class="docutils literal"><span class="pre">top_phrase</span></code>: the phrases of the interactive toplevel.</li>
+<li><code class="docutils literal"><span class="pre">use_file</span></code>: the phrases that can be found in a file included by
+the directive “use”.</li>
+</ul>
+<p>Extra useful entries also accessible:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">let_binding</span></code>: the bindings “expression = pattern” found in the
+“let” statement.</li>
+<li><code class="docutils literal"><span class="pre">type_declaration</span></code>: the bindings “name = type” found in the
+“type” statement.</li>
+</ul>
+<p class="rubric" id="syntax-tree-quotations">Syntax tree quotations</p>
+<p>A grammar rule is a list of rule symbols followed by the semantic
+action, i.e. the result of the rule. This result is a syntax tree,
+whose type is the type of the extended entry. The description of the
+types of the syntax tree are in the Camlp5 module “<code class="docutils literal"><span class="pre">MLast</span></code>”.</p>
+<p>There is however a simpler way to make values of these syntax tree
+types: the system quotations (see chapters about
+<a class="reference external" href="quot.html">quotations</a> and <a class="reference external" href="ml_ast.html">syntax tree</a>). With
+this system, it is possible to represent syntax tree in concrete
+syntax, between specific parentheses, namely “<code class="docutils literal"><span class="pre">&lt;&lt;</span></code>” and “<code class="docutils literal"><span class="pre">&gt;&gt;</span></code>”,
+or between “<code class="docutils literal"><span class="pre">&lt;:name&lt;</span></code>” and “<code class="docutils literal"><span class="pre">&gt;&gt;</span></code>”.</p>
+<p>For example, the syntax node of the “if” statement is, normally:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">ExIfe</span> <span class="n">loc</span> <span class="n">e1</span> <span class="n">e2</span> <span class="n">e3</span>
+</pre></div>
+</div>
+<p>where loc is the source location, and e1, e2, e3 are the expressions
+constituting the if statement. With quotations, it is possible to
+write it like this (which is stricly equivalent because this is
+evaluated at parse time, not execution time):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;:expr&lt; if $e1$ then $e2$ else $e3$ &gt;&gt;
+</pre></div>
+</div>
+<p>With quotations, it is possible to build pieces of program as complex
+as desired. See the chapter about <a class="reference external" href="ml_ast.html">syntax trees</a>.</p>
+<p class="rubric" id="an-example-repeat-until">An example : repeat..until</p>
+<p>A classical extension is the creation of the “repeat” statement. The
+“repeat” statement is like a “while” except that the loop is executed
+at least one time and that the test is at the end of the loop and is
+inverted. The equivalent of:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">repeat</span> <span class="n">x</span><span class="p">;</span> <span class="n">y</span><span class="p">;</span> <span class="n">z</span> <span class="n">until</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">do</span> <span class="p">{</span>
+  <span class="n">x</span><span class="p">;</span> <span class="n">y</span><span class="p">;</span> <span class="n">z</span><span class="p">;</span>
+  <span class="k">while</span> <span class="ow">not</span> <span class="n">c</span> <span class="n">do</span> <span class="p">{</span> <span class="n">x</span><span class="p">;</span> <span class="n">y</span><span class="p">;</span> <span class="n">z</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or, with a loop:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">loop</span> <span class="p">()</span> <span class="n">where</span> <span class="n">rec</span> <span class="n">loop</span> <span class="p">()</span> <span class="o">=</span> <span class="n">do</span> <span class="p">{</span>
+  <span class="n">x</span><span class="p">;</span> <span class="n">y</span><span class="p">;</span> <span class="n">z</span><span class="p">;</span>
+  <span class="k">if</span> <span class="n">c</span> <span class="n">then</span> <span class="p">()</span> <span class="k">else</span> <span class="n">loop</span> <span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="rubric" id="the-code">The code</p>
+<p>This syntax extension could be written like this (see the detail of
+syntax in the chapter about <a class="reference external" href="grammars.html">extensible grammars</a>
+and the syntax tree quotations in the chapter about
+<a class="reference external" href="ml_ast.html">them</a>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>#load &quot;pa_extend.cmo&quot;;
+#load &quot;q_MLast.cmo&quot;;
+open Pcaml;
+EXTEND
+  expr:
+    [ [ &quot;repeat&quot;; el = LIST1 expr SEP &quot;;&quot;; &quot;until&quot;; c = expr -&gt;
+          let el = el @ [&lt;:expr&lt; while not $c$ do { $list:el$ } &gt;&gt;] in
+          &lt;:expr&lt; do { $list:el$ } &gt;&gt; ] ]
+  ;
+END;
+</pre></div>
+</div>
+<p>Alternatively, with the loop version:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>#load &quot;pa_extend.cmo&quot;;
+#load &quot;q_MLast.cmo&quot;;
+open Pcaml;
+EXTEND
+  expr:
+    [ [ &quot;repeat&quot;; el = LIST1 expr SEP &quot;;&quot;; &quot;until&quot;; c = expr -&gt;
+          let el = el @ [&lt;:expr&lt; if $c$ then () else loop () &gt;&gt;] in
+          &lt;:expr&lt; loop () where rec loop () = do { $list:el$ } &gt;&gt; ] ]
+  ;
+END;
+</pre></div>
+</div>
+<p>The first “<code class="docutils literal"><span class="pre">#load</span></code>” in the code (in both files) means that a syntax
+extension has been used in the file, namely the “EXTEND” statement.
+The second “<code class="docutils literal"><span class="pre">#load</span></code>” means that abstract tree
+<a class="reference external" href="quot.html">quotations</a> has been used, namely the
+“<code class="docutils literal"><span class="pre">&lt;:expr&lt;</span> <span class="pre">...</span> <span class="pre">&gt;&gt;</span></code>”.</p>
+<p>The quotation, found in the second version:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&lt;:expr&lt; loop () where rec loop () = do { $list:el$ } &gt;&gt;
+</pre></div>
+</div>
+<p>is especially interesting. Written with abstract syntax tree, it
+would be:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">MLast</span><span class="o">.</span><span class="n">ExLet</span> <span class="n">loc</span> <span class="kc">True</span>
+  <span class="p">[(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaLid</span> <span class="n">loc</span> <span class="s2">&quot;loop&quot;</span><span class="p">,</span>
+    <span class="n">MLast</span><span class="o">.</span><span class="n">ExFun</span> <span class="n">loc</span> <span class="p">[(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaUid</span> <span class="n">loc</span> <span class="s2">&quot;()&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">MLast</span><span class="o">.</span><span class="n">ExSeq</span> <span class="n">loc</span> <span class="n">el</span><span class="p">)])]</span>
+  <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExApp</span> <span class="n">loc</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExLid</span> <span class="n">loc</span> <span class="s2">&quot;loop&quot;</span><span class="p">)</span> <span class="p">(</span><span class="n">MLast</span><span class="o">.</span><span class="n">ExUid</span> <span class="n">loc</span> <span class="s2">&quot;()&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>This shows the interest of writing abstract syntax tree with
+quotations: it is easier to program and to understand.</p>
+<p class="rubric" id="compilation">Compilation</p>
+<p>If the file “foo.ml” contains one of these versions, it is possible
+to compile it like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="o">-</span><span class="n">c</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>Notice that the ocamlc option “-c” means that we are interested only
+in generating the object file “foo.cmo”, not achieving the
+compilation by creating an executable. Anyway the link would not work
+because of usage of modules specific to Camlp5.</p>
+<p class="rubric" id="testing">Testing</p>
+<p class="rubric" id="in-the-ocaml-toplevel">In the OCaml toplevel</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocaml</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">camlp5r</span><span class="o">.</span><span class="n">cma</span>
+        <span class="n">Objective</span> <span class="n">Caml</span> <span class="n">version</span> <span class="o">...</span>
+
+        <span class="n">Camlp5</span> <span class="n">Parsing</span> <span class="n">version</span> <span class="o">...</span>
+
+<span class="c1"># #load &quot;foo.cmo&quot;;</span>
+<span class="c1"># value x = ref 42;</span>
+<span class="n">value</span> <span class="n">x</span> <span class="p">:</span> <span class="n">ref</span> <span class="nb">int</span> <span class="o">=</span> <span class="p">{</span><span class="n">val</span><span class="o">=</span><span class="mi">42</span><span class="p">}</span>
+<span class="c1"># repeat</span>
+    <span class="n">print_int</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span><span class="p">;</span> <span class="n">print_endline</span> <span class="s2">&quot;&quot;</span><span class="p">;</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="mi">3</span>
+  <span class="n">until</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mi">70</span><span class="p">;</span>
+<span class="mi">42</span>
+<span class="mi">45</span>
+<span class="mi">48</span>
+<span class="mi">51</span>
+<span class="mi">54</span>
+<span class="mi">57</span>
+<span class="mi">60</span>
+<span class="mi">63</span>
+<span class="mi">66</span>
+<span class="mi">69</span>
+<span class="o">-</span> <span class="p">:</span> <span class="n">unit</span> <span class="o">=</span> <span class="p">()</span>
+</pre></div>
+</div>
+<p class="rubric" id="in-a-file">In a file</p>
+<p>The code, above, used in the toplevel, can be written in a file, say
+“bar.ml”:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;./foo.cmo&quot;;</span>
+<span class="n">value</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ref</span> <span class="mi">42</span><span class="p">;</span>
+<span class="n">repeat</span>
+  <span class="n">print_int</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span><span class="p">;</span>
+  <span class="n">print_endline</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+  <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="mi">3</span>
+<span class="n">until</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mi">70</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>with a subtile difference: the loaded file must be “<code class="docutils literal"><span class="pre">./foo.cmo</span></code>”
+and not just “<code class="docutils literal"><span class="pre">foo.cmo</span></code>” because Camlp5 does not have, by default,
+the current directory in its path.</p>
+<p>The file can be compiled like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>or in native code:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlopt</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>And it is possible to check the resulting program by typing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5r</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>whose displayed result is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;./foo.cmo&quot;;</span>
+<span class="n">value</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ref</span> <span class="mi">42</span><span class="p">;</span>
+<span class="n">do</span> <span class="p">{</span>
+  <span class="n">print_int</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span><span class="p">;</span>
+  <span class="n">print_endline</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+  <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">&gt;</span> <span class="mi">70</span><span class="p">)</span> <span class="n">do</span> <span class="p">{</span>
+    <span class="n">print_int</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span><span class="p">;</span>
+    <span class="n">print_endline</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">:=</span> <span class="n">x</span><span class="o">.</span><span class="n">val</span> <span class="o">+</span> <span class="mi">3</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>See also the <a class="reference external" href="opretty.html#a:Example-:-repeat--until">same
+example</a> pretty printed in
+its original syntax, using the extendable <a class="reference external" href="opretty.html">programs
+printing</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="opretty.html" class="btn btn-neutral float-right" title="Extensions of printing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="directives.html" class="btn btn-neutral float-left" title="Directives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

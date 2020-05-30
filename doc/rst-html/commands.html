@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Commands and Files &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Library" href="library.html" />
+    <link rel="prev" title="Appendix" href="appendix.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="appendix.html">Appendix</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Commands and Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="library.html">Library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sources.html">Camlp5 sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html">About</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="appendix.html">Appendix</a> &raquo;</li>
+        
+      <li>Commands and Files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstcommands.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="commands-and-files">
+<h1>Commands and Files<a class="headerlink" href="#commands-and-files" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Commands and Files</p>
+<p>The main command of Camlp5 is “<code class="docutils literal"><span class="pre">camlp5</span></code>”. It is an OCaml program in
+bytecode (compiled with ocamlc, not ocamlopt), able to dynamically
+load OCaml object files (ending with “.cmo” and “.cma”).</p>
+<p>Most other Camlp5 commands derive from that one: they are the command
+“<code class="docutils literal"><span class="pre">camlp5</span></code>” with some implicitely applied parameters.</p>
+<p>Two other commands are provided: “<code class="docutils literal"><span class="pre">mkcamlp5</span></code>” and
+“<code class="docutils literal"><span class="pre">mkcamlp5.opt</span></code>”. They allow to create camlp5 executables with
+already loaded kits.</p>
+<p>All commands have an option “<code class="docutils literal"><span class="pre">-help</span></code>” which display all possible
+command parameters and options. Notice that some parameters (the
+parsing and pretting kits) may add new options. For example, the
+command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="o">-</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>prints more lines than just:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5</span> <span class="o">-</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>The first parameter (“load options”) allows to specify parsing and
+printing kits (“.cmo” and “.cma” files) which are loaded inside the
+“<code class="docutils literal"><span class="pre">camlp5</span></code>” core before any action. Other options may follow.</p>
+<p class="rubric" id="parsing-and-printing-kits">Parsing and Printing Kits</p>
+<p class="rubric" id="parsing-kits">Parsing kits</p>
+<p class="rubric" id="language-parsing-kits">language parsing kits</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_r.cmo</span></code></dt>
+<dd>Revised syntax (without parsers).</dd>
+<dt><code class="docutils literal"><span class="pre">pa_rp.cmo</span></code></dt>
+<dd>Add revised syntax parsers.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_o.cmo</span></code></dt>
+<dd><p class="first">Normal syntax (without parsers). Option added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-no_quot</span></code></dt>
+<dd>don’t parse quotations, allowing to use, e.g. “<code class="docutils literal"><span class="pre">&lt;:&gt;</span></code>” as
+token.</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pa_op.cmo</span></code></dt>
+<dd>Add normal syntax parsers.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_oop.cmo</span></code></dt>
+<dd>Add normal syntax parsers without code optimization.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_lexer.cmo</span></code></dt>
+<dd>Add stream lexers.</dd>
+</dl>
+<p class="rubric" id="extensible-grammars">extensible grammars</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_extend.cmo</span></code></dt>
+<dd><p class="first">Add the EXTEND statement. Options added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-split_ext</span></code></dt>
+<dd>split EXTEND by functions to turn around a PowerPC problem.</dd>
+<dt><code class="docutils literal"><span class="pre">-quotify</span></code></dt>
+<dd>generate code for quotations (internally used to synchronize
+q_MLast and pa_r)</dd>
+<dt><code class="docutils literal"><span class="pre">-meta_action</span></code></dt>
+<dd>undocumented (internally used for compiled version)</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pa_extfold.cmo</span></code></dt>
+<dd>Add the specific symbols FOLD0 and FOLD1 to the EXTEND statement.</dd>
+</dl>
+<p class="rubric" id="extensible-functions-and-printers">extensible functions and printers</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_extfun.cmo</span></code></dt>
+<dd>Add the extensible function (“extfun” statement).</dd>
+<dt><code class="docutils literal"><span class="pre">pa_extprint.cmo</span></code></dt>
+<dd>Add the EXTEND_PRINTER statement.</dd>
+</dl>
+<p class="rubric" id="functional-parsers">functional parsers</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_fstream.cmo</span></code></dt>
+<dd>Add the functional parsers (“fparser” statement) and the
+backtracking parsers (“bparser” statement).</dd>
+</dl>
+<p class="rubric" id="other-languages">other languages</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_lisp.cmo</span></code></dt>
+<dd>Lisp syntax.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_scheme.cmo</span></code></dt>
+<dd>Scheme syntax.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_sml.cmo</span></code></dt>
+<dd>SML syntax.</dd>
+</dl>
+<p class="rubric" id="other-parsing-kits">other parsing kits</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pa_lefteval.cmo</span></code></dt>
+<dd>Add guarantee of left evaluation in functions calls.</dd>
+<dt><code class="docutils literal"><span class="pre">pa_macro.cmo</span></code></dt>
+<dd><p class="first">Add macros. Options added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-D</span> <span class="pre">&lt;string&gt;</span></code></dt>
+<dd>define for IFDEF statement</dd>
+<dt><code class="docutils literal"><span class="pre">-U</span> <span class="pre">&lt;string&gt;</span></code></dt>
+<dd>undefine for IFDEF statement</dd>
+<dt><code class="docutils literal"><span class="pre">-defined</span></code></dt>
+<dd>print the defined macros and exit</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pa_pragma.cmo</span></code></dt>
+<dd>Add pragma directive: evaluations at parse time</dd>
+</dl>
+<p class="rubric" id="printing-kits">Printing kits</p>
+<p class="rubric" id="language-printing-kits">language printing kits</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pr_r.cmo</span></code></dt>
+<dd><p class="first">Display in revised syntax. Added options:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-flag</span> <span class="pre">&lt;str&gt;</span></code></dt>
+<dd>Change pretty printing behaviour according to “<code class="docutils literal"><span class="pre">&lt;str&gt;</span></code>”:
+A/a enable/disable all flags
+C/c enable/disable comments in phrases
+D/d enable/disable allowing expanding ‘declare’
+E/e enable/disable equilibrate cases
+L/l enable/disable allowing printing ‘let..in’ horizontally
+S/s enable/disable printing sequences beginners at end of lines
+default setting is “aS”.</dd>
+<dt><code class="docutils literal"><span class="pre">-wflag</span> <span class="pre">&lt;str&gt;</span></code></dt>
+<dd>Change displaying ‘where’ statements instead of ‘let’:
+A/a enable/disable all flags
+I/i enable/disable ‘where’ after ‘in’
+L/l enable/disable ‘where’ after ‘let..=’
+M/m enable/disable ‘where’ after ‘match’ and ‘try’
+P/p enable/disable ‘where’ after left parenthesis
+R/r enable/disable ‘where’ after ‘record_field..=’
+S/s enable/disable ‘where’ in sequences
+T/t enable/disable ‘where’ after ‘then’ or ‘else’
+V/v enable/disable ‘where’ after ‘value..=’
+W/w enable/disable ‘where’ after ‘<code class="docutils literal"><span class="pre">-&gt;</span></code>’
+default setting is “Ars”.</dd>
+<dt><code class="docutils literal"><span class="pre">-l</span> <span class="pre">&lt;length&gt;</span></code></dt>
+<dd>Maximum line length for pretty printing (default 78)</dd>
+<dt><code class="docutils literal"><span class="pre">-sep_src</span></code></dt>
+<dd>Read source file for text between phrases (default).</dd>
+<dt><code class="docutils literal"><span class="pre">-sep</span> <span class="pre">&lt;string&gt;</span></code></dt>
+<dd>Use this string between phrases instead of reading source.</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pr_ro.cmo</span></code></dt>
+<dd>Add display objects, labels and variants in revised syntax.</dd>
+<dt><code class="docutils literal"><span class="pre">pr_rp.cmo</span></code></dt>
+<dd>Add display parsers with their (revised) syntax.</dd>
+<dt><code class="docutils literal"><span class="pre">pr_o.cmo</span></code></dt>
+<dd><p class="first">Display in normal syntax. Added options:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-flag</span> <span class="pre">&lt;str&gt;</span></code></dt>
+<dd>Change pretty printing behaviour according to <code class="docutils literal"><span class="pre">&lt;str&gt;</span></code>:
+A/a enable/disable all flags
+C/c enable/disable comments in phrases
+E/e enable/disable equilibrate cases
+L/l enable/disable allowing printing ‘let..in’ horizontally
+M/m enable/disable printing double semicolons
+default setting is “Am”.</dd>
+<dt><code class="docutils literal"><span class="pre">-l</span> <span class="pre">&lt;length&gt;</span></code></dt>
+<dd>Maximum line length for pretty printing (default 78)</dd>
+<dt><code class="docutils literal"><span class="pre">-sep_src</span></code></dt>
+<dd>Read source file for text between phrases (default).</dd>
+<dt><code class="docutils literal"><span class="pre">-sep</span> <span class="pre">&lt;string&gt;</span></code></dt>
+<dd>Use this string between phrases instead of reading source.</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pr_op.cmo</span></code></dt>
+<dd>Add displaying parsers with their (normal) syntax.</dd>
+</dl>
+<p class="rubric" id="extensible-parsers">extensible parsers</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pr_extend.cmo</span></code></dt>
+<dd><p class="first">Add the displaying of EXTEND statements in their initial
+syntax.Option added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-no_slist</span></code></dt>
+<dd>Don’t reconstruct SLIST, SOPT, SFLAG</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric" id="extensible-functions-and-printers-1">extensible functions and printers</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pr_extfun.cmo</span></code></dt>
+<dd>Add displaying extensible functions (“extfun” statement) in their
+initial syntax.</dd>
+<dt><code class="docutils literal"><span class="pre">pr_extprint.cmo</span></code></dt>
+<dd>Add displaying extensible printers (“EXTEND_PRINTER” statement) in
+their initial syntax.</dd>
+</dl>
+<p class="rubric" id="other-language">other language</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pr_scheme.cmo</span></code></dt>
+<dd><p class="first">Display in Scheme syntax. Option added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-l</span> <span class="pre">&lt;length&gt;</span></code></dt>
+<dd>Maximum line length for pretty printing (default 78)</dd>
+<dt><code class="docutils literal"><span class="pre">-sep</span> <span class="pre">&lt;string&gt;</span></code></dt>
+<dd>Use this string between phrases instead of reading source.</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pr_schemep.cmo</span></code></dt>
+<dd>Add display parsers with their (Scheme) syntax.</dd>
+</dl>
+<p class="rubric" id="other-printing-kits">other printing kits</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pr_depend.cmo</span></code></dt>
+<dd><p class="first">Display dependencies. Option added:</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">-I</span> <span class="pre">dir</span></code></dt>
+<dd>Add “dir” to the list of search directories.</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">pr_dump.cmo</span></code></dt>
+<dd>Dump the syntax tree in binary (for the OCaml compiler)</dd>
+<dt><code class="docutils literal"><span class="pre">pr_null.cmo</span></code></dt>
+<dd>No output.</dd>
+</dl>
+<p class="rubric" id="quotations-expanders">Quotations expanders</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">q_MLast.cmo</span></code></dt>
+<dd>Syntax tree quotations. Define the quotations named: “expr”,
+“patt”, “ctyp”, “str_item”, “sig_item”, “module_type”,
+“module_expr”, “class_type”, “class_expr”, “class_sig_item”,
+“class_str_item”, “with_constr” and “poly_variant”.</dd>
+<dt><code class="docutils literal"><span class="pre">q_phony.cmo</span></code></dt>
+<dd>Transform quotations into phony variables to be able to pretty
+print the quotations in their initial form (not suitable for
+compilation)</dd>
+</dl>
+<p class="rubric" id="commands">Commands</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">camlp5r</span></code></dt>
+<dd>Shortcut for “<code class="docutils literal"><span class="pre">camlp5</span> <span class="pre">pa_r.cmo</span> <span class="pre">pa_rp.cmo</span> <span class="pre">pr_dump.cmo</span></code>”</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5r.opt</span></code></dt>
+<dd>Same as previous, but in native code instead of bytecode,
+therefore faster. But not extensible: it is not possible to add
+other parsing or printing kits neither in command arguments nor
+with the “load” directive inside sources. Suitable for compiling
+sources not using other syntax extensions.</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5o</span></code></dt>
+<dd>Shortcut for “<code class="docutils literal"><span class="pre">camlp5</span> <span class="pre">pa_o.cmo</span> <span class="pre">pa_op.cmo</span> <span class="pre">pr_dump.cmo</span></code>”</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5o.opt</span></code></dt>
+<dd>Same as previous, and like “<code class="docutils literal"><span class="pre">camlp5r.opt</span></code>”, faster and not
+extensible. Moreover, this has been produced by compilation of
+Camlp5 grammars, resulting in a still faster executable.</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5sch</span></code></dt>
+<dd>Shortcut for “<code class="docutils literal"><span class="pre">camlp5</span> <span class="pre">pa_scheme.cmo</span> <span class="pre">pr_dump.cmo</span></code>”</dd>
+<dt><code class="docutils literal"><span class="pre">mkcamlp5</span></code></dt>
+<dd>creates camlp5 executables with almost the same options than
+ocamlmktop. The interfaces to be visible must be explicitly added
+in the command line as “.cmi” files. For example, how to add the
+the OCaml module “str”:
+“<code class="docutils literal"><span class="pre">mkcamlp5</span> <span class="pre">-custom</span> <span class="pre">str.cmi</span> <span class="pre">str.cma</span>&#160;&#160;&#160;&#160; <span class="pre">-cclib</span> <span class="pre">-lstr</span> <span class="pre">-o</span> <span class="pre">camlp5str</span></code>”</dd>
+<dt><code class="docutils literal"><span class="pre">mkcamlp5.opt</span></code></dt>
+<dd>creates camlp5 executables like <code class="docutils literal"><span class="pre">mkcamlp5</span></code>, except that it is in
+native code, therefore faster, but not extensible; the added kits
+must be cmx or cmxa files</dd>
+</dl>
+<p class="rubric" id="environment-variable">Environment variable</p>
+<p>When running a program using extensible grammars (in particular, the
+camlp5 commands), the environment variable “<code class="docutils literal"><span class="pre">CAMLP5PARAM</span></code>” is
+consulted. It sets the grammar parsing algoritm parameters.</p>
+<p>This variable must be a sequence of parameter specifications. A
+parameter specification is a letter optionally followed by an = and a
+value, with any separator. There are four possible parameters:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">b</span></code></dt>
+<dd>Set the full backtrack algorithm as default.</dd>
+<dt><code class="docutils literal"><span class="pre">f</span></code></dt>
+<dd>Set the limited backtrack algorithm as default.</dd>
+<dt><code class="docutils literal"><span class="pre">t</span></code></dt>
+<dd>Trace symbols (terminals and non-terminals) while parsing with
+backtracking.</dd>
+<dt><code class="docutils literal"><span class="pre">y</span></code></dt>
+<dd>In backtracking, trace the advance in the input stream (number of
+unfrozen tokens) and the possible stalling (number of tokens
+tests).</dd>
+<dt><code class="docutils literal"><span class="pre">l=value</span></code></dt>
+<dd>Set the maximum stalling value.</dd>
+</dl>
+<p class="rubric" id="ocaml-toplevel-files">OCaml toplevel files</p>
+<p>These object files can be loaded in the OCaml toplevel to make Camlp5
+parse the input. It is possible to load them either by putting them
+as parameters of the toplevel, or by using the directive “load”. The
+option “<code class="docutils literal"><span class="pre">-I</span> <span class="pre">+camlp5</span></code>” (or “<code class="docutils literal"><span class="pre">-I</span>&#160;&#160; <span class="pre">`camlp5</span> <span class="pre">-where`</span></code>”) must
+be added to the “<code class="docutils literal"><span class="pre">ocaml</span></code>” command (the OCaml toplevel).</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">camlp5r.cma</span></code></dt>
+<dd>Read phrases and display results in revised syntax</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5o.cma</span></code></dt>
+<dd>Read phrases and display results in normal syntax</dd>
+<dt><code class="docutils literal"><span class="pre">camlp5sch.cma</span></code></dt>
+<dd>Read phrases in Scheme syntax</dd>
+</dl>
+<p class="rubric" id="library-files">Library files</p>
+<p>The <a class="reference external" href="library.html">Camlp5 library</a> is named “<code class="docutils literal"><span class="pre">gramlib.cma</span></code>” and
+its native code version is “<code class="docutils literal"><span class="pre">gramlib.cmxa</span></code>”. They contain the
+modules:</p>
+<ul class="simple">
+<li>Ploc : building and combining <a class="reference external" href="locations.html">locations</a></li>
+<li>Plexing : lexing for Camlp5 grammars</li>
+<li>Plexer : lexer used in revised and normal syntax</li>
+<li>Gramext : implementation of extensible grammars</li>
+<li>Grammar : <a class="reference external" href="grammars.html">extensible grammars</a></li>
+<li>Extfold : functions for grammar extensions FOLD0 and FOLD1</li>
+<li>Extfun : functions for <a class="reference external" href="extfun.html">extensible functions</a></li>
+<li>Eprinter : <a class="reference external" href="printers.html">extensible printers</a></li>
+<li>Fstream : <a class="reference external" href="fparsers.html">functional streams</a></li>
+<li>Pretty : <a class="reference external" href="pretty.html">pretty printing</a> on strings</li>
+</ul>
+<p>This is a pure library : when linking with it, the Camlp5 program is
+<em>not</em> included.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="library.html" class="btn btn-neutral float-right" title="Library" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="appendix.html" class="btn btn-neutral float-left" title="Appendix" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Backtracking parsers &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensible grammars" href="grammars.html" />
+    <link rel="prev" title="Functional parsers" href="fparsers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="parsing-tools.html">Printing tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="parsers.html">Stream parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lexers.html">Stream lexers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fparsers.html">Functional parsers</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Backtracking parsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grammars.html">Extensible grammars</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="parsing-tools.html">Printing tools</a> &raquo;</li>
+        
+      <li>Backtracking parsers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstbparsers.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="backtracking-parsers">
+<h1>Backtracking parsers<a class="headerlink" href="#backtracking-parsers" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Backtracking parsers</p>
+<p>Backtracking parsers are a second alternative of <a class="reference external" href="parsers.html">stream
+parsers</a> and <a class="reference external" href="fparsers.html">functional parsers</a>.</p>
+<p>Backtracking parsers are close to functional parsers: they use the
+same stream type, “<code class="docutils literal"><span class="pre">Fstream.t</span></code>”, and their syntax is almost
+identical, its introducing keyword being “<code class="docutils literal"><span class="pre">bparser</span></code>” instead of
+“<code class="docutils literal"><span class="pre">fparser</span></code>”.</p>
+<p>The difference is that they are implemented with <em>full backtracking</em>
+and that they return values of the type “<code class="docutils literal"><span class="pre">option</span></code>” of the triplet:
+1/ value, 2/ remaining stream and 3/ continuation.</p>
+<p class="rubric" id="syntax">Syntax</p>
+<p>The syntax of backtracking parsers is added together with the syntax
+of functional parsers, when the kit “pa_fstream.cmo” is loaded. It
+is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>        <span class="n">expression</span> <span class="p">:</span><span class="o">:=</span> <span class="n">bparser</span>
+                     <span class="o">|</span> <span class="n">match</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">bparser</span>
+           <span class="n">bparser</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;bparser&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;[&quot;</span> <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="s2">&quot;]&quot;</span>
+                     <span class="o">|</span> <span class="s2">&quot;bparser&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="n">parser</span><span class="o">-</span><span class="n">case</span>
+<span class="n">match</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">bparser</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;match&quot;</span> <span class="n">expression</span> <span class="s2">&quot;with&quot;</span> <span class="n">bparser</span>
+      <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="p">:</span><span class="o">:=</span> <span class="n">parser</span><span class="o">-</span><span class="n">cases</span> <span class="n">parser</span><span class="o">-</span><span class="n">case</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+       <span class="n">parser</span><span class="o">-</span><span class="n">case</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;[:&quot;</span> <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span> <span class="s2">&quot;:]&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="s2">&quot;[:&quot;</span> <span class="s2">&quot;:]&quot;</span> <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="s2">&quot;-&gt;&quot;</span> <span class="n">expression</span>
+    <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span> <span class="p">:</span><span class="o">:=</span> <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span>
+                     <span class="o">|</span> <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span> <span class="s2">&quot;;&quot;</span> <span class="n">stream</span><span class="o">-</span><span class="n">pattern</span>
+  <span class="n">stream</span><span class="o">-</span><span class="n">patt</span><span class="o">-</span><span class="n">comp</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;`&quot;</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="s2">&quot;`&quot;</span> <span class="n">pattern</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="n">pattern</span> <span class="s2">&quot;=&quot;</span> <span class="n">expression</span>
+                     <span class="o">|</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="s2">&quot;when&quot;</span> <span class="n">expression</span>
+           <span class="n">pos</span><span class="o">-</span><span class="n">opt</span> <span class="p">:</span><span class="o">:=</span> <span class="n">pattern</span>
+                     <span class="o">|</span> <span class="o">&lt;</span><span class="n">nothing</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p class="rubric" id="semantics">Semantics</p>
+<p class="rubric" id="algorithm">Algorithm</p>
+<p>The backtracking parsers, like classical parsers and functional
+parsers, use a recursive descent algorithm. But:</p>
+<ul class="simple">
+<li>If a stream pattern component does not match the current position
+of the input stream, the control is given to the next case of the
+stream pattern component before it. If it is the first stream
+pattern component, the rule (the stream pattern) is left and the
+next rule is tested.</li>
+</ul>
+<p>For example, the following grammar:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">E</span> <span class="o">-&gt;</span> <span class="n">X</span> <span class="n">Y</span>
+<span class="n">X</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="n">b</span> <span class="o">|</span> <span class="n">a</span>
+<span class="n">Y</span> <span class="o">-&gt;</span> <span class="n">b</span>
+</pre></div>
+</div>
+<p>works, with the backtracking algorithm, for the input “<code class="docutils literal"><span class="pre">a</span>&#160;&#160; <span class="pre">b</span></code>”.</p>
+<p>Parsing with the non-terminal “<code class="docutils literal"><span class="pre">E</span></code>”, the non-terminal “<code class="docutils literal"><span class="pre">X</span></code>” first
+accepts the input “<code class="docutils literal"><span class="pre">a</span> <span class="pre">b</span></code>” with its first rule. Then when “<code class="docutils literal"><span class="pre">Y</span></code>” is
+called, the parsing fails since nothing remains in the input stream.</p>
+<p>In the rule “<code class="docutils literal"><span class="pre">X</span> <span class="pre">Y</span></code>” of the non-terminal “<code class="docutils literal"><span class="pre">E</span></code>”, the non-terminal
+“<code class="docutils literal"><span class="pre">Y</span></code>” having failed, the control is given the the continuation of
+the non-terminal “<code class="docutils literal"><span class="pre">X</span></code>”. This continuation is its second rule
+containing only “<code class="docutils literal"><span class="pre">a</span></code>”. Then “<code class="docutils literal"><span class="pre">Y</span></code>” is called and accepted.</p>
+<p>This case does not work with functional parsers since when the rule
+“<code class="docutils literal"><span class="pre">a</span> <span class="pre">b</span></code>” of the non-terminal “<code class="docutils literal"><span class="pre">X</span></code>” is accepted, it is definitive.
+If the input starts with “<code class="docutils literal"><span class="pre">a</span> <span class="pre">b</span></code>”, there is no way to apply its
+second rule.</p>
+<p>Backtracking parsers are strictly more powerful than functional
+parsers.</p>
+<p class="rubric" id="type">Type</p>
+<p>A backtracking parser whose stream elements are of type “<code class="docutils literal"><span class="pre">t1</span></code>”, and
+whose semantic actions are of some type “<code class="docutils literal"><span class="pre">t2</span></code>”, is of type:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="n">t1</span> <span class="o">-&gt;</span> <span class="n">option</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="n">t1</span> <span class="o">*</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">kont</span> <span class="n">t1</span> <span class="n">t2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the backtracking parsers fails, its returning value is “<code class="docutils literal"><span class="pre">None</span></code>”.</p>
+<p>If it succeeds, its returning value is “<code class="docutils literal"><span class="pre">Some</span> <span class="pre">(x,</span> <span class="pre">strm,</span> <span class="pre">k)</span></code>” where
+“<code class="docutils literal"><span class="pre">x</span></code>” is its result, “<code class="docutils literal"><span class="pre">strm</span></code>” the remaining stream, and “<code class="docutils literal"><span class="pre">k</span></code>”
+the continuation.</p>
+<p>The continuation is internally used in the backtracking algorithm,
+but is can also be used in the main call to compute the next
+solution, using the function “<code class="docutils literal"><span class="pre">Fstream.bcontinue</span></code>”.</p>
+<p>It is also possible to directly get the list of all solutions by
+calling the function “<code class="docutils literal"><span class="pre">Fstream.bparse_all</span></code>”.</p>
+<p class="rubric" id="syntax-errors">Syntax errors</p>
+<p>Like for <a class="reference external" href="fparsers.html">functional parsers</a>, in case of syntax
+error, the error position can be found by using the function
+“<code class="docutils literal"><span class="pre">Fstream.count_unfrozen</span></code>”, the token in error being the last
+unfrozen element of the stream.</p>
+<p>A syntax error is not really an error: for the backtracking parsers,
+like for functional parsers, it is viewed as a “non-working” case and
+another solution is searched.</p>
+<p>In the backtracking algorithm, depending on the grammar and the
+input, the search of the next solution can be very long. A solution
+is proposed for that in the <a class="reference external" href="grammars.html">extensible grammars</a>
+system when the parsing algorithm is set to “backtracking”.</p>
+<p class="rubric" id="example">Example</p>
+<p>Here is an example which just shows the backtracking algorithm but
+without parsing, an empty stream being given as parameter and never
+referred.</p>
+<p>It creates a list of three strings, each of them being choosen
+between <code class="docutils literal"><span class="pre">&quot;A&quot;</span></code>, <code class="docutils literal"><span class="pre">&quot;B&quot;</span></code> and <code class="docutils literal"><span class="pre">&quot;C&quot;</span></code>.</p>
+<p>The code is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;pa_fstream.cmo&quot;;</span>
+<span class="n">value</span> <span class="n">choice</span> <span class="o">=</span> <span class="n">bparser</span> <span class="p">[</span> <span class="p">[:</span> <span class="p">:]</span> <span class="o">-&gt;</span> <span class="s2">&quot;A&quot;</span> <span class="o">|</span> <span class="p">[:</span> <span class="p">:]</span> <span class="o">-&gt;</span> <span class="s2">&quot;B&quot;</span> <span class="o">|</span> <span class="p">[:</span> <span class="p">:]</span> <span class="o">-&gt;</span> <span class="s2">&quot;C&quot;</span> <span class="p">];</span>
+<span class="n">value</span> <span class="n">combine</span> <span class="o">=</span> <span class="n">bparser</span> <span class="p">[:</span> <span class="n">x</span> <span class="o">=</span> <span class="n">choice</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">choice</span><span class="p">;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">choice</span> <span class="p">:]</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">x</span><span class="p">;</span> <span class="n">y</span><span class="p">;</span> <span class="n">z</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>The function “combine” returns the first solution:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># combine (fstream [: :]);</span>
+<span class="o">-</span> <span class="p">:</span> <span class="n">option</span> <span class="p">(</span><span class="nb">list</span> <span class="n">string</span> <span class="o">*</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">t</span> <span class="s1">&#39;_a * Fstream.kont &#39;</span><span class="n">_a</span> <span class="p">(</span><span class="nb">list</span> <span class="n">string</span><span class="p">))</span> <span class="o">=</span>
+<span class="n">Some</span> <span class="p">([</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">],</span> <span class="o">&lt;</span><span class="n">abstr</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Fstream</span><span class="o">.</span><span class="n">K</span> <span class="o">&lt;</span><span class="n">fun</span><span class="o">&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function “Fstream.bparse_all” returns the list of all solutions,
+showing the interest of the backtracking:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Fstream.bparse_all combine (fstream [: :]);</span>
+<span class="o">-</span> <span class="p">:</span> <span class="nb">list</span> <span class="p">(</span><span class="nb">list</span> <span class="n">string</span><span class="p">)</span> <span class="o">=</span>
+<span class="p">[[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">];</span>
+ <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;A&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;B&quot;</span><span class="p">];</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">;</span> <span class="s2">&quot;C&quot;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="grammars.html" class="btn btn-neutral float-right" title="Extensible grammars" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="fparsers.html" class="btn btn-neutral float-left" title="Functional parsers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

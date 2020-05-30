@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Directives &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extensions of syntax" href="syntext.html" />
+    <link rel="prev" title="The Pcaml module" href="pcaml.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="language-extensions.html">Language extensions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="locations.html">Locations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ml_ast.html">Syntax tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_transi.html">Syntax tree - transitional mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ast_strict.html">Syntax tree - strict mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_ast.html">Syntax tree quotations in user syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pcaml.html">The Pcaml module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Directives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntext.html">Extensions of syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opretty.html">Extensions of printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="redef.html">Redefining OCaml syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quot.html">Quotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="revsynt.html">The revised syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html">Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-scheme">OCaml                                     Scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scheme.html#ocaml-lisp">OCaml                                     Lisp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macros.html">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pragma.html">Pragma directive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="extfun.html">Extensible functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="language-extensions.html">Language extensions</a> &raquo;</li>
+        
+      <li>Directives</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstdirectives.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="directives">
+<h1>Directives<a class="headerlink" href="#directives" title="Permalink to this headline">¶</a></h1>
+<div class="docutils container" id="content">
+<p class="top rubric" id="id1">Directives</p>
+<p>Directives in normal or revised syntax are statements at top level,
+or, more generally, as signature items or structure items, which
+stops the preprocessor for evaluate things - which can change the
+behaviour of the preprocessor, for example to add syntax, load syntax
+extensions and so on. After the directive is evaluated, the parsing
+resumes.</p>
+<p>Directives begin with ‘#’, followed by an identifier, and,
+optionnally by an expression. They are usable in source files the and
+generally in the ocaml toplevel too.</p>
+<p>Four predefined directives exist: #load, #directory, #option and
+#use. It is also possible to add other directives. An example of that
+is the parsing kit <a class="reference external" href="pragma.html">pa_pragma.cmo</a> which adds a new
+directive #pragma.</p>
+<p class="rubric" id="predefined-directives">Predefined directives</p>
+<p>The predefined directives are:</p>
+<p class="rubric" id="load-name">#load “name”</p>
+<p>Loads an object file (ocaml cmo or cma file) in the core, evaluating
+it. This is typically to be used in the ocaml toplevel to add an
+syntax extension kit.</p>
+<p>For example, in the toplevel, loading the <a class="reference external" href="quot.html">quotation</a>
+expander of <a class="reference external" href="ast_strict.html">ocaml syntax trees</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># #load &quot;q_MLast.cmo&quot;;</span>
+
+<span class="c1"># value loc = Ploc.dummy;</span>
+<span class="n">value</span> <span class="n">loc</span> <span class="p">:</span> <span class="n">Ploc</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">abstr</span><span class="o">&gt;</span>
+
+<span class="c1"># &lt;:expr&lt; fun x -&gt; x &gt;&gt;;</span>
+<span class="o">-</span> <span class="p">:</span> <span class="n">MLast</span><span class="o">.</span><span class="n">expr</span> <span class="o">=</span>
+<span class="n">MLast</span><span class="o">.</span><span class="n">ExFun</span> <span class="o">&lt;</span><span class="n">abstr</span><span class="o">&gt;</span>
+  <span class="p">(</span><span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span>
+     <span class="p">[(</span><span class="n">MLast</span><span class="o">.</span><span class="n">PaLid</span> <span class="o">&lt;</span><span class="n">abstr</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span> <span class="s2">&quot;x&quot;</span><span class="p">),</span> <span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span> <span class="kc">None</span><span class="p">,</span>
+       <span class="n">MLast</span><span class="o">.</span><span class="n">ExLid</span> <span class="o">&lt;</span><span class="n">abstr</span><span class="o">&gt;</span> <span class="p">(</span><span class="n">Ploc</span><span class="o">.</span><span class="n">VaVal</span> <span class="s2">&quot;x&quot;</span><span class="p">))])</span>
+</pre></div>
+</div>
+<p>In a source file, the ‘#load’ directive is equivalent to put the
+object file as camlp5 parameter among the ‘load options’:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ cat myfile.ml
+
+#load &quot;pa_extend.cmo&quot;;
+value g = Grammar.gcreate (Plexer.gmake ());
+value e = Grammar.Entry.create g &quot;e&quot;;
+
+EXTEND e: [[ i = INT -&gt; i ]]; END;
+
+$ ocamlc -pp camlp5r -I +camlp5 -c myfile.ml
+</pre></div>
+</div>
+<p>which is equivalent to, without using ‘#load’:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ cat myfile2.ml
+
+value g = Grammar.gcreate (Plexer.gmake ());
+value e = Grammar.Entry.create g &quot;e&quot;;
+
+EXTEND e: [[ i = INT -&gt; i ]]; END;
+</pre></div>
+</div>
+<p>and compiling it like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ ocamlc -pp &#39;camlp5r pa_extend.cmo&#39; -I +camlp5 -c myfile2.ml
+</pre></div>
+</div>
+<p class="rubric" id="directory-name">#directory “name”</p>
+<p>Adds a new directory in the camlp5 path searching for loaded files
+(using the directive #load above). This is equivalent to the option
+‘-I’ of the camlp5 command. See the camlp5 man page.</p>
+<p class="rubric" id="use-name">#use “name”</p>
+<p>Loads a source file name. Useful in the ocaml toplevel to test a
+source file.</p>
+<p class="rubric" id="option-option">#option “option”</p>
+<p>Adds an option as if it were added in camlp5 command line (to be used
+in a source file, not in the ocaml toplevel). Implemented only on
+options without an extra parameter.</p>
+<p>For example, the syntax kit <a class="reference external" href="grammars.html">pa_extend.cmo</a> adds an
+option named ‘-split_ext’. This can be viewed through the command:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5r</span> <span class="n">pa_extend</span><span class="o">.</span><span class="n">cmo</span> <span class="o">-</span><span class="n">help</span>
+</pre></div>
+</div>
+<p>Thanks to the directive ‘#option’, the following command in the
+shell:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ camlp5r pa_extend.cmo -split_ext file.ml
+</pre></div>
+</div>
+<p>can be used only as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ camlp5r file.ml
+</pre></div>
+</div>
+<p>providing the file starts with:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;pa_extend.cmo&quot;;</span>
+<span class="c1">#option &quot;-split_ext&quot;;</span>
+</pre></div>
+</div>
+<p class="rubric" id="user-directives">User directives</p>
+<p>It is possible to add any extra directive. The syntax kit
+<a class="reference external" href="pragma.html">pragma.cmo</a>, for example, adds a directive named
+‘#pragma’.</p>
+<p>A user syntax kit can add its directives using the function
+“add_directive” of the module <a class="reference external" href="pcaml.html">Pcaml</a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="syntext.html" class="btn btn-neutral float-right" title="Extensions of syntax" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pcaml.html" class="btn btn-neutral float-left" title="The Pcaml module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

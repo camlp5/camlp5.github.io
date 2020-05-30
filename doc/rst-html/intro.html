@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; Camlp5  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Transitional and Strict modes" href="strict.html" />
+    <link rel="prev" title="Welcome to Camlp5’s documentation! (Only stub for now)" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Camlp5
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#shell-usage">Shell usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parsing-and-printing-kits">Parsing and Printing kits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extending-syntax">Extending syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pretty-printing">Pretty printing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-the-revised-syntax">Note: the revised syntax</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="strict.html">Transitional and Strict modes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptools.html">Parsing and Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsing-tools.html">Printing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="printing-tools.html">Parsing tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language-extensions.html">Language extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusion.html">Future work</a></li>
+<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Camlp5</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/camlp5/camlp5/blob/master/doc/rstintro.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Camlp5 is a preprocessor and pretty-printer for OCaml programs. It
+also provides parsing and printing tools.</p>
+<p>As a preprocessor, it allows to:</p>
+<ul class="simple">
+<li>extend the syntax of OCaml,</li>
+<li>redefine the whole syntax of the language.</li>
+</ul>
+<p>As a pretty printer, it allows to:</p>
+<ul class="simple">
+<li>display OCaml programs in an elegant way,</li>
+<li>convert from one syntax to another,</li>
+<li>check the results of syntax extensions.</li>
+</ul>
+<p>Camlp5 also provides some parsing and pretty printing tools:</p>
+<ul class="simple">
+<li>extensible grammars</li>
+<li>extensible printers</li>
+<li>stream parsers and lexers</li>
+<li>pretty print module</li>
+</ul>
+<p>It works as a shell command and can also be used in the OCaml
+toplevel.</p>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#shell-usage" id="id1">Shell usage</a></li>
+<li><a class="reference internal" href="#parsing-and-printing-kits" id="id2">Parsing and Printing kits</a></li>
+<li><a class="reference internal" href="#extending-syntax" id="id3">Extending syntax</a></li>
+<li><a class="reference internal" href="#pretty-printing" id="id4">Pretty printing</a></li>
+<li><a class="reference internal" href="#note-the-revised-syntax" id="id5">Note: the revised syntax</a></li>
+</ul>
+</div>
+<div class="section" id="shell-usage">
+<h2><a class="toc-backref" href="#id1">Shell usage</a><a class="headerlink" href="#shell-usage" title="Permalink to this headline">¶</a></h2>
+<p>The main shell commands are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">camlp5o</span></code> : to treat files written in normal OCaml syntax,</li>
+<li><code class="docutils literal"><span class="pre">camlp5r</span></code> : to treat files written in an original syntax named</li>
+</ul>
+<blockquote>
+<div>the <a class="reference external" href="revsynt.html">revised syntax</a>.</div></blockquote>
+<p>These commands can be given as parameters of the option <code class="docutils literal"><span class="pre">-pp</span></code> of
+the OCaml compiler. Examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5o</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+<span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5r</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>This way, the parsing is done by Camlp5. In case of syntax errors,
+the parsing fails with an error message and the compilation is
+aborted. Otherwise, the OCaml compiler continues with the syntax tree
+provided by Camlp5.</p>
+<p>In the toplevel, it is possible to preprocess the input phrases by
+loading one of the files “<code class="docutils literal"><span class="pre">camlp5o.cma</span></code>” or “<code class="docutils literal"><span class="pre">camlp5r.cma</span></code>”. The
+common usage is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocaml</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">camlp5o</span><span class="o">.</span><span class="n">cma</span>
+<span class="n">ocaml</span> <span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span> <span class="n">camlp5r</span><span class="o">.</span><span class="n">cma</span>
+</pre></div>
+</div>
+<p>It is possible that, in your installation, the Camlp5 library is not
+in the OCaml directory. In this case, the commands must be:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>ocaml -I `camlp5 -where` camlp5o.cma
+ocaml -I `camlp5 -where` camlp5r.cma
+</pre></div>
+</div>
+<p>In general, in this documentation, when a command requires:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">I</span> <span class="o">+</span><span class="n">camlp5</span>
+</pre></div>
+</div>
+<p>it can be replaced by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>-I `camlp5 -where`
+</pre></div>
+</div>
+<p>or, by:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">-</span><span class="n">I</span> <span class="o">&lt;</span><span class="n">directory</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>where “directory” is the directory path where the Camlp5 library
+files are installed.</p>
+</div>
+<div class="section" id="parsing-and-printing-kits">
+<h2><a class="toc-backref" href="#id2">Parsing and Printing kits</a><a class="headerlink" href="#parsing-and-printing-kits" title="Permalink to this headline">¶</a></h2>
+<p>Parsing and printing extensions are OCaml object files, i.e. files
+with the extension “<code class="docutils literal"><span class="pre">.cmo</span></code>” or “<code class="docutils literal"><span class="pre">.cma</span></code>”. They are the result of
+the compilation of OCaml source files containing what is necessary to
+do the parsing or printing. These object files are named parsing and
+printing <em>kits</em>.</p>
+<p>These files cannot be linked to produce executables because they
+generally call functions and use variables defined only in Camlp5
+core, typically belonging to the module “<code class="docutils literal"><span class="pre">Pcaml</span></code>”. The kits are
+designed to be loaded by the Camlp5 commands, either through their
+command arguments or through directives in the source files.</p>
+<p>It is therefore important to compile the <em>kits</em> with the option
+“<code class="docutils literal"><span class="pre">-c</span></code>” of the OCaml compiler (i.e. just compilation, not producing
+an executable) and with the option “<code class="docutils literal"><span class="pre">-I</span>&#160;&#160; <span class="pre">+camlp5</span></code>” (or
+“<code class="docutils literal"><span class="pre">-I</span> <span class="pre">`camlp5</span> <span class="pre">-where`</span></code>”) to inform the compiler to find
+module interfaces in installed Camlp5 library.</p>
+<p>In the OCaml toplevel, it is possible to use a kit by simply loading
+it with the directive “<code class="docutils literal"><span class="pre">#load</span></code>”.</p>
+</div>
+<div class="section" id="extending-syntax">
+<h2><a class="toc-backref" href="#id3">Extending syntax</a><a class="headerlink" href="#extending-syntax" title="Permalink to this headline">¶</a></h2>
+<p>A syntax extension is a Camlp5 parsing kit. There are two ways to use
+a syntax extension:</p>
+<ul class="simple">
+<li>Either by giving this object file as parameter to the Camlp5</li>
+</ul>
+<blockquote>
+<div><p>command. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="s2">&quot;camlp5o ./myext.cmo&quot;</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li>Or by adding the directive “<code class="docutils literal"><span class="pre">#load</span></code>” in the source file:</li>
+</ul>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#load &quot;./myext.cmo&quot;;;</span>
+</pre></div>
+</div>
+<p>and then compile it simply like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ocamlc</span> <span class="o">-</span><span class="n">pp</span> <span class="n">camlp5o</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Several syntax extensions can be used for a single file. The way to
+create one’s own syntax extensions is explained in this document.</p>
+</div>
+<div class="section" id="pretty-printing">
+<h2><a class="toc-backref" href="#id4">Pretty printing</a><a class="headerlink" href="#pretty-printing" title="Permalink to this headline">¶</a></h2>
+<p>As for syntax extensions, the pretty printing is defined or extended
+through Camlp5 printing kits. Some pretty printing kits are provided
+by Camlp5, the main ones being:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">pr_o.cmo</span></code>: to pretty print in normal syntax,</li>
+<li><code class="docutils literal"><span class="pre">pr_r.cmo</span></code>: to pretty print in revised syntax.</li>
+</ul>
+<p>Examples: if we have a file, <code class="docutils literal"><span class="pre">foo.ml</span></code>, written in normal syntax and
+and another one, <code class="docutils literal"><span class="pre">bar.ml</span></code>, written in revised syntax, here are the
+commands to pretty print them in their own syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5o</span> <span class="n">pr_o</span><span class="o">.</span><span class="n">cmo</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+<span class="n">camlp5r</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="n">bar</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>And how to convert them into the other syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">camlp5o</span> <span class="n">pr_r</span><span class="o">.</span><span class="n">cmo</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+<span class="n">camlp5r</span> <span class="n">pr_o</span><span class="o">.</span><span class="n">cmo</span> <span class="n">foo</span><span class="o">.</span><span class="n">ml</span>
+</pre></div>
+</div>
+<p>The way to create one’s own pretty printing extensions is explained
+in this document.</p>
+</div>
+<div class="section" id="note-the-revised-syntax">
+<h2><a class="toc-backref" href="#id5">Note: the revised syntax</a><a class="headerlink" href="#note-the-revised-syntax" title="Permalink to this headline">¶</a></h2>
+<p>The <em>revised syntax</em> is a specific syntax whose aim is to resolve
+some problems and inconsistencies of the normal OCaml syntax. A
+chapter will explain the differences between the normal and the
+revised syntax.</p>
+<p>All examples of this documentation are written in that revised
+syntax. Even if you don’t know it, it is not difficult to understand.
+The same examples can be written in normal syntax. In case of
+problems, refer to the chapter describing it.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="strict.html" class="btn btn-neutral float-right" title="Transitional and Strict modes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Camlp5’s documentation! (Only stub for now)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2007-2017, INRIA (Institut National de Recherches en Informatique et Automatique). All rights reserved.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
