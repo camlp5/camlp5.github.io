@@ -1,64 +1,60 @@
 # Camlp5
 
-Camlp5 is a preprocessor-pretty-printer of ocaml.
+Camlp5 is a preprocessor-pretty-printer of OCaml.
 
-It is (theoretically) compatible with all versions of ocaml from 1.07
-to 4.11.1 (when they compile), and jocaml 3.12.0 to 3.12.1, but
-maintainers only test against versions of ocaml >= 4.00.0.
+It is compatible with all versions of OCaml from 4.00.0 thru 4.11.0.
+Previous versions of Camlp5 have supported OCaml versions down to 1.07
+and jocaml 3.12.0 to 3.12.1, but this version cuts off support at
+4.00.0.  Camlp5 is heavily tested with OCaml versions from 4.10.0
+forward, with an extensive and ever-growing testsuite.
 
-This Camlp5 version is 7.13.
+This Camlp5 version is 8.00.  NOTE WELL that this is an
+**alpha** release, and as such, may break your code.  If it does,
+please do reach out to me, and I'll be happy to help upgrade it.  I'm
+still working on the documentation, but .... that could take a while,
+so I figured I had better get this out and find out where code breaks,
+so I can fix that.
 
-## Requirements
+## Documentation: Installation, Testsuite, Tutorial
 
-You need the ocaml compiler installed. It must be accessible in the path.
+Since most OCaml users will install Camlp5 via opam, all the
+documentation has been moved over to Sphinx/RST, and is available in
+`doc/rst/_build` as well as
+[on ReadTheDocs](https://camlp5.readthedocs.io/en/latest/).
 
-## Installation
+- Introduction: `doc/rst/_build/intro.html`, [on ReadTheDocs](https://camlp5.readthedocs.io/en/latest/intro.html).
 
-1) First, run the "configure" script by typing:
-```shell
-   ./configure
-```
-The `configure` script has a few options. Use the `--help` option to get a
-list and short description of each option.
+  This introduction explains how to use Camlp5 from the commandline
+  and toplevel: compiling files, loading into toplevel, selecting
+  syntax (original or revised).  I'd recommend starting here before
+  trying one of the tutorials.
 
-2) It creates a Makefile, which can be invoked by:
-```shell
-   make
-```
+- Building, Requirements & Installation: `doc/rst/_build/building.html`, [on ReadTheDocs](https://camlp5.readthedocs.io/en/latest/building.html).
 
-Alternatively, you can decompose the operations into:
-```shell
-   make out
-```
-Then, to make camlp5 check itself:
-```shell
-   make bootstrap
-```
-Further, to make the native-code library:
-```shell
-   make opt
-```
-At end, to make more native-code programs:
-```shell
-   make opt.opt
-```
+  This covers building Camlp5 "manually", as well as building the
+  documentation, testsuite, and tutorial examples.
 
-3) The binaries are installed by typing:
-```shell
-   make install
-```
-or, if you install to a system location but are not an administrator
-```
-   sudo make install
-```
+- Tutorials (using Camlp5): `doc/rst/_build/tutorial-language-processing.html`, [on ReadTheDocs](https://camlp5.readthedocs.io/en/latest/tutorial-language-processing.html).
 
-## Documentation
+  This covers how to use Camlp5 to write new language processors (the
+  running example of a calculator with parsing, pretty-printing, and
+  evaluation), using Camlp5 infrastructure, as well as interfacing with
+  Ocamllex.
 
-There are two forms of documentation: HTML and RST (ReStructured Text)
-(for Sphinx).  We're switching to RST, but for now will maintain both
-in parallel.
+- Tutorials (extending OCaml Syntax): `doc/rst/_build/tutorial-extending-camlp5.html`, [on ReadTheDocs](https://camlp5.readthedocs.io/en/latest/tutorial-extending-camlp5.html).
 
-The directory doc/htmlp contains the sources of the HTML documentation.
+  This covers how to use Camlp5 to write new syntax-extensions for
+  Ocaml, using the example new syntax ``sum 1 ; 2 end``.
+
+Some tutorials are provided in both original and revised syntax:
+eventually all will be provided in both forms.
+
+### Outdated HTML Documentation
+
+The directory doc/htmlp contains the sources of outdated HTML
+documentation.  It will be removed once the Sphinx documentation is
+fully updated.
+
 To build it, cd doc/htmlp, and:
 * for its html version, type "make", result in directory ../html
 * for its latex version, type "make tex", result camlp5.tex
@@ -66,30 +62,19 @@ To build it, cd doc/htmlp, and:
 * for its pdf version, type "make pdf", result camlp5.pdf
 * for its info version, type "make info", result camlp5.info*
 
-The directory doc/rst contains the sources of the RST documentation.  To build it requires:
-*`python3` (tested with version 3.6.9)
-* Sphinx (tested with version 3.0.3)
-* sphinx-rtd-theme (tested with 0.4.3)
-
-The easiest way to do that is to use Python's `venv` and install them with `pip3`.  Then
-```
-make -C doc/rst all
-```
-
-This creates the Sphinx documentation in `doc/rst/_build`.
-
-## Developers
-
-The file DEVEL gives information for people who want to make changes
-in Camlp5, or who are just curious of how it is implemented. The same
-explanations are also in the chapter "Camlp5 sources" in the documentation.
-
 ## Problems
 
-If you have problems to compile your source files with this version of
-Camlp5, the reason can be that there the new type 'location' is now
-abstract. Consider looking at the file UPGRADING.
+If you have problems compiling your source files with this version of
+Camlp5, please contact me (Chet Murthy <chetsky@gmail.com>) and I'll
+help you resolve them.  I can't promise, but it's likely I can just
+fork your repo, fix the problem, and send you a PR.
 
-## Author
+For really old code, the reason can be that there the new type
+'location' is now abstract. Consider looking at the file UPGRADING.
 
-Daniel de Rauglaudre <daniel.roglo@free.fr>
+## Author(s)
+
+Originally written by Daniel de Rauglaudre <daniel.roglo@free.fr>.
+Maintenance and upgrades by Chet Murthy <chetsky@gmail.com>.
+
+All bugs are my (Chet's) fault, all good ideas are Daniel's.

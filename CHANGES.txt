@@ -1,11 +1,242 @@
-Camlp5 Version 7.13:
+
+Camlp5 Version 8.00:
 --------------------
 
-* [04 Sep 20] Support for Ocaml 4.10.1.
-* [03 Sep 20] Support for Ocaml 4.11.1.
+* [26 Dec 2020] several changes
+
+  * support ocaml 4.12 syntax: injective type-parameters and prefix-ops containing hash.
+  * debug-printing via pa_ppx -- requiring 'pa_ppx.base' will load
+    'pa_ppx.deriving_plugins.show'-based pretty-printers for Camlp5's AST types.
+
+
+Camlp5 Version 8.00-alpha07:
+--------------------
+
+* [18 Oct 2020] BIG change: the type of expressions (MLast.expr) is
+  switched to using longidents instead of the old "ExAcc"/"ExUid"
+  stuff.  This is a vast improvement in correctness as well as
+  allowing better support for things like "M.N.( ... expr ...)"
+
+  The old quotation syntax <:expr< $e1$ . $e2$ >> is discontinued.
+  Instead you should use:
+
+  <:expr< $longid:li$ >>:
+
+  for a module-path or constructor
+
+  <:expr< $longid:li$ . ( $e$ ) >>:
+
+  for a local-open
+
+  <:expr< $e$ . $longid:li$ . $lid:id$ >>:
+
+  for a qualified field-name, e.g. x.Location.txt
+
+  <:expr< $e$ . $lid:id$ >>:
+
+  for a simple field-name, e.g. x.txt
+
+Camlp5 Version 8.00-alpha06:
+--------------------
+
+* [01 Oct 2020] multiple small changes
+
+  * export "pa_macro_gram.cmo" as the findlib package "camlp5.macro_gram": this provides IFDEF support in grammars.
+
+  * in Q_ast, add "stri" as a valid antiquotation for str_item.  And add tests.
+
+  * factored out base of Q_ast, so we can use it in PPX derivers that
+    generate quotations for other types than Camlp5's AST
+
+Camlp5 Version 8.00-alpha05:
+--------------------
+
+* [24 Sep 2020] add support for 4.11.0 quoted-extension, viz {%foo|argle|} and
+  {foo bar|argle|bar}
+
+* [19 Sep 2020] multiple small changes
+
+  * export more names from Reloc
+
+  * in Q_MLast, allow Qast.Node to take a dotted name, e.g. Qast.Node
+    "A.B.C" and convert it into an access-expression, so we can use
+    quotations over types not in MLast.
+
+Camlp5 Version 8.00-alpha04:
+--------------------
+
+* [01 Sep 2020] Add support for Ocaml 4.11.1.
+
+  Support "#-types" with extended longidents (module-applications).  Test support for same.
+
+Camlp5 Version 8.00-alpha03:
+--------------------
+
+* [22 Aug 2020] Add support for Ocaml 4.10.1.
+
+Camlp5 Version 8.00-alpha02:
+--------------------
+
+* [18 Aug 2020] fixed original-syntax pretty-printing bug in class-decl params.
+
+* [16 Aug 2020] added "-version" to succinctly print out camlp5 version
+  (like "ocamlc --version").
+
+  Added "constructor" quotation to q_MLast and q_ast, we can
+  pattern-match with quotations, on constructor-declarations.
+
+* [15 Aug 2020] fixed "-verbose" bug in mkcamlp5 (and updated doc)
+
+* [13 Aug 2020] rehabilitated q_ast parsing kit and verified that it
+  works just as q_MLast does (for revised syntax).  Still haven't done
+  so original syntax (and it won't, since original syntax has
+  ambiguities when introducing antiquotations everywhere).
+
+  Also rehabbed the "test" tests, but not all of them work
+  (e.g. "quot_o").
+
+  Changed revised syntax (only revised -- original syntax remains the
+  same) of GADT declarations to allow them to be pattern-matched with
+  quotations.  Example: instead of
+
+  type t = A : t1 -> t2 -> t
+
+  use
+
+  type t = A of t1 and t2 : t
+  
+  This allows quotations like
+
+  type t = [ A of $list:args$ : $t$ ] ;
+
+* [05 Aug 2020] Fixed top/rprint so that in revised syntax toplevel
+  mode, exceptions get printed out correctly.
+
+  TODO: Devise a unit-test for this, and go thru and verify that it
+  works for all "outcometree" types.
+
+* [01 Aug 2020] Added purely-internal "ppxprint" (PPX-derived printers
+  for AST types) so we can use it to debug.  It's disabled by default,
+  so no external users should need to worry about it.
+
+  To enable, build camlp5 with "BOOTSTRAPPED=1" as an extra toplevel
+  make argument.
+
+  TODO: add this to the "configure" script.
+
+* [30 Jul 2020] fixed parser lookahead-too-far bug in revised syntax.
+  Input {|(F.f 1);|} was causing lookahead to the token after the
+  semicolon.
+
+* [25 Jul 2020] add "extfold" to META.  Move much documentation from
+  README.md to Sphinx/RST docs.  Add example of extending Ocaml syntax
+  to tutorial.
+
+* [24 Jul 2020] update META to allow use of all syntax-extension kits
+  with original syntax.  Some of these will be breaking; we'll undo
+  them as we find that they break (assuming nothing can be done to fix
+  the breakage).
+
+Camlp5 Version 8.00-alpha01:
+--------------------
+
+* [07 Jul 2020] Massive number of changes to support PPX
+  extension/attribute syntax, PPX rewriters, and syntax changes thru
+  Ocaml 4.10.0.  Also support for Ocaml 4.11.0, but not for syntax
+  changes therein (that'll come in the next release).
+
+  It is fair to say that this release has lots of incompatibilities
+  with the previous stream, hence the bump in major version number.
+  Many camlp5 users will find that things continue to work; others
+  will find that they do not, I'm happy to help them upgrade their
+  code.  I'll maintain the 7.xx stream of code as long as I can (in
+  the face of Ocaml changes), but new function will appear here as
+  part of 8.xx.  I'll try to list big changes below:
+
+  * New set of packages in META file, so you should be able to use
+    camlp5 almost exclusively via ocamlfind (not having to resort to
+    the camlp5{,r,o} commands).
+
+  * New documentation in Sphinx/RST format (thanks to Kakadu@ !) and
+    this is the documentation that will be updated, going forward.
+    I'll keep the old docs around for the next few releases until the
+    new docs are fully-updated and cleaned-up, but eventually they'll
+    get deleted.
+
+  * Support for all the syntax up to 4.10.0, including all PPX
+    attributes and extensions, parsed, represented in parsetree,
+    pretty-printed, passed properly to Ocaml compiler.  Of course, all
+    the syntax is supported in "original" syntax; with few exceptions,
+    all of it is also supported in "revised" syntax.
+
+  * Most of the places where Ocaml introduced module-prefixes
+    (e.g. "M.N.(A e1 e2)") are now supported.  The glaring exception
+    is in *expressions*, and this will be fixed in a coming release.
+    This means that instead of pattern-matching on (for instance)
+    patterns to take apart a module-prefix, you pattern-match to
+    extract a "longid" and that longid itself can be pattern-matched
+    to reveal the module-identifiers.
+
+  * Camlp5 version 7.11 added support for "blank module-binders" in
+    all syntax locatinos where module-names can be introduced (to
+    follow Ocaml's introduction of same), and also "empty" functor
+    arguments and argument-types", viz:
+
+    in struct-items:
+
+    module _ = struct ... end
+    module F = functor () -> struct ... end
+    module F = functor (_ : sig ... end) -> struct ... end
+
+    and many other locations (look in the Ocaml documentation for
+    those locations).
+
+    in signature-items:
+
+    module _ : sig ... end
+
+    This necessarily means that in places where there was a string
+    (module-id binder), you'll now have a string option; in places
+    where there was a "string * ctyp" (bound module-type) you'll have
+    "(string option * ctyp) option".
+
+  * This new version preserves compatibility with Ocaml versions >=
+    4.00.0, though new function (e.g. PPX syntax, is ONLY tested with
+    ocaml version 4.10.0 and above).
+
+    More precise: all pre-existing camlp5 function (module bugfixes
+    and API changes) should work with all ocaml versions; new function
+    only works with ocaml >= 4.10.0.
+
+  * A breaking change to the Grammar API of lib/grammar.mli.  This can
+    only affect code that constructs grammar-rules programmatically,
+    rather than by using the "pa_extend.cmo" syntax.  So literally no
+    code in camlp5 is affected.  The only example I know of that is
+    affected is the "elpi" package.
+
+    Previously, a grammar-rule consisted in a tuple of a list of
+    symbols, and an "action" (code).  Now, it is a thruple of: a list
+    of symbols, a hashcode (of the AST of the action), and the action.
+    This change is necessary to allow left-factorization to work
+    properly for, e.g. rules like
+
+    [ [ OPT [ "foo" ] ; x = INT ] | [ OPT [ "foo" ] ; x = STRING ] ]
+
+    because implicitly, the OPT symbol involves an action that returns
+    "()".
+
+  * a breaking change to the Plexing API of lib/plexing.mli.  This can
+    only affect code that defines its own lexer (for example, defining
+    a new language wholly in camlp5).  Please consult the definition
+    of the type "Plexing.Location' for details.  The only downstream
+    package affected (that I know of) is "elpi".
 
 Camlp5 Version 7.12:
 --------------------
+
+* [29 Apr 20] Added a new "topfind.camlp5" script that can be "#use"-ed
+  just like "topfind"; it defines #camlp5o and #camlp5r commands (like
+  topfind's #camlp4o and $camlp4r commands)
 
 * [29 Apr 20] upgrade to minimal support for Ocaml 4.11.0
   (specifically 4.11.0+dev2-2020-04-22).  This does not provide
